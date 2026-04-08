@@ -3,13 +3,13 @@ import localFont from 'next/font/local';
 export const moniqa = localFont({
   src: [
     {
-      path: '../public/fonts/Moniqa-BoldParagraph.otf', // Medium/SemiBold equivalent for Paragraph style
-      weight: '500',
+      path: '../public/fonts/Moniqa-BoldParagraph.otf', // Used for bold (e.g. 700)
+      weight: '700',
       style: 'normal',
     },
     {
       path: '../public/fonts/Moniqa-ExtraBoldParagraph.otf',
-      weight: '600',
+      weight: '800',
       style: 'normal',
     },
     {
