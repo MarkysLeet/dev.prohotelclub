@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+:root {
+  --background: #F6EEE1;
+  --foreground: #1A231E;
+  --text-secondary: #5A6B5D;
+  --primary: #2E4B2F;
+  --primary-hover: #1F3520;
+  --surface: #FFFFFF;
+  --surface-dim: #FAEDDB;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-text-secondary: var(--text-secondary);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-surface: var(--surface);
+  --color-surface-dim: var(--surface-dim);
+  --font-sans: var(--font-inter), sans-serif;
+  --font-heading: var(--font-inter), sans-serif;
+}
+
+/* Force light mode variables, ignore prefers-color-scheme */
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+strong {
+  font-weight: 600;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in forwards;
+}
