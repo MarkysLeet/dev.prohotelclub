@@ -1,0 +1,20 @@
+
+> tmp-next-app@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.2 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 667ms
+
+○ Compiling / ...
+ GET / 200 in 7.6s (next.js: 7.0s, application-code: 582ms)
+⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+▲ Next.js 16.2.2 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 604ms
+
+ GET / 200 in 745ms (next.js: 282ms, application-code: 463ms)
+⨯ upstream image response failed for https://images.unsplash.com/photo-1542314831-c6a4d14d8c1e?q=80&w=2574&auto=format&fit=crop 404
+⨯ upstream image response failed for https://images.unsplash.com/photo-1582719478250-c89af14fb181?q=80&w=2670&auto=format&fit=crop 404
