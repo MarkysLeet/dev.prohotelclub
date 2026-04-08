@@ -23,7 +23,7 @@ export default function Home() {
     <main className="w-full min-h-[100dvh] lg:h-[100dvh] lg:overflow-hidden flex flex-col bg-[#f6eee1] relative">
       <Header />
 
-      <div className="flex-1 w-full flex flex-col lg:flex-row mt-[85px] lg:h-[calc(100dvh-85px)] relative">
+      <div className="flex-1 w-full flex flex-col lg:flex-row mt-[60px] lg:h-[calc(100dvh-60px)] relative">
 
         {/* Decorative thin line vector logic can be simulated with borders or thin divs if needed, but keeping it clean */}
 
@@ -59,7 +59,7 @@ export default function Home() {
 
           {/* Main Background Image Block */}
           {/* Note: The design shows the image slightly inset from the right and top */}
-          <div className="absolute top-0 md:top-[0px] lg:top-[0px] right-0 w-full lg:w-[1344px] h-full lg:h-[995px] overflow-hidden rounded-bl-[60px] lg:rounded-none">
+          <div className="absolute top-0 md:top-[0px] lg:top-[0px] right-0 w-full lg:w-[1344px] h-full lg:h-[calc(100vh-60px)] overflow-hidden rounded-bl-[60px] lg:rounded-none">
             <Image
               src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/30/b0/1b/8e/caption.jpg?w=1200&h=-1&s=1"
               alt="Hotel Interior"
