@@ -1,58 +1,19 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-soft-sand: #F6EEE1;
+  --color-primary-text: #1A231E;
+  --color-secondary-text: #5A6B5D;
+  --color-evergreen-forest: #2E4B2F;
+  --color-evergreen-hover: #1F3520;
+
+  --font-moniqa: var(--font-moniqa), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-century-gothic: var(--font-century-gothic), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
 
 @layer base {
-  button,
-  input,
-  select,
-  textarea {
-    @apply appearance-none bg-transparent border-0 outline-none;
-  }
-}
-
-@layer components {
-  .all-\[unset\] {
-    all: unset;
-  }
-}
-
-:root {
-  --background: #F6EEE1;
-  --foreground: #1A231E;
-}
-
-body {
-  color: var(--foreground);
-  background: var(--background);
-}
-
-.animate-fade-in {
-  animation: fade-in 1s var(--animation-delay, 0s) ease forwards;
-}
-
-.animate-fade-up {
-  animation: fade-up 1s var(--animation-delay, 0s) ease forwards;
-}
-
-@keyframes fade-in {
-  0% {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-@keyframes fade-up {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
+  body {
+    background-color: var(--color-soft-sand);
+    color: var(--color-primary-text);
   }
 }
