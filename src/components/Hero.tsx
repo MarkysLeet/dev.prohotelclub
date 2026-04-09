@@ -2,84 +2,101 @@ import Image from "next/image";
 
 export default function Hero() {
   return (
-    <section className="relative w-full h-[1080px] mt-[85px]">
+    <section className="relative w-full flex justify-center bg-soft-sand overflow-hidden h-[995px] mt-[85px]">
 
       {/*
-        Hero Background Image:
-        Starts at X=576, width 1905, height 995, Y=85 (which is 0 relative to this section).
+        Main Container: strictly 1920px wide.
+        Everything inside uses absolute positioning relative to this 1920px canvas,
+        matching Figma coordinates exactly.
       */}
-      <div
-        className="absolute top-0 z-0 h-[995px] overflow-hidden"
-        style={{ left: '576px', width: '1905px' }}
-      >
-        <Image
-          src="https://images.unsplash.com/photo-1542314831-c6a4d1409e50?q=80&w=2070&auto=format&fit=crop"
-          alt="Luxury Hotel"
-          fill
-          className="object-cover"
-          priority
-        />
-      </div>
+      <div className="relative w-[1920px] min-w-[1920px] h-[995px]">
 
-      {/* Main Container 1920px max width for coordinates */}
-      <div className="relative z-10 w-full max-w-[1920px] h-[995px] mx-auto">
-
-        {/* Left Block: Y=339 from top of page, so 339-85 = 254 from top of Hero */}
+        {/* Background Image: X=576, Y=0 (relative to hero), W=1905, H=995 */}
         <div
-          className="absolute flex flex-col items-start animate-fade-in"
+          className="absolute z-0"
+          style={{ top: '0px', left: '576px', width: '1905px', height: '995px' }}
+        >
+          <Image
+            src="https://images.unsplash.com/photo-1542314831-c6a4d1409e50?q=80&w=2070&auto=format&fit=crop"
+            alt="Luxury Hotel"
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+
+        {/* Слайдер (точки): X=861, Y=1028 (relative to screen top = 1028 - 85 = 943px relative to Hero) */}
+        <div
+          className="absolute z-20 flex gap-2"
+          style={{ top: '943px', left: '861px' }}
+        >
+          <div className="w-[12.5px] h-[12.5px] bg-white rounded-full border-2 border-evergreen-forest" />
+          <div className="w-[12.5px] h-[12.5px] bg-white/50 rounded-full" />
+          <div className="w-[12.5px] h-[12.5px] bg-white/50 rounded-full" />
+        </div>
+
+        {/* Left Block: Y=339 absolute -> 339 - 85 = 254px top */}
+        <div
+          className="absolute animate-fade-in text-left"
           style={{ top: '254px', left: '52px', width: '869px' }}
         >
-          <h1 className="font-moniqa text-[120px] text-primary-text leading-[0.85] tracking-tight">
+          <h1 className="font-moniqa text-[120px] text-primary-text leading-[0.85] tracking-tight m-0 p-0">
             Профессиональная среда <br />
             для работы с отелями
           </h1>
 
-          <p className="font-century-gothic text-[24px] text-primary-text leading-[1.4] mt-[161px]">
+          {/* Y=620 absolute -> 620 - 339 = 281 gap from top of block */}
+          <p
+            className="absolute font-century-gothic text-[24px] text-primary-text leading-[1.4] m-0 p-0 w-[644px]"
+            style={{ top: '281px', left: '0px' }}
+          >
             Качественные превью и структурированные данные.<br />
             Создано экспертами для экспертов индустрии.
           </p>
 
-          <button className="mt-[44px] px-[40px] py-[15px] border border-evergreen-forest text-evergreen-forest font-century-gothic text-[24px] rounded-xl hover:bg-evergreen-forest hover:text-soft-sand transition-all duration-200 cinematic-easing">
+          {/* Button: Y=722 absolute -> 722 - 339 = 383 from top of block.
+              But Figma says X: 171 relative to frame (171 - 52 = 119 from left of block)
+          */}
+          <button
+            className="absolute flex items-center justify-center border border-evergreen-forest text-evergreen-forest font-century-gothic text-[24px] rounded-[26px] hover:bg-evergreen-forest hover:text-soft-sand transition-colors duration-200"
+            style={{ top: '383px', left: '119px', width: '281px', height: '53px' }}
+          >
             Подробнее о нас
           </button>
         </div>
 
-        {/* Hotel Info Card: X=1020, Y=725 from top of page -> 725-85 = 640 from top of Hero */}
+        {/* Hotel Info Card: X=1020, Y=725 absolute -> 725 - 85 = 640px top */}
         <div
-          className="absolute animate-fade-in-delayed flex items-end justify-end"
+          className="absolute animate-fade-in-delayed"
           style={{
             top: '640px',
             left: '1020px',
             width: '900px',
-            height: '356px',
+            height: '357px',
           }}
         >
           {/* SVG Background Layer */}
-          <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="absolute inset-0 z-0">
             <svg width="900" height="357" viewBox="0 0 900 357" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M899.929 0L899.646 6.06825C899.747 27.837 877.266 71.3744 786.532 71.3744H300.266C262.001 72.2247 185.47 96.3743 185.47 186.17V189.742V296.374C185.47 320.543 158.369 356.547 80.8181 356.547C3.2671 356.547 -5.5163 351.978 2.30683 356.547H80.8181H695.054H899.427L900 0H899.929Z" fill="#F6EEE1"/>
             </svg>
           </div>
 
-          {/* Content Layer (positioning based on text relative coordinates)
-              The text inside card:
-              "Тэги" Y: 889 (absolute) -> 889 - 725 = 164 from top of card.
-              "Название" Y: 828 -> 828 - 725 = 103 from top of card.
-              "Кнопка" Y: 981 -> 981 - 725 = 256 from top of card.
-          */}
-          <div className="relative z-10 w-full h-full flex flex-col items-end pr-[49px]">
-            {/* Название отеля */}
+          {/* Content inside card. Positioning relative to 1920px frame, minus card offset (X:1020, Y:640 relative to Hero) */}
+          <div className="absolute inset-0 z-10 text-left">
+
+            {/* Название: X=1671 -> 1671-1020 = 651 relative to card. Y=828 -> 828-725 = 103 */}
             <h2
-              className="absolute font-moniqa text-[50px] text-primary-text leading-none text-right"
-              style={{ top: '103px', right: '49px' }}
+              className="absolute font-moniqa text-[50px] text-primary-text leading-none m-0 p-0"
+              style={{ top: '103px', left: '651px', width: '220px' }}
             >
               Название отеля
             </h2>
 
-            {/* Теги */}
+            {/* Тэги: X=1610 -> 1610-1020 = 590. Y=889 -> 889-725 = 164 */}
             <div
-              className="absolute flex gap-[20px] justify-end"
-              style={{ top: '164px', right: '49px' }}
+              className="absolute flex gap-[20px]"
+              style={{ top: '164px', left: '590px', width: '281px' }}
             >
               {["Семейный", "Всё включено", "16+"].map((tag) => (
                 <div key={tag} className="flex items-center justify-center h-[27px] px-4 rounded-[13px] border-[0.5px] border-dashed border-[#2e4b2f]">
@@ -90,18 +107,18 @@ export default function Hero() {
               ))}
             </div>
 
-            {/* Описание */}
+            {/* Описание: X=1276 -> 1276-1020 = 256. Y=929 -> 929-725 = 204 */}
             <p
-              className="absolute font-century-gothic text-[24px] text-primary-text leading-snug text-right max-w-[400px]"
-              style={{ top: '204px', right: '49px' }} // 929 - 725 = 204px
+              className="absolute font-century-gothic text-[24px] text-primary-text leading-snug m-0 p-0"
+              style={{ top: '204px', left: '256px', width: '615px' }}
             >
               Короткое описание отеля, локации, преимуществ
             </p>
 
-            {/* Action */}
+            {/* Action: X=1610 -> 1610-1020 = 590. Y=981 -> 981-725 = 256 */}
             <button
-              className="absolute w-[283px] h-[53px] group focus:outline-none rounded-[26px]"
-              style={{ top: '256px', right: '49px' }} // 981 - 725 = 256px
+              className="absolute group focus:outline-none rounded-[26px]"
+              style={{ top: '256px', left: '590px', width: '281px', height: '53px' }}
             >
                 <div className="absolute inset-0 w-full h-full bg-evergreen-forest rounded-[26px] border border-black transition-colors group-hover:bg-[#1F3520]" />
                 <span className="absolute inset-0 flex items-center justify-center font-century-gothic text-white text-[24px] font-normal tracking-wide">
