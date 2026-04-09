@@ -1,29 +1,41 @@
-import { Menu01Icon, Search02Icon, UserCircleIcon } from 'hugeicons-react';
+import { Search01Icon, UserIcon, Menu01Icon } from 'hugeicons-react';
 
 export default function Header() {
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 w-full h-[60px] bg-[#2E4B2F] flex items-center justify-between px-[29px] lg:px-[50px] animate-in fade-in duration-700 ease-cinematic">
-      {/* Left: Burger Menu & Icon */}
-      <div className="flex items-center gap-[20px]">
-        <button aria-label="Open menu" className="p-2 -ml-2 text-white hover:opacity-80 transition-opacity">
-          <Menu01Icon strokeWidth={1.5} size={35} />
+    <header className="w-full h-[85px] bg-evergreen-forest flex items-center fixed top-0 left-0 z-40">
+      <div className="w-full max-w-[1920px] h-full mx-auto relative flex items-center">
+        {/* Бургер - X: 35 relative to header */}
+        <button
+          aria-label="Menu"
+          className="absolute text-soft-sand hover:text-white transition-colors duration-200"
+          style={{ left: '35px' }}
+        >
+          <Menu01Icon size={24} strokeWidth={1.5} />
         </button>
-      </div>
 
-      {/* Center: Logo */}
-      <div className="absolute left-1/2 -translate-x-1/2 mt-1">
-        <span className="font-moniqa text-white text-[50px] tracking-wide font-normal leading-none">
+        {/* Логотип - X: 872 (which is exactly centered in 1920 since 1920/2 - textwidth/2 = approx 872) */}
+        <div
+          className="absolute font-moniqa text-[50px] text-white tracking-wide leading-none select-none w-full text-center"
+        >
           ProHotelClub
-        </span>
-      </div>
+        </div>
 
-      {/* Right: Icons */}
-      <div className="flex items-center gap-6">
-        <button aria-label="Search" className="text-white hover:opacity-80 transition-opacity">
-          <Search02Icon strokeWidth={1.5} size={28} />
+        {/* Поиск - X: 1782 */}
+        <button
+          aria-label="Search"
+          className="absolute text-soft-sand hover:text-white transition-colors duration-200"
+          style={{ left: '1782px' }}
+        >
+          <Search01Icon size={24} strokeWidth={1.5} />
         </button>
-        <button aria-label="User Profile" className="text-white hover:opacity-80 transition-opacity">
-          <UserCircleIcon strokeWidth={1.5} size={28} />
+
+        {/* Кабинет - X: 1859 */}
+        <button
+          aria-label="Profile"
+          className="absolute text-soft-sand hover:text-white transition-colors duration-200"
+          style={{ left: '1859px' }}
+        >
+          <UserIcon size={24} strokeWidth={1.5} />
         </button>
       </div>
     </header>
