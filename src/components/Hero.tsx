@@ -2,21 +2,15 @@ import Image from "next/image";
 
 export default function Hero() {
   return (
-    <section className="relative w-full h-[995px] mt-[85px] overflow-hidden flex items-start">
+    <section className="relative w-full h-[1080px] mt-[85px]">
 
       {/*
         Hero Background Image:
-        According to Figma data, X is 576, meaning the image doesn't start from the left edge.
-        It starts at 576px from left, and has width 1905px (stretching beyond 1920px screen).
-        This gives a split-screen or overlay effect where the left side text is on a solid background,
-        and the image is on the right.
+        Starts at X=576, width 1905, height 995, Y=85 (which is 0 relative to this section).
       */}
       <div
-        className="absolute top-0 right-0 h-full z-0"
-        style={{
-          width: 'calc(100% - 576px)',
-          minWidth: '50%', // fallback for smaller screens
-        }}
+        className="absolute top-0 z-0 h-[995px] overflow-hidden"
+        style={{ left: '576px', width: '1905px' }}
       >
         <Image
           src="https://images.unsplash.com/photo-1542314831-c6a4d1409e50?q=80&w=2070&auto=format&fit=crop"
@@ -25,72 +19,91 @@ export default function Hero() {
           className="object-cover"
           priority
         />
-        {/* We can add a gradient or subtle overlay to match the design's "cut" if there was any masking */}
       </div>
 
-      {/* Main Container 1920px max width to keep text aligned to Figma coordinates */}
-      <div className="relative z-10 w-full max-w-[1920px] h-full mx-auto">
+      {/* Main Container 1920px max width for coordinates */}
+      <div className="relative z-10 w-full max-w-[1920px] h-[995px] mx-auto">
 
-        {/* Left Block */}
-        {/* Y: 339 absolute from top = 339 - 85(header) = 254px top margin inside this section */}
+        {/* Left Block: Y=339 from top of page, so 339-85 = 254 from top of Hero */}
         <div
           className="absolute flex flex-col items-start animate-fade-in"
           style={{ top: '254px', left: '52px', width: '869px' }}
         >
-          {/* Профессиональная среда для работы с отелями (Y: 339 relative to top = top of container) */}
           <h1 className="font-moniqa text-[120px] text-primary-text leading-[0.85] tracking-tight">
             Профессиональная среда <br />
             для работы с отелями
           </h1>
 
-          {/* Качественные превью... Y: 620 absolute -> 620 - 339 = 281px gap from top of this block */}
           <p className="font-century-gothic text-[24px] text-primary-text leading-[1.4] mt-[161px]">
             Качественные превью и структурированные данные.<br />
             Создано экспертами для экспертов индустрии.
           </p>
 
-          {/* Кнопка Y: 722 -> 722 - 620 = 102px gap minus text height */}
           <button className="mt-[44px] px-[40px] py-[15px] border border-evergreen-forest text-evergreen-forest font-century-gothic text-[24px] rounded-xl hover:bg-evergreen-forest hover:text-soft-sand transition-all duration-200 cinematic-easing">
             Подробнее о нас
           </button>
         </div>
 
-        {/* Hotel Info Card (Right Bottom) */}
-        {/* Absolute X: 1020, Y: 725 -> Top offset = 725 - 85 = 640px */}
+        {/* Hotel Info Card: X=1020, Y=725 from top of page -> 725-85 = 640 from top of Hero */}
         <div
-          className="absolute bg-white/90 backdrop-blur-md flex flex-col justify-between shadow-xl animate-fade-in-delayed"
+          className="absolute animate-fade-in-delayed flex items-end justify-end"
           style={{
             top: '640px',
             left: '1020px',
             width: '900px',
             height: '356px',
-            borderTopLeftRadius: '40px', // Typical for these corner "cut" designs in Figma, matching rounded design.md
           }}
         >
-          {/* We use padding based on text relative coordinates.
-              Let's flex it nicely while respecting the general layout */}
-          <div className="w-full h-full p-10 flex flex-col justify-end items-end text-right">
+          {/* SVG Background Layer */}
+          <div className="absolute inset-0 z-0 pointer-events-none">
+            <svg width="900" height="357" viewBox="0 0 900 357" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M899.929 0L899.646 6.06825C899.747 27.837 877.266 71.3744 786.532 71.3744H300.266C262.001 72.2247 185.47 96.3743 185.47 186.17V189.742V296.374C185.47 320.543 158.369 356.547 80.8181 356.547C3.2671 356.547 -5.5163 351.978 2.30683 356.547H80.8181H695.054H899.427L900 0H899.929Z" fill="#F6EEE1"/>
+            </svg>
+          </div>
 
-            {/* Название отеля. Rel Y: 828. Absolute Y is 725. Diff = 103px from top of card. */}
-            <h2 className="font-moniqa text-[50px] text-primary-text leading-none mb-4 w-full text-right">
+          {/* Content Layer (positioning based on text relative coordinates)
+              The text inside card:
+              "Тэги" Y: 889 (absolute) -> 889 - 725 = 164 from top of card.
+              "Название" Y: 828 -> 828 - 725 = 103 from top of card.
+              "Кнопка" Y: 981 -> 981 - 725 = 256 from top of card.
+          */}
+          <div className="relative z-10 w-full h-full flex flex-col items-end pr-[49px]">
+            {/* Название отеля */}
+            <h2
+              className="absolute font-moniqa text-[50px] text-primary-text leading-none text-right"
+              style={{ top: '103px', right: '49px' }}
+            >
               Название отеля
             </h2>
 
-            <div className="flex gap-3 mb-6 justify-end w-full">
+            {/* Теги */}
+            <div
+              className="absolute flex gap-[20px] justify-end"
+              style={{ top: '164px', right: '49px' }}
+            >
               {["Семейный", "Всё включено", "16+"].map((tag) => (
-                <span key={tag} className="px-4 py-1 border-[0.5px] border-dashed border-evergreen-forest text-evergreen-forest font-century-gothic text-[12px] rounded-full uppercase tracking-wider">
-                  {tag}
-                </span>
+                <div key={tag} className="flex items-center justify-center h-[27px] px-4 rounded-[13px] border-[0.5px] border-dashed border-[#2e4b2f]">
+                  <span className="text-[#2e4b2f] font-century-gothic text-[12px] uppercase tracking-wider mt-0.5">
+                    {tag}
+                  </span>
+                </div>
               ))}
             </div>
 
-            <p className="font-century-gothic text-[24px] text-primary-text leading-snug mb-8 max-w-[400px]">
+            {/* Описание */}
+            <p
+              className="absolute font-century-gothic text-[24px] text-primary-text leading-snug text-right max-w-[400px]"
+              style={{ top: '204px', right: '49px' }} // 929 - 725 = 204px
+            >
               Короткое описание отеля, локации, преимуществ
             </p>
 
             {/* Action */}
-            <button className="relative w-[283px] h-[53px] group focus:outline-none rounded-[26px]">
-                <div className="absolute inset-0 w-full h-full bg-[#2e4b2f] rounded-[26px] border border-black transition-colors group-hover:bg-[#1F3520]" />
+            <button
+              className="absolute w-[283px] h-[53px] group focus:outline-none rounded-[26px]"
+              style={{ top: '256px', right: '49px' }} // 981 - 725 = 256px
+            >
+                <div className="absolute inset-0 w-full h-full bg-evergreen-forest rounded-[26px] border border-black transition-colors group-hover:bg-[#1F3520]" />
                 <span className="absolute inset-0 flex items-center justify-center font-century-gothic text-white text-[24px] font-normal tracking-wide">
                   Посмотреть детали
                 </span>
