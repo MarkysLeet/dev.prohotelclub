@@ -1,30 +1,42 @@
-import { Menu01Icon, Search02Icon, UserCircleIcon } from 'hugeicons-react';
+import { Search01Icon, UserIcon, Menu01Icon } from 'hugeicons-react';
 
 export default function Header() {
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 w-full h-[60px] bg-[#2E4B2F] flex items-center justify-between px-[29px] lg:px-[50px] animate-in fade-in duration-700 ease-cinematic">
-      {/* Left: Burger Menu & Icon */}
-      <div className="flex items-center gap-[20px]">
-        <button aria-label="Open menu" className="p-2 -ml-2 text-white hover:opacity-80 transition-opacity">
-          <Menu01Icon strokeWidth={1.5} size={35} />
-        </button>
-      </div>
+    <header className="w-full h-[85px] bg-evergreen-forest flex justify-center fixed top-0 left-0 z-40 px-6 lg:px-[35px]">
+      <div className="w-full max-w-[1920px] h-full flex items-center justify-between relative">
 
-      {/* Center: Logo */}
-      <div className="absolute left-1/2 -translate-x-1/2 mt-1">
-        <span className="font-moniqa text-white text-[50px] tracking-wide font-normal leading-none">
-          ProHotelClub
-        </span>
-      </div>
+        {/* Left: Burger Menu */}
+        <button
+          aria-label="Menu"
+          className="text-soft-sand hover:text-white transition-colors duration-200 flex items-center justify-center p-2 -ml-2"
+        >
+          <Menu01Icon size={32} strokeWidth={1.5} />
+        </button>
 
-      {/* Right: Icons */}
-      <div className="flex items-center gap-6">
-        <button aria-label="Search" className="text-white hover:opacity-80 transition-opacity">
-          <Search02Icon strokeWidth={1.5} size={28} />
-        </button>
-        <button aria-label="User Profile" className="text-white hover:opacity-80 transition-opacity">
-          <UserCircleIcon strokeWidth={1.5} size={28} />
-        </button>
+        {/* Center: Logo */}
+        <div className="absolute left-1/2 -translate-x-1/2 mt-1">
+          <span className="font-moniqa text-[clamp(32px,4vw,50px)] text-white tracking-wide leading-none select-none">
+            ProHotelClub
+          </span>
+        </div>
+
+        {/* Right: Actions */}
+        <div className="flex items-center gap-4 lg:gap-8">
+          <button
+            aria-label="Search"
+            className="text-soft-sand hover:text-white transition-colors duration-200 flex items-center justify-center p-2"
+          >
+            <Search01Icon size={30} strokeWidth={1.5} />
+          </button>
+
+          <button
+            aria-label="Profile"
+            className="text-soft-sand hover:text-white transition-colors duration-200 flex items-center justify-center p-2 -mr-2"
+          >
+            <UserIcon size={30} strokeWidth={1.5} />
+          </button>
+        </div>
+
       </div>
     </header>
   );
