@@ -2,106 +2,82 @@ import Image from "next/image";
 
 export default function Hero() {
   return (
-    <section className="relative w-full min-h-[calc(100vh-85px)] mt-[85px] flex flex-col lg:block bg-soft-sand">
-
-      {/*
-        Hero Background Image:
-        On mobile/tablet: Full width, upper half.
-        On desktop (lg): Right side, leaving space on the left.
-        (576px / 1920px = approx 30% left space)
-      */}
-      <div className="relative lg:absolute lg:right-0 lg:top-0 w-full lg:w-[calc(100vw-min(30vw,576px))] h-[50vh] lg:h-full z-0 overflow-hidden">
-        <Image
-          src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/30/b0/1b/8e/caption.jpg?w=1200&h=-1&s=1"
-          alt="Luxury Hotel"
-          fill
-          className="object-cover"
-          priority
-          unoptimized
-        />
-      </div>
-
+    <section className="relative w-full min-h-[calc(100vh-85px)] mt-[85px] bg-soft-sand px-[clamp(1.5rem,4vw,3rem)] py-[clamp(2rem,5vw,4rem)]">
       {/* Main Content Wrapper */}
-      <div className="relative z-10 w-full h-full flex flex-col lg:block max-w-[1920px] mx-auto px-6 lg:px-0">
+      <div className="w-full h-full max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-[clamp(2rem,4vw,4rem)]">
 
-        {/* Left Block */}
-        <div className="flex flex-col items-start text-left pt-12 lg:pt-[254px] lg:pl-[52px] w-full lg:w-[min(45vw,869px)] mb-12 lg:mb-0 animate-fade-in">
-
-          <h1 className="font-moniqa text-[clamp(60px,8vw,120px)] text-primary-text leading-[0.85] tracking-tight m-0 p-0">
+        {/* Left Column: Text */}
+        <div className="flex flex-col justify-center text-left animate-fade-in order-2 lg:order-1 pt-4 lg:pt-[10%]">
+          <h1 className="font-moniqa text-[clamp(3.75rem,7vw,7.5rem)] text-primary-text leading-[0.85] tracking-tight m-0 p-0">
             Профессиональная среда <br className="hidden md:block" />
             для работы с отелями
           </h1>
 
-          <p className="font-century-gothic text-[clamp(16px,1.5vw,24px)] text-primary-text leading-[1.4] m-0 p-0 mt-6 lg:mt-[160px] max-w-[644px]">
+          <p className="font-century-gothic text-[clamp(1rem,1.5vw,1.5rem)] text-primary-text leading-tight m-0 p-0 mt-6 lg:mt-[clamp(2rem,5vw,4rem)] max-w-[40rem]">
             Качественные превью и структурированные данные.<br className="hidden md:block" />
             Создано экспертами для экспертов индустрии.
           </p>
 
-          <button className="mt-8 lg:mt-12 flex items-center justify-center border border-evergreen-forest text-evergreen-forest font-century-gothic text-[clamp(16px,1.5vw,24px)] rounded-[26px] hover:bg-evergreen-forest hover:text-soft-sand transition-colors duration-200 px-8 py-3 w-full sm:w-auto min-w-[281px]">
+          <button className="mt-8 lg:mt-12 flex items-center justify-center border border-evergreen-forest text-evergreen-forest font-century-gothic text-[clamp(1rem,1.5vw,1.5rem)] rounded-[1.625rem] hover:bg-evergreen-forest hover:text-soft-sand transition-colors duration-200 px-[2rem] py-[0.75rem] w-full sm:w-auto min-w-[17.5rem] self-start">
             Подробнее о нас
           </button>
         </div>
 
-        {/* Hotel Info Card (Right Bottom on Desktop) */}
-        <div className="relative lg:absolute lg:bottom-0 lg:right-0 w-full lg:w-[clamp(600px,60vw,900px)] lg:aspect-[900/357] mt-auto pb-12 lg:pb-0 animate-fade-in-delayed flex flex-col justify-end items-end">
+        {/* Right Column: Image and Card */}
+        <div className="relative w-full aspect-square lg:aspect-auto lg:h-full lg:min-h-[70vh] rounded-[clamp(1rem,2vw,1.5rem)] overflow-hidden order-1 lg:order-2">
 
-          {/* SVG Background Layer (Desktop only) */}
-          <div className="hidden lg:block absolute inset-0 z-0 pointer-events-none">
-            <svg
-              viewBox="0 0 900 357"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-full h-full object-fill"
-              preserveAspectRatio="none"
-            >
-              <path d="M899.929 0L899.646 6.06825C899.747 27.837 877.266 71.3744 786.532 71.3744H300.266C262.001 72.2247 185.47 96.3743 185.47 186.17V189.742V296.374C185.47 320.543 158.369 356.547 80.8181 356.547C3.2671 356.547 -5.5163 351.978 2.30683 356.547H80.8181H695.054H899.427L900 0H899.929Z" fill="#F6EEE1"/>
-            </svg>
-          </div>
+          <Image
+            src="https://dynamic-media-cdn.tripadvisor.com/media/photo-o/30/b0/1b/8e/caption.jpg?w=1200&h=-1&s=1"
+            alt="Luxury Hotel"
+            fill
+            className="object-cover"
+            priority
+            unoptimized
+          />
 
-          {/* Mobile Background */}
-          <div className="lg:hidden absolute inset-0 z-0 bg-soft-sand/95 backdrop-blur-sm rounded-xl border border-white/20 shadow-xl" />
+          {/* Hotel Info Card positioned absolutely at bottom right */}
+          <div className="absolute bottom-0 right-0 z-10 w-full md:w-auto md:min-w-[clamp(20rem,35vw,35rem)] bg-soft-sand p-[clamp(1.5rem,3vw,2.5rem)] rounded-tl-[clamp(2rem,4vw,3rem)] flex flex-col justify-end">
 
-          {/* Content Layer */}
-          <div className="relative z-10 w-full h-full flex flex-col items-end justify-end text-left pr-0 lg:pr-[5%] pb-8 lg:pb-[10%] px-6 lg:px-0 pt-8 lg:pt-0">
+            {/* Pseudo-elements for the inverse border radius to blend smoothly with the image */}
+            <div className="hidden md:block absolute -top-[2rem] right-0 w-[2rem] h-[2rem] pointer-events-none before:content-[''] before:absolute before:inset-0 before:bg-transparent before:shadow-[1rem_1rem_0_0_#F6EEE1] before:rounded-br-[2rem]" />
+            <div className="hidden md:block absolute bottom-0 -left-[2rem] w-[2rem] h-[2rem] pointer-events-none before:content-[''] before:absolute before:inset-0 before:bg-transparent before:shadow-[1rem_1rem_0_0_#F6EEE1] before:rounded-br-[2rem]" />
 
-            {/* Название отеля */}
-            <h2 className="font-moniqa text-[clamp(32px,4vw,50px)] text-primary-text leading-none m-0 p-0 w-full lg:w-[auto] max-w-[400px] text-right lg:text-left mb-6 lg:mb-4">
-              Название отеля
-            </h2>
+            <div className="relative z-10 flex flex-col">
+              <h2 className="font-moniqa text-[clamp(2rem,4vw,3.125rem)] text-primary-text leading-none m-0 p-0 mb-[1.5rem]">
+                Название отеля
+              </h2>
 
-            {/* Теги */}
-            <div className="flex flex-wrap gap-2 lg:gap-[20px] w-full lg:w-[auto] justify-end lg:justify-start mb-6">
-              {["Семейный", "Всё включено", "16+"].map((tag) => (
-                <div key={tag} className="flex items-center justify-center h-[27px] px-4 rounded-[13px] border-[0.5px] border-dashed border-[#2e4b2f]">
-                  <span className="text-[#2e4b2f] font-century-gothic text-[12px] uppercase tracking-wider mt-0.5">
-                    {tag}
+              <div className="flex flex-wrap gap-[0.5rem] lg:gap-[1.25rem] mb-[1.5rem]">
+                {["Семейный", "Всё включено", "16+"].map((tag) => (
+                  <div key={tag} className="flex items-center justify-center h-[1.6875rem] px-[1rem] rounded-[0.8125rem] border-[0.5px] border-dashed border-evergreen-forest">
+                    <span className="text-evergreen-forest font-century-gothic text-[0.75rem] uppercase tracking-wider mt-[0.125rem]">
+                      {tag}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <p className="font-century-gothic text-[clamp(1rem,1.5vw,1.5rem)] text-primary-text leading-snug m-0 p-0 mb-[2rem] max-w-[38rem]">
+                Короткое описание отеля, локации, преимуществ
+              </p>
+
+              <button className="relative w-full sm:w-[17.6875rem] h-[3.3125rem] group focus:outline-none rounded-[1.625rem]">
+                  <div className="absolute inset-0 w-full h-full bg-evergreen-forest rounded-[1.625rem] border border-black transition-colors group-hover:bg-[#1F3520]" />
+                  <span className="absolute inset-0 flex items-center justify-center font-century-gothic text-white text-[clamp(1rem,1.5vw,1.5rem)] font-normal tracking-wide">
+                    Посмотреть детали
                   </span>
-                </div>
-              ))}
+              </button>
             </div>
-
-            {/* Описание */}
-            <p className="font-century-gothic text-[clamp(16px,1.5vw,24px)] text-primary-text leading-snug m-0 p-0 w-full lg:w-[auto] max-w-[615px] text-right lg:text-left mb-8">
-              Короткое описание отеля, локации, преимуществ
-            </p>
-
-            {/* Action */}
-            <button className="relative w-full sm:w-[283px] h-[53px] group focus:outline-none rounded-[26px]">
-                <div className="absolute inset-0 w-full h-full bg-evergreen-forest rounded-[26px] border border-black transition-colors group-hover:bg-[#1F3520]" />
-                <span className="absolute inset-0 flex items-center justify-center font-century-gothic text-white text-[clamp(16px,1.5vw,24px)] font-normal tracking-wide">
-                  Посмотреть детали
-                </span>
-            </button>
           </div>
-        </div>
 
-        {/* Слайдер (точки) - Positioned on top of image for desktop */}
-        <div className="hidden lg:flex absolute bottom-[10%] left-[clamp(600px,45vw,861px)] z-20 gap-2">
-          <div className="w-[12.5px] h-[12.5px] bg-white rounded-[6.25px] border-2 border-evergreen-forest cursor-pointer" />
-          <div className="w-[12.5px] h-[12.5px] bg-white/70 hover:bg-white rounded-[6.25px] cursor-pointer transition-colors" />
-          <div className="w-[12.5px] h-[12.5px] bg-white/70 hover:bg-white rounded-[6.25px] cursor-pointer transition-colors" />
-        </div>
+          {/* Dots on top of image */}
+          <div className="absolute bottom-[2rem] left-[2rem] z-20 flex gap-[0.5rem]">
+            <div className="w-[0.78125rem] h-[0.78125rem] bg-white rounded-full border-2 border-evergreen-forest cursor-pointer" />
+            <div className="w-[0.78125rem] h-[0.78125rem] bg-white/70 hover:bg-white rounded-full cursor-pointer transition-colors" />
+            <div className="w-[0.78125rem] h-[0.78125rem] bg-white/70 hover:bg-white rounded-full cursor-pointer transition-colors" />
+          </div>
 
+        </div>
       </div>
     </section>
   );
