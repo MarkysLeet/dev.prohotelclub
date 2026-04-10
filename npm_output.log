@@ -2,14 +2,17 @@
 > tmp-next-app@0.1.0 dev
 > next dev
 
+⚠ Port 3000 is in use by an unknown process, using available port 3001 instead.
 ▲ Next.js 16.2.2 (Turbopack)
-- Local:         http://localhost:3000
-- Network:       http://192.168.0.2:3000
-✓ Ready in 620ms
+- Local:         http://localhost:3001
+- Network:       http://192.168.0.2:3001
+✓ Ready in 967ms
+⨯ Another next dev server is already running.
 
- GET /hotels 200 in 978ms (next.js: 315ms, application-code: 663ms)
-[browser] Image with src "https://placehold.co/800x600/F6EEE1/5A6B5D?text=Maxx+Royal" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
-Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
- GET /hotels 200 in 120ms (next.js: 5ms, application-code: 115ms)
-[browser] Image with src "https://placehold.co/800x600/F6EEE1/5A6B5D?text=Maxx+Royal" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
-Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+- Local:        http://localhost:3000
+- PID:          377537
+- Dir:          /app
+- Log:          .next/dev/logs/next-development.log
+
+Run kill 377537 to stop it.
+[?25h

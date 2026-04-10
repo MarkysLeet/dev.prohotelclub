@@ -88,19 +88,7 @@ export default function HotelsPage() {
         <div className="max-w-[1920px] mx-auto px-6 lg:px-[35px]">
 
           {/* Header Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="mb-12 md:mb-16"
-          >
-            <h1 className="font-moniqa text-[clamp(48px,8vw,120px)] text-primary-text leading-none tracking-wide mb-4">
-              Коллекция
-            </h1>
-            <p className="text-secondary-text text-lg max-w-2xl">
-              Эксклюзивные отели Турции. Безупречный сервис, первоклассный отдых и привилегии для членов клуба.
-            </p>
-          </motion.div>
+
 
           {/* Filters Section */}
           <motion.div
@@ -183,14 +171,24 @@ export default function HotelsPage() {
             >
               <AnimatePresence>
                 {filteredHotels.map((hotel) => (
-                  <HotelCard
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.4 }}
                     key={hotel.id}
+                  >
+                    <HotelCard
+
                     hotel={hotel}
                     isFavorite={favorites.has(hotel.id)}
                     onToggleFavorite={handleToggleFavorite}
                     getTagIcon={getTagIcon}
                     variant="collection"
+                    onTagClick={toggleTag}
                   />
+                  </motion.div>
                 ))}
               </AnimatePresence>
             </motion.div>

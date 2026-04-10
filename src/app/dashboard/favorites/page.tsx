@@ -33,13 +33,22 @@ export default function FavoritesPage() {
         <motion.div layout className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           <AnimatePresence>
             {favoriteHotels.map((hotel) => (
-              <HotelCard
+              <motion.div
+                layout
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.4 }}
                 key={hotel.id}
+              >
+                <HotelCard
+
                 hotel={hotel}
                 isFavorite={favorites.has(hotel.id)}
                 onToggleFavorite={(id) => toggleFavorite(id)}
                 variant="dashboard"
               />
+              </motion.div>
             ))}
           </AnimatePresence>
         </motion.div>

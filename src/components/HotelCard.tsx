@@ -16,6 +16,7 @@ interface HotelCardProps {
   getTagIcon?: (tag: string) => ReactNode | null;
   layoutId?: string;
   variant?: 'collection' | 'dashboard';
+  onTagClick?: (tag: string) => void;
 }
 
 export function HotelCard({
@@ -23,16 +24,14 @@ export function HotelCard({
   isFavorite,
   onToggleFavorite,
   getTagIcon,
-  variant = 'collection'
+  variant = 'collection',
+  onTagClick
 }: HotelCardProps) {
 
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.4 }}
+
       className="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-100 flex flex-col h-full hover:border-evergreen-forest/20"
     >
       {/* Image Area */}
@@ -76,14 +75,35 @@ export function HotelCard({
       {/* Content Area */}
       <div className="p-6 flex-1 flex flex-col">
         <div className="flex flex-wrap gap-1.5 mb-4">
-          {hotel.tags.slice(0, 3).map(tag => (
-            <span
-              key={tag}
-              className="inline-flex items-center gap-1 px-2 py-1 bg-soft-sand text-secondary-text text-[10px] font-medium rounded-md uppercase tracking-wider"
-            >
-              {getTagIcon && getTagIcon(tag)} {tag}
-            </span>
-          ))}
+          {hotel.tags.slice(0, 3).map(tag => {
+            const content = (
+              <>
+                {getTagIcon && getTagIcon(tag)} {tag}
+              </>
+            );
+            const className = "inline-flex items-center gap-1 px-2 py-1 bg-soft-sand text-secondary-text text-[10px] font-medium rounded-md uppercase tracking-wider";
+
+            if (onTagClick) {
+              return (
+                <button
+                  key={tag}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onTagClick(tag);
+                  }}
+                  className={cn(className, "hover:bg-evergreen-forest hover:text-white transition-colors cursor-pointer")}
+                >
+                  {content}
+                </button>
+              );
+            }
+
+            return (
+              <span key={tag} className={className}>
+                {content}
+              </span>
+            );
+          })}
           {hotel.tags.length > 3 && (
             <span className="inline-flex items-center px-2 py-1 bg-soft-sand text-secondary-text text-[10px] font-medium rounded-md">
               +{hotel.tags.length - 3}
