@@ -37,14 +37,14 @@ export default function AuthForm() {
   };
 
   const animationVariants = {
-    initial: { opacity: 0, y: 10 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -10 },
+    initial: { opacity: 0, height: 0, overflow: 'hidden' },
+    animate: { opacity: 1, height: 'auto', overflow: 'visible' },
+    exit: { opacity: 0, height: 0, overflow: 'hidden' },
   };
 
   return (
-    <div className="w-full">
-      <form onSubmit={handleSubmit} className="space-y-5">
+    <div className="w-full flex flex-col">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
         <AnimatePresence mode="wait">
           {mode === "register" && (
             <motion.div
@@ -55,20 +55,22 @@ export default function AuthForm() {
               exit="exit"
               transition={{ duration: 0.3 }}
             >
-              <label htmlFor="name" className="block text-sm text-secondary-text mb-1.5 ml-1">
-                Имя
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-secondary-text">
-                  <UserIcon size={20} strokeWidth={1.5} />
+              <div className="pb-4 sm:pb-0">
+                <label htmlFor="name" className="block text-sm text-secondary-text mb-1.5 ml-1">
+                  Имя
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-secondary-text">
+                    <UserIcon size={20} strokeWidth={1.5} />
+                  </div>
+                  <input
+                    id="name"
+                    type="text"
+                    required
+                    placeholder="Ваше имя"
+                    className="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-evergreen-forest focus:border-evergreen-forest transition-colors text-primary-text placeholder-gray-400"
+                  />
                 </div>
-                <input
-                  id="name"
-                  type="text"
-                  required
-                  placeholder="Ваше имя"
-                  className="w-full pl-11 pr-4 py-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-evergreen-forest focus:border-evergreen-forest transition-colors text-primary-text placeholder-gray-400"
-                />
               </div>
             </motion.div>
           )}
@@ -87,7 +89,7 @@ export default function AuthForm() {
               type="email"
               required
               placeholder="agent@example.com"
-              className="w-full pl-11 pr-4 py-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-evergreen-forest focus:border-evergreen-forest transition-colors text-primary-text placeholder-gray-400"
+              className="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-evergreen-forest focus:border-evergreen-forest transition-colors text-primary-text placeholder-gray-400"
             />
           </div>
         </motion.div>
@@ -112,7 +114,7 @@ export default function AuthForm() {
               type="password"
               required
               placeholder="••••••••"
-              className="w-full pl-11 pr-4 py-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-evergreen-forest focus:border-evergreen-forest transition-colors text-primary-text placeholder-gray-400"
+              className="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-evergreen-forest focus:border-evergreen-forest transition-colors text-primary-text placeholder-gray-400"
             />
           </div>
         </motion.div>
@@ -121,7 +123,7 @@ export default function AuthForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-4 bg-evergreen-forest text-soft-sand rounded-xl hover:bg-evergreen-hover transition-colors font-medium flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full py-3.5 sm:py-4 bg-evergreen-forest text-soft-sand rounded-xl hover:bg-evergreen-hover transition-colors font-medium flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <div className="w-6 h-6 border-2 border-soft-sand/30 border-t-soft-sand rounded-full animate-spin" />
@@ -134,7 +136,7 @@ export default function AuthForm() {
         </motion.div>
       </form>
 
-      <motion.div layout className="mt-8 relative">
+      <motion.div layout className="mt-6 sm:mt-8 relative">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-gray-200"></div>
         </div>
@@ -143,12 +145,12 @@ export default function AuthForm() {
         </div>
       </motion.div>
 
-      <motion.div layout className="mt-8">
+      <motion.div layout className="mt-6 sm:mt-8">
         <button
           type="button"
           onClick={handleGoogleLogin}
           disabled={isLoading}
-          className="w-full py-3.5 bg-white border border-gray-200 text-primary-text rounded-xl hover:bg-gray-50 transition-colors font-medium flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed"
+          className="w-full py-3 sm:py-3.5 bg-white border border-gray-200 text-primary-text rounded-xl hover:bg-gray-50 transition-colors font-medium flex items-center justify-center gap-3 disabled:opacity-70 disabled:cursor-not-allowed"
         >
           {/* Custom minimal Google SVG icon to fit the design system */}
           <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -161,7 +163,7 @@ export default function AuthForm() {
         </button>
       </motion.div>
 
-      <motion.p layout className="mt-10 text-center text-sm text-secondary-text">
+      <motion.p layout className="mt-6 sm:mt-10 text-center text-sm text-secondary-text pb-2">
         {mode === "login" ? "У вас еще нет аккаунта? " : "Уже есть аккаунт? "}
         <button
           onClick={toggleMode}
