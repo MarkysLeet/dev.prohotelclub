@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
+import AboutUs from "@/components/AboutUs";
 
 export default function Home() {
   return (
@@ -7,6 +8,7 @@ export default function Home() {
       <Header />
       <div className="pt-[85px] w-full">
         <Hero />
+        <AboutUs />
       </div>
     </main>
   );
