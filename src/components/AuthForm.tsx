@@ -1,4 +1,5 @@
 "use client";
+import { useAuth } from "@/lib/AuthContext";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -11,6 +12,7 @@ export default function AuthForm() {
   const [mode, setMode] = useState<AuthMode>("login");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { login } = useAuth();
 
   const toggleMode = () => {
     setMode((prev) => (prev === "login" ? "register" : "login"));
@@ -23,7 +25,7 @@ export default function AuthForm() {
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
-      router.push("/");
+      login(); router.push("/");
     }, 1500);
   };
 
@@ -32,7 +34,7 @@ export default function AuthForm() {
     // Simulate Google Auth
     setTimeout(() => {
       setIsLoading(false);
-      router.push("/");
+      login(); router.push("/");
     }, 1500);
   };
 
