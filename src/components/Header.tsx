@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search01Icon, UserIcon, Menu01Icon } from "hugeicons-react";
+import { Search01Icon, UserIcon, Menu01Icon, Building04Icon } from "hugeicons-react";
 import { useAuth } from "@/lib/AuthContext";
 
 export default function Header() {
@@ -42,13 +42,23 @@ export default function Header() {
   return (
     <header className="w-full h-[56px] lg:h-[64px] bg-evergreen-forest flex justify-center fixed top-0 left-0 z-50 px-6 lg:px-[35px]">
       <div className="w-full max-w-[1920px] h-full flex items-center justify-between relative">
-        {/* Left: Burger Menu */}
-        <button
-          aria-label="Menu"
-          className="text-soft-sand hover:text-white transition-colors duration-200 flex items-center justify-center p-2 -ml-2"
-        >
-          <Menu01Icon size={28} strokeWidth={1.5} />
-        </button>
+        {/* Left: Burger Menu & Collection Link */}
+        <div className="flex items-center gap-4">
+          <button
+            aria-label="Menu"
+            className="text-soft-sand hover:text-white transition-colors duration-200 flex items-center justify-center p-2 -ml-2"
+          >
+            <Menu01Icon size={28} strokeWidth={1.5} />
+          </button>
+
+          <Link
+            href="/hotels"
+            className="hidden md:flex items-center gap-2 text-soft-sand hover:text-white transition-colors duration-200 p-2 font-medium"
+          >
+            <Building04Icon size={22} strokeWidth={1.5} />
+            <span className="text-sm font-century-gothic tracking-wide uppercase">Коллекция</span>
+          </Link>
+        </div>
 
         {/* Center: Logo */}
         <div className="absolute left-1/2 -translate-x-1/2 mt-1">
@@ -61,6 +71,14 @@ export default function Header() {
 
         {/* Right: Actions */}
         <div className="flex items-center gap-4 lg:gap-8">
+          <Link
+            href="/hotels"
+            className="md:hidden text-soft-sand hover:text-white transition-colors duration-200 flex items-center justify-center p-2"
+            aria-label="Collection"
+          >
+            <Building04Icon size={26} strokeWidth={1.5} />
+          </Link>
+
           <button
             aria-label="Search"
             className="text-soft-sand hover:text-white transition-colors duration-200 flex items-center justify-center p-2"
