@@ -49,9 +49,9 @@ export default function Hero() {
           </div>
 
           {/* Hotel Info Block with SVG Background */}
-          {/* We position it at the bottom left overlapping the image slightly if needed,
-              but based on original it was on the right bottom. Let's make it responsive. */}
-          <div className="absolute right-0 bottom-0 w-[85%] max-w-[900px] aspect-[900/357] z-10 flex flex-col items-end justify-end pb-[2%] pr-[2%]">
+          {/* We position it at the bottom right based on the original design.
+              We use absolute positioning IN PERCENTAGES relative to the block to ensure exact fit over the SVG. */}
+          <div className="absolute right-0 bottom-0 w-[85%] max-w-[900px] aspect-[900/357] z-10">
 
             {/* Exact SVG from Figma acting as background */}
             <div className="absolute inset-0 z-0 pointer-events-none">
@@ -66,38 +66,41 @@ export default function Hero() {
               </svg>
             </div>
 
-            {/* Content layered over SVG */}
-            <div className="relative z-10 w-full h-full flex flex-col justify-center pr-6 xl:pr-12 pl-[35%] xl:pl-[35%] pt-[15%]">
+            {/* Content layered over SVG using absolute % based positioning */}
+            <div className="relative z-10 w-full h-full">
 
-              <div className="w-full flex justify-between items-end mb-4">
-                 <h2 className="font-moniqa text-[clamp(32px,2.6vw,50px)] text-primary-text leading-none m-0 p-0 whitespace-nowrap ml-auto">
+              {/* Hotel Name */}
+              <div className="absolute right-[5.5%] top-[25%]">
+                 <h2 className="font-moniqa text-[clamp(24px,3.5vw,50px)] text-primary-text leading-none m-0 p-0 whitespace-nowrap">
                    Название отеля
                  </h2>
               </div>
 
-              <div className="w-full flex justify-end gap-2 xl:gap-4 mb-4">
+              {/* Tags */}
+              <div className="absolute right-[5.5%] top-[42%] flex gap-2 xl:gap-4">
                  {["16+", "Семейный", "Всё включено"].map((tag) => (
-                   <div key={tag} className="flex items-center justify-center h-[27px] px-3 xl:px-4 rounded-[13px] border-[0.5px] border-dashed border-[#2e4b2f]">
-                     <span className="text-[#2e4b2f] font-century-gothic text-[10px] xl:text-[12px] uppercase tracking-wider mt-0.5 whitespace-nowrap">
+                   <div key={tag} className="flex items-center justify-center h-[clamp(20px,2vw,27px)] px-2 xl:px-4 rounded-[13px] border-[0.5px] border-dashed border-[#2e4b2f]">
+                     <span className="text-[#2e4b2f] font-century-gothic text-[clamp(8px,1vw,12px)] uppercase tracking-wider mt-0.5 whitespace-nowrap">
                        {tag}
                      </span>
                    </div>
                  ))}
               </div>
 
-              <div className="w-full flex justify-end mb-6">
-                <p className="font-century-gothic text-[clamp(14px,1.25vw,24px)] text-primary-text leading-snug m-0 p-0 text-right max-w-[80%]">
+              {/* Description */}
+              <div className="absolute right-[5.5%] top-[56%] w-[60%]">
+                <p className="font-century-gothic text-[clamp(12px,1.5vw,24px)] text-primary-text leading-snug m-0 p-0 text-right">
                   Короткое описание отеля, локации, преимуществ
                 </p>
               </div>
 
-              <div className="w-full flex justify-end">
-                <div className="relative w-[60%] lg:w-[50%] h-[45px] xl:h-[53px] group focus:outline-none rounded-[26px]">
+              {/* Button */}
+              <div className="absolute right-[5.5%] top-[72%] w-auto group focus:outline-none rounded-[26px]">
+                  {/* Instead of fixed height, we use px and py. Also min-width to avoid collapsing too much. */}
                   <div className="absolute inset-0 w-full h-full bg-evergreen-forest rounded-[26px] border border-black transition-colors group-hover:bg-[#1F3520]" />
-                  <button className="absolute inset-0 flex items-center justify-center font-century-gothic text-soft-sand text-[clamp(14px,1.25vw,24px)] font-normal tracking-wide w-full h-full">
+                  <button className="relative z-10 flex items-center justify-center font-century-gothic text-soft-sand text-[clamp(12px,1.5vw,24px)] font-normal tracking-wide w-full h-full px-6 py-2 xl:px-10 xl:py-3 whitespace-nowrap">
                     Посмотреть детали
                   </button>
-                </div>
               </div>
 
             </div>
