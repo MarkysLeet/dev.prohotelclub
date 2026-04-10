@@ -7,14 +7,25 @@ import { cn } from '@/lib/utils';
 
 export type ToastType = 'success' | 'error' | 'info';
 
+interface ToastAction {
+  label: string;
+  onClick: () => void;
+}
+
 interface ToastMessage {
   id: string;
   message: string;
   type: ToastType;
+  action?: ToastAction;
+}
+
+interface ToastOptions {
+  type?: ToastType;
+  action?: ToastAction;
 }
 
 interface ToastContextType {
-  toast: (message: string, type?: ToastType) => void;
+  toast: (message: string, options?: ToastOptions) => void;
   success: (message: string) => void;
   error: (message: string) => void;
 }
@@ -28,22 +39,27 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }, []);
 
-  const toast = useCallback((message: string, type: ToastType = 'info') => {
+  const toast = useCallback((message: string, options: ToastOptions = {}) => {
     const id = Math.random().toString(36).substring(2, 9);
-    setToasts((prev) => [...prev, { id, message, type }]);
+    const type = options.type || 'info';
+
+    setToasts((prev) => [...prev, { id, message, type, action: options.action }]);
+
+    // Если есть экшен, тост висит дольше (10 секунд вместо 5)
+    const timeout = options.action ? 10000 : 5000;
 
     setTimeout(() => {
       removeToast(id);
-    }, 5000);
+    }, timeout);
   }, [removeToast]);
 
-  const success = useCallback((message: string) => toast(message, 'success'), [toast]);
-  const error = useCallback((message: string) => toast(message, 'error'), [toast]);
+  const success = useCallback((message: string) => toast(message, { type: 'success' }), [toast]);
+  const error = useCallback((message: string) => toast(message, { type: 'error' }), [toast]);
 
   return (
     <ToastContext.Provider value={{ toast, success, error }}>
       {children}
-      <div className="fixed bottom-4 right-4 z-[60] flex flex-col gap-2 pointer-events-none">
+      <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none">
         <AnimatePresence>
           {toasts.map((t) => (
             <motion.div
@@ -53,23 +69,38 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               exit={{ opacity: 0, y: 20, scale: 0.95 }}
               transition={{ duration: 0.2 }}
               className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border pointer-events-auto",
+                "flex items-center gap-3 p-4 rounded-xl shadow-xl border pointer-events-auto max-w-sm w-full",
                 t.type === 'success' && "bg-white border-green-200 text-primary-text",
                 t.type === 'error' && "bg-white border-red-200 text-primary-text",
                 t.type === 'info' && "bg-white border-gray-200 text-primary-text"
               )}
             >
-              {t.type === 'success' && <CheckmarkCircle01Icon className="text-green-500" size={20} />}
-              {t.type === 'error' && <Alert01Icon className="text-red-500" size={20} />}
-              {t.type === 'info' && <Alert01Icon className="text-blue-500" size={20} />}
+              <div className="flex-shrink-0">
+                {t.type === 'success' && <CheckmarkCircle01Icon className="text-green-500" size={24} />}
+                {t.type === 'error' && <Alert01Icon className="text-red-500" size={24} />}
+                {t.type === 'info' && <Alert01Icon className="text-evergreen-forest" size={24} />}
+              </div>
 
-              <span className="text-sm font-medium">{t.message}</span>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium">{t.message}</p>
+                {t.action && (
+                  <button
+                    onClick={() => {
+                      t.action?.onClick();
+                      removeToast(t.id);
+                    }}
+                    className="mt-2 text-sm font-bold text-evergreen-forest hover:text-evergreen-hover transition-colors underline decoration-2 underline-offset-2"
+                  >
+                    {t.action.label}
+                  </button>
+                )}
+              </div>
 
               <button
                 onClick={() => removeToast(t.id)}
-                className="ml-2 text-gray-400 hover:text-gray-600 transition-colors"
+                className="ml-2 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0 self-start mt-0.5"
               >
-                <Cancel01Icon size={16} />
+                <Cancel01Icon size={20} />
               </button>
             </motion.div>
           ))}

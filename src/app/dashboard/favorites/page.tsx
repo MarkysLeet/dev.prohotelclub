@@ -1,65 +1,78 @@
 "use client";
 
+import { useMemo } from 'react';
 import { hotels } from '@/lib/mock-data';
-import { Badge, Button } from '@/components/ui';
-import { FavouriteIcon, ArrowRight01Icon } from 'hugeicons-react';
-import Image from 'next/image';
+import { Button } from '@/components/ui';
+import { HotelCard } from '@/components/HotelCard';
+import { InformationCircleIcon } from 'hugeicons-react';
+import Link from 'next/link';
+import { useFavorites } from '@/lib/useFavorites';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function FavoritesPage() {
+  const { favorites, toggleFavorite } = useFavorites();
+
+  const favoriteHotels = useMemo(() => {
+    return hotels.filter(hotel => favorites.has(hotel.id));
+  }, [favorites]);
+
   return (
     <div className="space-y-10">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <h1 className="font-moniqa text-[clamp(40px,5vw,72px)] text-primary-text leading-none">
           Избранное
         </h1>
-        <Badge variant="primary" className="text-sm">
-          {hotels.length} сохранено
-        </Badge>
+        {favoriteHotels.length > 0 && (
+          <span className="px-4 py-1.5 bg-white border border-gray-100 rounded-full text-sm font-medium text-secondary-text shadow-sm w-fit">
+            Сохранено: <span className="text-primary-text">{favoriteHotels.length}</span>
+          </span>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {hotels.map((hotel) => (
-          <div key={hotel.id} className="group relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-cinematic border border-gray-100 flex flex-col h-full">
-            <div className="relative aspect-[4/3] w-full overflow-hidden">
-              <Image
-                src={hotel.imageUrl}
-                alt={hotel.name}
-                fill
-                className="object-cover transition-transform duration-[1.5s] ease-out group-hover:scale-105"
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      {favoriteHotels.length > 0 ? (
+        <motion.div layout className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+          <AnimatePresence>
+            {favoriteHotels.map((hotel) => (
+              <motion.div
+                layout
+                initial={{ opacity: 1, scale: 1 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.4 }}
+                key={hotel.id}
+                className="h-full"
+              >
+                <HotelCard
+
+                hotel={hotel}
+                isFavorite={favorites.has(hotel.id)}
+                onToggleFavorite={(id) => toggleFavorite(id)}
+                variant="dashboard"
               />
-              <div className="absolute top-4 right-4 z-10">
-                <button className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-evergreen-forest hover:bg-white hover:scale-110 transition-all shadow-sm">
-                  <FavouriteIcon size={20} className="fill-evergreen-forest" />
-                </button>
-              </div>
-            </div>
-
-            <div className="p-6 flex flex-col flex-grow">
-              <div className="flex flex-wrap gap-2 mb-4">
-                {hotel.tags.slice(0, 2).map((tag, idx) => (
-                  <Badge key={idx} variant="default" className="text-[10px]">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-
-              <h3 className="font-moniqa text-3xl text-primary-text mb-3 group-hover:text-evergreen-forest transition-colors">
-                {hotel.name}
-              </h3>
-
-              <p className="text-secondary-text text-sm line-clamp-3 mb-6 flex-grow">
-                {hotel.description}
-              </p>
-
-              <Button variant="ghost" className="w-full justify-between px-0 text-evergreen-forest group-hover:px-4 group-hover:bg-soft-sand transition-all">
-                <span>Перейти к материалам</span>
-                <ArrowRight01Icon size={18} />
-              </Button>
-            </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="bg-white rounded-xl border border-gray-100 p-12 flex flex-col items-center justify-center text-center shadow-sm h-[400px]"
+        >
+          <div className="w-20 h-20 bg-soft-sand rounded-full flex items-center justify-center mb-6">
+            <InformationCircleIcon size={32} className="text-secondary-text" strokeWidth={1.5} />
           </div>
-        ))}
-      </div>
+          <h3 className="text-2xl font-medium text-primary-text mb-2">Нет сохраненных отелей</h3>
+          <p className="text-secondary-text max-w-md mb-8">
+            Вы еще не добавили ни одного отеля в избранное. Перейдите в коллекцию, чтобы найти лучшие предложения.
+          </p>
+          <Link href="/hotels">
+            <Button>
+              Перейти в коллекцию
+            </Button>
+          </Link>
+        </motion.div>
+      )}
     </div>
   );
 }

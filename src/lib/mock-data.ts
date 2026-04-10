@@ -1,6 +1,7 @@
 export interface Hotel {
   id: string;
   name: string;
+  location: string;
   tags: string[];
   description: string;
   imageUrl: string;
@@ -10,28 +11,85 @@ export interface Hotel {
 export const hotels: Hotel[] = [
   {
     id: '1',
-    name: 'Aman Tokyo',
-    tags: ['Urban Retreat', 'Minimalist', 'Panoramic Views'],
-    description: 'A monument to the modern Japanese capital, Aman Tokyo is a place of balance and calm. Find sanctuary high above the streets.',
-    imageUrl: 'https://images.unsplash.com/photo-1542314831-c6a4d14d8c1e?q=80&w=2574&auto=format&fit=crop', // luxury hotel architecture
+    name: 'Maxx Royal Belek Golf Resort',
+    location: 'Белек',
+    tags: ['Ultra All Inclusive', 'Для семьи', 'Первая линия', 'Гольф'],
+    description: 'Роскошный курорт с первоклассным сервисом, предлагающий эксклюзивные сьюты и виллы. Идеальное место для семейного отдыха и любителей гольфа.',
+    imageUrl: 'https://placehold.co/800x600/F6EEE1/5A6B5D?text=Maxx+Royal',
     link: '#',
   },
   {
     id: '2',
-    name: 'Amangiri Resort',
-    tags: ['Desert Oasis', 'Canyon Point', 'Secluded Luxury'],
-    description: 'Tucked into a protected valley with sweeping views, the resort blends into its dramatic surroundings of deep canyons and towering plateaus.',
-    imageUrl: 'https://images.unsplash.com/photo-1582719478250-c89af14fb181?q=80&w=2670&auto=format&fit=crop', // minimalist resort interior
+    name: 'Regnum Carya',
+    location: 'Белек',
+    tags: ['Ultra All Inclusive', 'Для семьи', 'Премиум', 'Первая линия'],
+    description: 'Один из самых престижных отелей региона с великолепным белым песчаным пляжем, роскошными номерами и высочайшим уровнем обслуживания.',
+    imageUrl: 'https://placehold.co/800x600/F6EEE1/5A6B5D?text=Regnum+Carya',
     link: '#',
   },
   {
     id: '3',
-    name: 'Six Senses Ibiza',
-    tags: ['Mediterranean', 'Wellness', 'Sustainable'],
-    description: 'Immerse yourself in a setting that celebrates the bohemian spirit of Ibiza, bringing people together through deep connections and profound wellness.',
-    imageUrl: 'https://images.unsplash.com/photo-1618221118493-9cfa1a1c00da?q=80&w=2732&auto=format&fit=crop', // premium aesthetic building
+    name: 'Nirvana Mediterranean Excellence',
+    location: 'Кемер',
+    tags: ['С животными', 'Для семьи', 'Wellness', 'Природа'],
+    description: 'Уникальный концепт, объединяющий роскошь и природу. Отель расположен в сосновом лесу на берегу кристально чистого моря.',
+    imageUrl: 'https://placehold.co/800x600/F6EEE1/5A6B5D?text=Nirvana+ME',
     link: '#',
-  }
+  },
+  {
+    id: '4',
+    name: 'Cullinan Belek',
+    location: 'Белек',
+    tags: ['Премиум', 'Новый отель', 'Golf', 'Ultra All Inclusive'],
+    description: 'Новый уровень роскоши на побережье Средиземного моря. Элегантный дизайн, безупречный сервис и гастрономические изыски.',
+    imageUrl: 'https://placehold.co/800x600/F6EEE1/5A6B5D?text=Cullinan',
+    link: '#',
+  },
+  {
+    id: '5',
+    name: 'NG Phaselis Bay',
+    location: 'Кемер',
+    tags: ['Wellness', 'Для семьи', 'Первая линия', 'Премиум'],
+    description: 'Идеальное сочетание комфорта и уединения в живописной бухте. Панорамные виды на море и горы Торос.',
+    imageUrl: 'https://placehold.co/800x600/F6EEE1/5A6B5D?text=NG+Phaselis',
+    link: '#',
+  },
+  {
+    id: '6',
+    name: 'Barut Hemera',
+    location: 'Сиде',
+    tags: ['Для семьи', 'Уютный', 'Исторический центр'],
+    description: 'Легендарное качество сервиса сети Barut. Отель с зеленой территорией и отличным пляжем, расположенный недалеко от античного города Сиде.',
+    imageUrl: 'https://placehold.co/800x600/F6EEE1/5A6B5D?text=Barut+Hemera',
+    link: '#',
+  },
+  {
+    id: '7',
+    name: 'Rixos Premium Tekirova',
+    location: 'Кемер',
+    tags: ['Для семьи', 'Аквапарк', 'Активный отдых'],
+    description: 'Огромная зеленая территория у подножия гор. Отель славится масштабными шоу-программами и одним из лучших детских клубов.',
+    imageUrl: 'https://placehold.co/800x600/F6EEE1/5A6B5D?text=Rixos+Tekirova',
+    link: '#',
+  },
+  {
+    id: '8',
+    name: 'Kempinski Hotel The Dome',
+    location: 'Белек',
+    tags: ['Тихий отдых', 'Только для взрослых', 'Гольф', 'SPA'],
+    description: 'Бутик-отель в сельджукском стиле. Предлагает спокойный отдых, великолепный SPA-центр и доступ к лучшим гольф-полям.',
+    imageUrl: 'https://placehold.co/800x600/F6EEE1/5A6B5D?text=Kempinski',
+    link: '#',
+  },
+  {
+    id: '9',
+    name: 'Lujo Hotel',
+    location: 'Бодрум',
+    tags: ['Арт-отель', 'Премиум', 'Гастрономия', 'Белоснежный песок'],
+    description: 'Концепция Art & Joy. Уникальная архитектура, три роскошных пляжа с белым песком и рестораны a la carte мирового уровня.',
+    imageUrl: 'https://placehold.co/800x600/F6EEE1/5A6B5D?text=Lujo+Hotel',
+    link: '#',
+  },
 ];
 
 export interface Transaction {
