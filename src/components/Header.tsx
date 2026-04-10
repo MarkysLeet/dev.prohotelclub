@@ -2,7 +2,7 @@ import { Search01Icon, UserIcon, Menu01Icon } from 'hugeicons-react';
 
 export default function Header() {
   return (
-    <header className="w-full h-[85px] bg-evergreen-forest flex justify-center fixed top-0 left-0 z-40 px-6 lg:px-[35px]">
+    <header className="w-full h-[56px] lg:h-[64px] bg-evergreen-forest flex justify-center fixed top-0 left-0 z-40 px-6 lg:px-[35px]">
       <div className="w-full max-w-[1920px] h-full flex items-center justify-between relative">
 
         {/* Left: Burger Menu */}
@@ -10,12 +10,12 @@ export default function Header() {
           aria-label="Menu"
           className="text-soft-sand hover:text-white transition-colors duration-200 flex items-center justify-center p-2 -ml-2"
         >
-          <Menu01Icon size={32} strokeWidth={1.5} />
+          <Menu01Icon size={28} strokeWidth={1.5} />
         </button>
 
         {/* Center: Logo */}
         <div className="absolute left-1/2 -translate-x-1/2 mt-1">
-          <span className="font-moniqa text-[clamp(32px,4vw,50px)] text-white tracking-wide leading-none select-none">
+          <span className="font-moniqa text-[clamp(24px,4vw,40px)] text-white tracking-wide leading-none select-none">
             ProHotelClub
           </span>
         </div>
@@ -26,14 +26,14 @@ export default function Header() {
             aria-label="Search"
             className="text-soft-sand hover:text-white transition-colors duration-200 flex items-center justify-center p-2"
           >
-            <Search01Icon size={30} strokeWidth={1.5} />
+            <Search01Icon size={26} strokeWidth={1.5} />
           </button>
 
           <button
             aria-label="Profile"
             className="text-soft-sand hover:text-white transition-colors duration-200 flex items-center justify-center p-2 -mr-2"
           >
-            <UserIcon size={30} strokeWidth={1.5} />
+            <UserIcon size={26} strokeWidth={1.5} />
           </button>
         </div>
 
