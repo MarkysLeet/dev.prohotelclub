@@ -35,11 +35,12 @@ export default function FavoritesPage() {
             {favoriteHotels.map((hotel) => (
               <motion.div
                 layout
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 1, scale: 1 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.4 }}
                 key={hotel.id}
+                className="h-full"
               >
                 <HotelCard
 
