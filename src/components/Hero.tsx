@@ -65,19 +65,19 @@ export default function Hero() {
               </svg>
             </div>
 
-            {/* Content layered over SVG using Flexbox to avoid overlap */}
-            <div className="relative z-10 w-full h-full flex flex-col justify-end items-end pb-[6%] pr-[5.5%] gap-2 xl:gap-3">
+            {/* Content layered over SVG using a Safe Area to avoid overlapping out of bounds */}
+            <div className="absolute right-[5.5%] bottom-[12%] top-[25%] left-[30%] z-10 flex flex-col justify-between items-end">
 
               {/* Hotel Name */}
-              <h2 className="font-moniqa text-[clamp(28px,3.5vw,50px)] text-primary-text leading-none m-0 p-0 whitespace-nowrap">
+              <h2 className="font-moniqa text-[clamp(28px,3vw,50px)] text-primary-text leading-none m-0 p-0 whitespace-nowrap">
                 Название отеля
               </h2>
 
               {/* Tags */}
-              <div className="flex gap-2 xl:gap-4 mt-1">
+              <div className="flex gap-2 xl:gap-3">
                  {["16+", "Семейный", "Всё включено"].map((tag) => (
-                   <div key={tag} className="flex items-center justify-center h-[clamp(20px,2vw,27px)] px-2 xl:px-4 rounded-[13px] border-[0.5px] border-dashed border-[#2e4b2f]">
-                     <span className="text-[#2e4b2f] font-century-gothic text-[clamp(10px,1vw,12px)] uppercase tracking-wider mt-0.5 whitespace-nowrap">
+                   <div key={tag} className="flex items-center justify-center px-3 py-1 rounded-[13px] border-[0.5px] border-dashed border-[#2e4b2f]">
+                     <span className="text-[#2e4b2f] font-century-gothic text-[clamp(10px,0.8vw,12px)] uppercase tracking-wider mt-[1px] whitespace-nowrap">
                        {tag}
                      </span>
                    </div>
@@ -85,13 +85,13 @@ export default function Hero() {
               </div>
 
               {/* Description */}
-              <p className="font-century-gothic text-[clamp(14px,1.5vw,24px)] text-primary-text leading-snug m-0 p-0 text-right max-w-[60%] mt-2">
+              <p className="font-century-gothic text-[clamp(12px,1.2vw,20px)] text-primary-text leading-snug m-0 p-0 text-right max-w-[80%]">
                 Короткое описание отеля, локации, преимуществ
               </p>
 
               {/* Button */}
-              <div className="mt-2 w-auto group focus:outline-none rounded-[26px]">
-                  <button className="relative flex items-center justify-center font-century-gothic text-soft-sand text-[clamp(14px,1.5vw,24px)] font-normal tracking-wide bg-evergreen-forest border border-black rounded-[26px] transition-colors group-hover:bg-[#1F3520] px-6 py-2 xl:px-8 xl:py-3 whitespace-nowrap">
+              <div className="w-auto group focus:outline-none">
+                  <button className="flex items-center justify-center font-century-gothic text-soft-sand text-[clamp(12px,1vw,16px)] font-normal tracking-wide bg-evergreen-forest border border-black rounded-[26px] transition-colors group-hover:bg-[#1F3520] px-5 py-2 xl:px-8 xl:py-2.5 whitespace-nowrap">
                     Посмотреть детали
                   </button>
               </div>
