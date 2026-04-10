@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { moniqa, centuryGothic } from "@/fonts";
 import { AuthProvider } from "@/lib/AuthContext";
+import { ToastProvider } from "@/components/ui/Toast";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -17,7 +18,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${moniqa.variable} ${centuryGothic.variable} antialiased`}>
         <AuthProvider>
-          {children}
+          <ToastProvider>
+            {children}
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

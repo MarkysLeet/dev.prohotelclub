@@ -33,3 +33,26 @@ export const hotels: Hotel[] = [
     link: '#',
   }
 ];
+
+export interface Transaction {
+  id: string;
+  date: string;
+  description: string;
+  amount: number;
+  status: 'completed' | 'pending' | 'failed';
+}
+
+export const transactions: Transaction[] = [
+  { id: 'TRX-1092', date: '2026-04-10', description: 'Professional Plan (Monthly)', amount: 99, status: 'completed' },
+  { id: 'TRX-1091', date: '2026-04-05', description: 'Premium Media Pack: Aman Tokyo', amount: 49, status: 'completed' },
+  { id: 'TRX-1090', date: '2026-03-10', description: 'Professional Plan (Monthly)', amount: 99, status: 'completed' },
+  { id: 'TRX-1089', date: '2026-02-10', description: 'Professional Plan (Monthly)', amount: 99, status: 'completed' },
+];
+
+export const userProfile = {
+  name: 'Виктор Грозан',
+  email: 'viktor@grozan.studio',
+  company: 'Grozan Studio',
+  plan: 'Professional',
+  memberSince: '2025-11',
+};

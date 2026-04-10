@@ -40,7 +40,7 @@ export default function Header() {
   }, [isDropdownOpen]);
 
   return (
-    <header className="w-full h-[56px] lg:h-[64px] bg-evergreen-forest flex justify-center fixed top-0 left-0 z-40 px-6 lg:px-[35px]">
+    <header className="w-full h-[56px] lg:h-[64px] bg-evergreen-forest flex justify-center fixed top-0 left-0 z-50 px-6 lg:px-[35px]">
       <div className="w-full max-w-[1920px] h-full flex items-center justify-between relative">
         {/* Left: Burger Menu */}
         <button
@@ -88,25 +88,11 @@ export default function Header() {
                   className="absolute right-0 top-[calc(100%+8px)] w-48 bg-white border border-gray-200 shadow-xl rounded-xl overflow-hidden py-2 z-50 flex flex-col font-century-gothic"
                 >
                   <Link
-                    href="/profile"
+                    href="/dashboard"
                     onClick={() => setIsDropdownOpen(false)}
                     className="px-4 py-2 text-sm text-primary-text hover:bg-soft-sand hover:text-evergreen-forest transition-colors text-left"
                   >
-                    Мой профиль
-                  </Link>
-                  <Link
-                    href="/subscription"
-                    onClick={() => setIsDropdownOpen(false)}
-                    className="px-4 py-2 text-sm text-primary-text hover:bg-soft-sand hover:text-evergreen-forest transition-colors text-left"
-                  >
-                    Моя подписка
-                  </Link>
-                  <Link
-                    href="/settings"
-                    onClick={() => setIsDropdownOpen(false)}
-                    className="px-4 py-2 text-sm text-primary-text hover:bg-soft-sand hover:text-evergreen-forest transition-colors text-left"
-                  >
-                    Настройки
+                    Личный кабинет
                   </Link>
                   <div className="h-px bg-gray-200 my-1 mx-2" />
                   <button
