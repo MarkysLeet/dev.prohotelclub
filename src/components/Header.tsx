@@ -12,7 +12,8 @@ import {
   Building04Icon,
   Home03Icon,
   FavouriteIcon,
-  Login03Icon
+  Login03Icon,
+  Logout01Icon
 } from "hugeicons-react";
 import { useAuth } from "@/lib/AuthContext";
 
@@ -66,11 +67,15 @@ export default function Header() {
 
   useEffect(() => {
     if (isMenuOpen) {
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
       document.body.style.overflow = 'hidden';
     } else {
+      document.body.style.paddingRight = '0px';
       document.body.style.overflow = 'unset';
     }
     return () => {
+      document.body.style.paddingRight = '0px';
       document.body.style.overflow = 'unset';
     };
   }, [isMenuOpen]);
@@ -217,7 +222,7 @@ export default function Header() {
             Коллекция
           </Link>
 
-          {isAuth ? (
+          {isAuth && (
             <>
               <Link
                 href="/dashboard"
@@ -245,21 +250,48 @@ export default function Header() {
                 Избранное
               </Link>
             </>
-          ) : (
-            <Link
-              href="/auth"
-              onClick={() => setIsMenuOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm ${
-                pathname === "/auth"
-                  ? "bg-evergreen-forest/10 text-evergreen-forest"
-                  : "text-secondary-text hover:bg-soft-sand hover:text-primary-text"
-              }`}
-            >
-              <Login03Icon size={20} strokeWidth={1.5} />
-              Вход
-            </Link>
           )}
         </nav>
+      </div>
+
+      {/* Bottom section: User Info & Auth Actions */}
+      <div className="p-6 border-t border-gray-100 font-century-gothic">
+        {isAuth ? (
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-3 px-2">
+              <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest font-bold text-lg">
+                ВГ
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold text-primary-text leading-tight">Виктор Грозан</span>
+                <span className="text-xs text-secondary-text">Турагент</span>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setIsMenuOpen(false);
+                logout();
+              }}
+              className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-red-600 hover:bg-red-50 transition-colors font-medium text-sm"
+            >
+              <Logout01Icon size={20} strokeWidth={1.5} />
+              Выйти
+            </button>
+          </div>
+        ) : (
+          <Link
+            href="/auth"
+            onClick={() => setIsMenuOpen(false)}
+            className={`flex items-center gap-3 px-4 py-3 w-full rounded-xl transition-colors font-medium text-sm ${
+              pathname === "/auth"
+                ? "bg-evergreen-forest/10 text-evergreen-forest"
+                : "text-secondary-text hover:bg-soft-sand hover:text-primary-text"
+            }`}
+          >
+            <Login03Icon size={20} strokeWidth={1.5} />
+            Вход
+          </Link>
+        )}
       </div>
     </aside>
     </>
