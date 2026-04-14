@@ -5,8 +5,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Search01Icon,
-  UserIcon,
+    UserIcon,
   Menu01Icon,
   Cancel01Icon,
   Building04Icon,
@@ -16,6 +15,7 @@ import {
   Logout01Icon
 } from "hugeicons-react";
 import { useAuth } from "@/lib/AuthContext";
+import { GlobalSearch } from "@/components/GlobalSearch";
 
 const PAGE_INFO: Record<string, { title: string; icon: React.ElementType }> = {
   "/": { title: "Главная", icon: Home03Icon },
@@ -124,12 +124,7 @@ export default function Header() {
             <CurrentIcon size={26} strokeWidth={1.5} />
           </div>
 
-          <button
-            aria-label="Search"
-            className="text-soft-sand hover:text-white transition-colors duration-200 flex items-center justify-center p-2"
-          >
-            <Search01Icon size={26} strokeWidth={1.5} />
-          </button>
+          <GlobalSearch />
 
           <div className="relative" ref={dropdownRef}>
             <button
