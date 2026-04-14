@@ -1,17 +1,42 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search01Icon, UserIcon, Menu01Icon, Building04Icon } from "hugeicons-react";
+import {
+  Search01Icon,
+  UserIcon,
+  Menu01Icon,
+  Cancel01Icon,
+  Building04Icon,
+  Home03Icon,
+  FavouriteIcon,
+  Login03Icon
+} from "hugeicons-react";
 import { useAuth } from "@/lib/AuthContext";
+
+const PAGE_INFO: Record<string, { title: string; icon: React.ElementType }> = {
+  "/": { title: "Главная", icon: Home03Icon },
+  "/hotels": { title: "Коллекция", icon: Building04Icon },
+  "/dashboard": { title: "Кабинет", icon: UserIcon },
+  "/dashboard/favorites": { title: "Избранное", icon: FavouriteIcon },
+  "/auth": { title: "Вход", icon: Login03Icon },
+};
 
 export default function Header() {
   const { isAuth, logout } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const currentPageInfo = React.useMemo(() => {
+    return PAGE_INFO[pathname] || { title: "ProHotelClub", icon: Home03Icon };
+  }, [pathname]);
+
+  const CurrentIcon = currentPageInfo.icon;
 
   const handleUserIconClick = () => {
     if (!isAuth) {
@@ -39,25 +64,41 @@ export default function Header() {
     };
   }, [isDropdownOpen]);
 
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
+
   return (
+    <>
     <header className="w-full h-[56px] lg:h-[64px] bg-evergreen-forest flex justify-center fixed top-0 left-0 z-50 px-6 lg:px-[35px]">
       <div className="w-full max-w-[1920px] h-full flex items-center justify-between relative">
-        {/* Left: Burger Menu & Collection Link */}
+        {/* Left: Burger Menu & Current Page Indicator */}
         <div className="flex items-center gap-4">
           <button
             aria-label="Menu"
-            className="text-soft-sand hover:text-white transition-colors duration-200 flex items-center justify-center p-2 -ml-2"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="text-soft-sand hover:text-white transition-colors duration-200 flex items-center justify-center p-2 -ml-2 z-50 relative"
           >
-            <Menu01Icon size={28} strokeWidth={1.5} />
+            {isMenuOpen ? (
+              <Cancel01Icon size={28} strokeWidth={1.5} />
+            ) : (
+              <Menu01Icon size={28} strokeWidth={1.5} />
+            )}
           </button>
 
-          <Link
-            href="/hotels"
-            className="hidden md:flex items-center gap-2 text-soft-sand hover:text-white transition-colors duration-200 p-2 font-medium"
+          <div
+            className="hidden md:flex items-center gap-2 text-soft-sand p-2 font-medium opacity-80"
           >
-            <Building04Icon size={22} strokeWidth={1.5} />
-            <span className="text-sm font-century-gothic tracking-wide uppercase">Коллекция</span>
-          </Link>
+            <CurrentIcon size={22} strokeWidth={1.5} />
+            <span className="text-sm font-century-gothic tracking-wide uppercase">{currentPageInfo.title}</span>
+          </div>
         </div>
 
         {/* Center: Logo */}
@@ -71,13 +112,12 @@ export default function Header() {
 
         {/* Right: Actions */}
         <div className="flex items-center gap-4 lg:gap-8">
-          <Link
-            href="/hotels"
-            className="md:hidden text-soft-sand hover:text-white transition-colors duration-200 flex items-center justify-center p-2"
-            aria-label="Collection"
+          <div
+            className="md:hidden text-soft-sand flex items-center justify-center p-2 opacity-80"
+            aria-label={currentPageInfo.title}
           >
-            <Building04Icon size={26} strokeWidth={1.5} />
-          </Link>
+            <CurrentIcon size={26} strokeWidth={1.5} />
+          </div>
 
           <button
             aria-label="Search"
@@ -129,5 +169,99 @@ export default function Header() {
         </div>
       </div>
     </header>
+
+    {/* Full Screen Menu */}
+    <AnimatePresence>
+      {isMenuOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="fixed inset-0 bg-soft-sand z-40 flex flex-col justify-center items-center font-moniqa px-6"
+        >
+          <div className="flex flex-col gap-8 text-center mt-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <Link
+                href="/"
+                onClick={() => setIsMenuOpen(false)}
+                className="text-5xl md:text-7xl text-primary-text hover:text-evergreen-forest transition-colors tracking-wide"
+              >
+                Главная
+              </Link>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <Link
+                href="/hotels"
+                onClick={() => setIsMenuOpen(false)}
+                className="text-5xl md:text-7xl text-primary-text hover:text-evergreen-forest transition-colors tracking-wide"
+              >
+                Коллекция
+              </Link>
+            </motion.div>
+
+            {isAuth ? (
+              <>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.5, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-5xl md:text-7xl text-primary-text hover:text-evergreen-forest transition-colors tracking-wide"
+                  >
+                    Личный кабинет
+                  </Link>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <Link
+                    href="/dashboard/favorites"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-5xl md:text-7xl text-primary-text hover:text-evergreen-forest transition-colors tracking-wide"
+                  >
+                    Избранное
+                  </Link>
+                </motion.div>
+              </>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                transition={{ duration: 0.5, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <Link
+                  href="/auth"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-5xl md:text-7xl text-primary-text hover:text-evergreen-forest transition-colors tracking-wide"
+                >
+                  Вход
+                </Link>
+              </motion.div>
+            )}
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+    </>
   );
 }
