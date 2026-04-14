@@ -10,6 +10,43 @@ export interface Hotel {
 
 export const hotels: Hotel[] = [
   {
+    id: 'hero-1',
+    name: 'ADALYA BLISS',
+    location: 'Анталья',
+    tags: ['Ultra All Inclusive', 'Новый отель', 'Для семьи'],
+    description: 'Новый уровень роскоши на побережье Средиземного моря. Элегантный дизайн, безупречный сервис и гастрономические изыски.',
+    imageUrl: 'https://storage.yandexcloud.net/arina-reels-storage/ADALYA%20BLISS.jfif',
+    link: '/hotels',
+  },
+  {
+    id: 'hero-2',
+    name: 'DoubleTree by Hilton Kemer',
+    location: 'Кемер',
+    tags: ['Premium', 'Стильный', 'Первая линия'],
+    description: 'Отель со стильным дизайном и концепцией комфорта, расположенный прямо на берегу моря в Кемере.',
+    imageUrl: 'https://storage.yandexcloud.net/arina-reels-storage/Double%20Tree%20Kemer.jfif',
+    link: '/hotels',
+  },
+  {
+    id: 'hero-3',
+    name: 'Greenwood Suites Resort',
+    location: 'Анталья',
+    tags: ['Suites', 'Для семьи', 'Бассейны'],
+    description: 'Курортный отель, предлагающий просторные сьюты и отличную инфраструктуру для семейного отдыха с детьми.',
+    imageUrl: 'https://storage.yandexcloud.net/arina-reels-storage/Greenwood%20Suites%20Resort.jfif',
+    link: '/hotels',
+  },
+  {
+    id: 'hero-4',
+    name: 'Adalya ArtSide Hotel',
+    location: 'Сиде',
+    tags: ['All Inclusive', 'Пляж', 'Архитектура'],
+    description: 'Отель с уникальной архитектурой, расположенный рядом с песчаным пляжем. Отличный выбор для комфортного отпуска.',
+    imageUrl: 'https://storage.yandexcloud.net/arina-reels-storage/Adalya%20ArtSide%20Hotel.jfif',
+    link: '/hotels',
+  },
+
+  {
     id: '1',
     name: 'Maxx Royal Belek Golf Resort',
     location: 'Белек',

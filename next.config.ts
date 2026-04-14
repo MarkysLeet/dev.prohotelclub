@@ -15,6 +15,14 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'static.tildacdn.one',
       },
+      {
+        protocol: 'https',
+        hostname: 'storage.yandexcloud.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'dynamic-media-cdn.tripadvisor.com',
+      }
     ],
     dangerouslyAllowSVG: true,
   },
