@@ -12,7 +12,8 @@ import {
   Building04Icon,
   Home03Icon,
   FavouriteIcon,
-  Login03Icon
+  Login03Icon,
+  Logout01Icon
 } from "hugeicons-react";
 import { useAuth } from "@/lib/AuthContext";
 
@@ -66,11 +67,15 @@ export default function Header() {
 
   useEffect(() => {
     if (isMenuOpen) {
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
       document.body.style.overflow = 'hidden';
     } else {
+      document.body.style.paddingRight = '0px';
       document.body.style.overflow = 'unset';
     }
     return () => {
+      document.body.style.paddingRight = '0px';
       document.body.style.overflow = 'unset';
     };
   }, [isMenuOpen]);
@@ -170,98 +175,125 @@ export default function Header() {
       </div>
     </header>
 
-    {/* Full Screen Menu */}
+    {/* Mobile menu backdrop */}
     <AnimatePresence>
       {isMenuOpen && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="fixed inset-0 bg-soft-sand z-40 flex flex-col justify-center items-center font-moniqa px-6"
-        >
-          <div className="flex flex-col gap-8 text-center mt-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <Link
-                href="/"
-                onClick={() => setIsMenuOpen(false)}
-                className="text-5xl md:text-7xl text-primary-text hover:text-evergreen-forest transition-colors tracking-wide"
-              >
-                Главная
-              </Link>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.5, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <Link
-                href="/hotels"
-                onClick={() => setIsMenuOpen(false)}
-                className="text-5xl md:text-7xl text-primary-text hover:text-evergreen-forest transition-colors tracking-wide"
-              >
-                Коллекция
-              </Link>
-            </motion.div>
-
-            {isAuth ? (
-              <>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  transition={{ duration: 0.5, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <Link
-                    href="/dashboard"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="text-5xl md:text-7xl text-primary-text hover:text-evergreen-forest transition-colors tracking-wide"
-                  >
-                    Личный кабинет
-                  </Link>
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  transition={{ duration: 0.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                >
-                  <Link
-                    href="/dashboard/favorites"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="text-5xl md:text-7xl text-primary-text hover:text-evergreen-forest transition-colors tracking-wide"
-                  >
-                    Избранное
-                  </Link>
-                </motion.div>
-              </>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.5, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <Link
-                  href="/auth"
-                  onClick={() => setIsMenuOpen(false)}
-                  className="text-5xl md:text-7xl text-primary-text hover:text-evergreen-forest transition-colors tracking-wide"
-                >
-                  Вход
-                </Link>
-              </motion.div>
-            )}
-          </div>
-        </motion.div>
+          onClick={() => setIsMenuOpen(false)}
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 mt-[56px] lg:mt-[64px]"
+        />
       )}
     </AnimatePresence>
+
+    {/* Sidebar Menu */}
+    <aside
+      className={`fixed top-[56px] lg:top-[64px] h-[calc(100vh-56px)] lg:h-[calc(100vh-64px)] w-64 bg-white border-r border-gray-100 flex flex-col z-40 transition-transform duration-300 ease-in-out left-0 ${
+        isMenuOpen ? "translate-x-0" : "-translate-x-full"
+      }`}
+    >
+      <div className="p-6 flex-1 overflow-y-auto">
+        <nav className="space-y-1 font-century-gothic">
+          <Link
+            href="/"
+            onClick={() => setIsMenuOpen(false)}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm ${
+              pathname === "/"
+                ? "bg-evergreen-forest/10 text-evergreen-forest"
+                : "text-secondary-text hover:bg-soft-sand hover:text-primary-text"
+            }`}
+          >
+            <Home03Icon size={20} strokeWidth={1.5} />
+            Главная
+          </Link>
+
+          <Link
+            href="/hotels"
+            onClick={() => setIsMenuOpen(false)}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm ${
+              pathname === "/hotels"
+                ? "bg-evergreen-forest/10 text-evergreen-forest"
+                : "text-secondary-text hover:bg-soft-sand hover:text-primary-text"
+            }`}
+          >
+            <Building04Icon size={20} strokeWidth={1.5} />
+            Коллекция
+          </Link>
+
+          {isAuth && (
+            <>
+              <Link
+                href="/dashboard"
+                onClick={() => setIsMenuOpen(false)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm ${
+                  pathname === "/dashboard"
+                    ? "bg-evergreen-forest/10 text-evergreen-forest"
+                    : "text-secondary-text hover:bg-soft-sand hover:text-primary-text"
+                }`}
+              >
+                <UserIcon size={20} strokeWidth={1.5} />
+                Личный кабинет
+              </Link>
+
+              <Link
+                href="/dashboard/favorites"
+                onClick={() => setIsMenuOpen(false)}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm ${
+                  pathname === "/dashboard/favorites"
+                    ? "bg-evergreen-forest/10 text-evergreen-forest"
+                    : "text-secondary-text hover:bg-soft-sand hover:text-primary-text"
+                }`}
+              >
+                <FavouriteIcon size={20} strokeWidth={1.5} />
+                Избранное
+              </Link>
+            </>
+          )}
+        </nav>
+      </div>
+
+      {/* Bottom section: User Info & Auth Actions */}
+      <div className="p-6 border-t border-gray-100 font-century-gothic">
+        {isAuth ? (
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-3 px-2">
+              <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest font-bold text-lg">
+                ВГ
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold text-primary-text leading-tight">Виктор Грозан</span>
+                <span className="text-xs text-secondary-text">Турагент</span>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setIsMenuOpen(false);
+                logout();
+              }}
+              className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-red-600 hover:bg-red-50 transition-colors font-medium text-sm"
+            >
+              <Logout01Icon size={20} strokeWidth={1.5} />
+              Выйти
+            </button>
+          </div>
+        ) : (
+          <Link
+            href="/auth"
+            onClick={() => setIsMenuOpen(false)}
+            className={`flex items-center gap-3 px-4 py-3 w-full rounded-xl transition-colors font-medium text-sm ${
+              pathname === "/auth"
+                ? "bg-evergreen-forest/10 text-evergreen-forest"
+                : "text-secondary-text hover:bg-soft-sand hover:text-primary-text"
+            }`}
+          >
+            <Login03Icon size={20} strokeWidth={1.5} />
+            Вход
+          </Link>
+        )}
+      </div>
+    </aside>
     </>
   );
 }
