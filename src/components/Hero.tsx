@@ -30,7 +30,7 @@ export default function Hero() {
       <div className="hidden lg:flex relative w-full h-[calc(100vh-64px)] max-w-[1920px] mx-auto">
 
         {/* Left Content Area (Text & Button) */}
-        <div className="w-[50%] h-full flex flex-col justify-center pl-12 pr-6 xl:pl-24 xl:pr-12 z-10 relative">
+        <div className="w-[45%] h-full flex flex-col justify-center pl-12 pr-6 xl:pl-24 xl:pr-12 z-10 relative">
           <h1 className="font-moniqa text-[clamp(50px,5vw,100px)] text-primary-text leading-[0.85] tracking-tight m-0 p-0 whitespace-nowrap">
             Профессиональная среда <br />
             для работы с отелями
@@ -63,7 +63,7 @@ export default function Hero() {
         </div>
 
         {/* Right Content Area (Image & Hotel Info) */}
-        <div className="w-[50%] h-full relative">
+        <div className="w-[55%] h-full relative">
           <AnimatePresence>
             <motion.div
               key={currentHotel.id}
@@ -87,18 +87,18 @@ export default function Hero() {
 
               {/* Hotel Info Block with SVG Background */}
               {/* We position it at the bottom right based on the original design. */}
-              <div className="absolute right-0 bottom-0 w-[85%] max-w-[900px] z-10">
-                <div className="bg-soft-sand rounded-tl-[80px] p-8 md:p-10 xl:p-12 pr-[5.5%] flex flex-col justify-end items-end gap-4 shadow-[-10px_-10px_20px_rgba(0,0,0,0.02)]">
+              <div className="absolute right-0 bottom-0 w-[75%] max-w-[700px] z-10">
+                <div className="bg-soft-sand rounded-tl-[60px] p-6 pr-[5.5%] flex flex-col justify-end items-end gap-3 shadow-[-10px_-10px_20px_rgba(0,0,0,0.02)]">
                   {/* Hotel Name */}
-                  <h2 className="font-moniqa text-[clamp(28px,3vw,50px)] text-primary-text leading-[0.9] m-0 p-0 text-right w-full">
+                  <h2 className="font-moniqa text-[clamp(24px,2.5vw,40px)] text-primary-text leading-[0.9] m-0 p-0 text-right w-full">
                     {currentHotel.name}
                   </h2>
 
                   {/* Tags */}
-                  <div className="flex flex-wrap gap-2 xl:gap-3 justify-end">
+                  <div className="flex flex-wrap gap-2 justify-end">
                      {currentHotel.tags.slice(0, 3).map((tag) => (
-                       <div key={tag} className="flex items-center justify-center px-3 py-1 rounded-[13px] border-[0.5px] border-dashed border-[#2e4b2f]">
-                         <span className="text-[#2e4b2f] font-century-gothic text-[clamp(10px,0.8vw,12px)] uppercase tracking-wider mt-[1px] whitespace-nowrap">
+                       <div key={tag} className="flex items-center justify-center px-3 py-0.5 rounded-[13px] border-[0.5px] border-dashed border-[#2e4b2f]">
+                         <span className="text-[#2e4b2f] font-century-gothic text-[clamp(10px,0.7vw,11px)] uppercase tracking-wider mt-[1px] whitespace-nowrap">
                            {tag}
                          </span>
                        </div>
@@ -106,13 +106,13 @@ export default function Hero() {
                   </div>
 
                   {/* Description */}
-                  <p className="font-century-gothic text-[clamp(12px,1.2vw,20px)] text-primary-text leading-snug m-0 p-0 text-right max-w-[80%] line-clamp-3">
+                  <p className="font-century-gothic text-[clamp(12px,1vw,16px)] text-primary-text leading-snug m-0 p-0 text-right max-w-[85%] line-clamp-2">
                     {currentHotel.description}
                   </p>
 
                   {/* Button */}
-                  <div className="w-auto group focus:outline-none mt-2">
-                      <Link href="/hotels" className="flex items-center justify-center font-century-gothic text-soft-sand text-[clamp(12px,1vw,16px)] font-normal tracking-wide bg-evergreen-forest border border-black rounded-[26px] transition-colors group-hover:bg-[#1F3520] px-5 py-2 xl:px-8 xl:py-2.5 whitespace-nowrap">
+                  <div className="w-auto group focus:outline-none mt-1">
+                      <Link href="/hotels" className="flex items-center justify-center font-century-gothic text-soft-sand text-[clamp(12px,0.9vw,14px)] font-normal tracking-wide bg-evergreen-forest border border-black rounded-[26px] transition-colors group-hover:bg-[#1F3520] px-5 py-2 whitespace-nowrap">
                         Посмотреть детали
                       </Link>
                   </div>
