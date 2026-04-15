@@ -14,7 +14,7 @@ export function HotelSection({ section }: HotelSectionProps) {
   const isPro = false;
 
   const content = (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-8">
       <div className="max-w-3xl">
         <h2 className="font-moniqa text-5xl md:text-7xl font-medium text-primary-text mb-6 tracking-tight">
           {section.title}
@@ -27,8 +27,9 @@ export function HotelSection({ section }: HotelSectionProps) {
     </div>
   );
 
+  // Удален max-w-7xl mx-auto px-4, так как теперь мы внутри сетки Two-Column Layout
   return (
-    <section id={section.id} className="scroll-mt-40 max-w-7xl mx-auto px-4 md:px-8 py-20 relative border-b border-gray-200/50 last:border-0">
+    <section id={section.id} className="scroll-mt-32 py-16 relative border-b border-gray-200/50 last:border-0">
       {section.isPaywalled && !isPro ? (
         <HotelPaywallOverlay>
           {content}

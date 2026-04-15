@@ -3,6 +3,7 @@ import { getHotelBySlug } from '@/lib/hotel-mock-data';
 import { HotelHero } from '@/components/hotel-detail/HotelHero';
 import { HotelAnchorMenu } from '@/components/hotel-detail/HotelAnchorMenu';
 import { HotelSection } from '@/components/hotel-detail/HotelSection';
+import { HotelHeader } from '@/components/hotel-detail/HotelHeader';
 
 interface HotelPageProps {
   params: {
@@ -20,6 +21,8 @@ export default async function HotelPage({ params }: HotelPageProps) {
 
   return (
     <main className="min-h-screen bg-soft-sand relative">
+      <HotelHeader />
+
       <HotelHero
         name={hotelData.name}
         location={hotelData.location}
@@ -27,12 +30,18 @@ export default async function HotelPage({ params }: HotelPageProps) {
         heroImage={hotelData.heroImage}
       />
 
-      <HotelAnchorMenu sections={hotelData.sections} />
+      <div className="max-w-7xl mx-auto px-4 md:px-8 py-16 flex flex-col lg:flex-row gap-12 lg:gap-24 items-start">
+        {/* Sidebar Navigation */}
+        <aside className="w-full lg:w-1/4 hidden lg:block">
+           <HotelAnchorMenu sections={hotelData.sections} />
+        </aside>
 
-      <div className="flex flex-col pb-32">
-        {hotelData.sections.map((section) => (
-          <HotelSection key={section.id} section={section} />
-        ))}
+        {/* Content Area */}
+        <div className="w-full lg:w-3/4 flex flex-col">
+          {hotelData.sections.map((section) => (
+            <HotelSection key={section.id} section={section} />
+          ))}
+        </div>
       </div>
     </main>
   );

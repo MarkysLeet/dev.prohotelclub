@@ -37,31 +37,29 @@ export function HotelAnchorMenu({ sections }: HotelAnchorMenuProps) {
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
+      // Offset for floating header
       const y = el.getBoundingClientRect().top + window.scrollY - 100;
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
   };
 
   return (
-    <div className="sticky top-0 z-40 bg-soft-sand/80 backdrop-blur-xl border-b border-gray-200/50 py-5 transition-all duration-500">
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <nav className="flex overflow-x-auto gap-8 no-scrollbar snap-x">
-          {sections.map((section) => (
-            <button
-              key={section.id}
-              onClick={() => scrollToSection(section.id)}
-              className={cn(
-                "whitespace-nowrap pb-1 text-[15px] font-medium transition-all duration-300 border-b-[3px] snap-start uppercase tracking-wider",
-                activeSection === section.id
-                  ? "text-evergreen-forest border-evergreen-forest"
-                  : "text-secondary-text/70 border-transparent hover:text-primary-text hover:border-gray-300"
-              )}
-            >
-              {section.title}
-            </button>
-          ))}
-        </nav>
-      </div>
-    </div>
+    <nav className="flex flex-col gap-4 sticky top-32">
+      <h3 className="font-moniqa text-2xl text-secondary-text mb-4">Навигация</h3>
+      {sections.map((section) => (
+        <button
+          key={section.id}
+          onClick={() => scrollToSection(section.id)}
+          className={cn(
+            "text-left text-sm transition-all duration-300 relative pl-4 border-l-2 py-1",
+            activeSection === section.id
+              ? "text-evergreen-forest border-evergreen-forest font-semibold"
+              : "text-secondary-text border-transparent hover:text-primary-text hover:border-gray-300"
+          )}
+        >
+          {section.title}
+        </button>
+      ))}
+    </nav>
   );
 }
