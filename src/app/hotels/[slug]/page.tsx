@@ -24,6 +24,7 @@ export default async function HotelPage({ params }: HotelPageProps) {
         name={hotelData.name}
         location={hotelData.location}
         shootingDate={hotelData.shootingDate}
+        heroImage={hotelData.heroImage}
       />
 
       <HotelAnchorMenu sections={hotelData.sections} />

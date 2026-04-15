@@ -14,17 +14,13 @@ export function HotelAnchorMenu({ sections }: HotelAnchorMenuProps) {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        // Find all intersecting entries
         const intersecting = entries.filter((entry) => entry.isIntersecting);
         if (intersecting.length > 0) {
-          // If multiple are intersecting, pick the one closest to the top
-          // For simplicity in this mock, we just take the first one or we can sort
           const sorted = intersecting.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
           setActiveSection(sorted[0].target.id);
         }
       },
       {
-        // Adjust these margins to trigger earlier/later
         rootMargin: '-20% 0px -60% 0px',
         threshold: 0.1,
       }
@@ -41,25 +37,24 @@ export function HotelAnchorMenu({ sections }: HotelAnchorMenuProps) {
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
-      // Offset for sticky menu height
       const y = el.getBoundingClientRect().top + window.scrollY - 100;
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
   };
 
   return (
-    <div className="sticky top-0 z-40 bg-soft-sand/90 backdrop-blur-md border-b border-gray-200 py-4 shadow-sm mb-8 transition-all duration-300">
+    <div className="sticky top-0 z-40 bg-soft-sand/80 backdrop-blur-xl border-b border-gray-200/50 py-5 transition-all duration-500">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
-        <nav className="flex overflow-x-auto gap-6 no-scrollbar snap-x">
+        <nav className="flex overflow-x-auto gap-8 no-scrollbar snap-x">
           {sections.map((section) => (
             <button
               key={section.id}
               onClick={() => scrollToSection(section.id)}
               className={cn(
-                "whitespace-nowrap pb-2 text-sm font-medium transition-colors border-b-2 snap-start",
+                "whitespace-nowrap pb-1 text-[15px] font-medium transition-all duration-300 border-b-[3px] snap-start uppercase tracking-wider",
                 activeSection === section.id
                   ? "text-evergreen-forest border-evergreen-forest"
-                  : "text-secondary-text border-transparent hover:text-primary-text"
+                  : "text-secondary-text/70 border-transparent hover:text-primary-text hover:border-gray-300"
               )}
             >
               {section.title}

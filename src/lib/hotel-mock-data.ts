@@ -11,6 +11,7 @@ export interface HotelDetailData {
   name: string;
   location: string;
   shootingDate: string;
+  heroImage?: string;
   sections: HotelSection[];
 }
 
@@ -20,6 +21,7 @@ export const hotelDetailMockData: HotelDetailData[] = [
     name: 'ADALYA BLISS',
     location: 'Сиде, Эвренсеки',
     shootingDate: '06.04.2026',
+    heroImage: 'https://storage.yandexcloud.net/arina-reels-storage/ADALYA%20BLISS.jfif',
     sections: [
       {
         id: 'entrance',
