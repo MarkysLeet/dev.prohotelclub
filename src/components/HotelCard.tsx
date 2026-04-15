@@ -121,7 +121,7 @@ export function HotelCard({
 
         {variant === 'collection' ? (
           <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
-            <Link href={`/hotels/${hotel.id}`} className="text-evergreen-forest text-sm font-medium flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <Link href={hotel.link || `/hotels/${hotel.id}`} className="text-evergreen-forest text-sm font-medium flex items-center gap-2 hover:opacity-80 transition-opacity">
               Подробнее
             </Link>
             <Button variant="secondary" size="sm" className="h-9 px-4 text-xs rounded-lg">
@@ -130,7 +130,7 @@ export function HotelCard({
           </div>
         ) : (
           <div className="mt-auto pt-4 border-t border-gray-100">
-            <Link href={`/hotels/${hotel.id}`}>
+            <Link href={hotel.link || `/hotels/${hotel.id}`}>
               <Button variant="ghost" className="w-full justify-between px-0 text-evergreen-forest group-hover:px-4 group-hover:bg-soft-sand transition-all rounded-lg">
                 <span>Перейти к материалам</span>
                 <ArrowRight01Icon size={18} />

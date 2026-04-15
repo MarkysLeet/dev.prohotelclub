@@ -16,7 +16,7 @@ export const hotels: Hotel[] = [
     tags: ['Ultra All Inclusive', 'Новый отель', 'Для семьи'],
     description: 'Новый уровень роскоши на побережье Средиземного моря. Элегантный дизайн, безупречный сервис и гастрономические изыски.',
     imageUrl: 'https://storage.yandexcloud.net/arina-reels-storage/ADALYA%20BLISS.jfif',
-    link: '/hotels',
+    link: '/hotels/adalya-bliss',
   },
   {
     id: 'hero-2',
@@ -25,7 +25,7 @@ export const hotels: Hotel[] = [
     tags: ['Premium', 'Стильный', 'Первая линия'],
     description: 'Отель со стильным дизайном и концепцией комфорта, расположенный прямо на берегу моря в Кемере.',
     imageUrl: 'https://storage.yandexcloud.net/arina-reels-storage/Double%20Tree%20Kemer.jfif',
-    link: '/hotels',
+    link: '/hotels/doubletree-by-hilton-kemer',
   },
   {
     id: 'hero-3',
@@ -34,7 +34,7 @@ export const hotels: Hotel[] = [
     tags: ['Suites', 'Для семьи', 'Бассейны'],
     description: 'Курортный отель, предлагающий просторные сьюты и отличную инфраструктуру для семейного отдыха с детьми.',
     imageUrl: 'https://storage.yandexcloud.net/arina-reels-storage/Greenwood%20Suites%20Resort.jfif',
-    link: '/hotels',
+    link: '/hotels/greenwood-suites-resort',
   },
   {
     id: 'hero-4',
@@ -43,7 +43,7 @@ export const hotels: Hotel[] = [
     tags: ['All Inclusive', 'Пляж', 'Архитектура'],
     description: 'Отель с уникальной архитектурой, расположенный рядом с песчаным пляжем. Отличный выбор для комфортного отпуска.',
     imageUrl: 'https://storage.yandexcloud.net/arina-reels-storage/Adalya%20ArtSide%20Hotel.jfif',
-    link: '/hotels',
+    link: '/hotels/adalya-artside-hotel',
   },
 
   {
@@ -53,7 +53,7 @@ export const hotels: Hotel[] = [
     tags: ['Ultra All Inclusive', 'Для семьи', 'Первая линия', 'Гольф'],
     description: 'Роскошный курорт с первоклассным сервисом, предлагающий эксклюзивные сьюты и виллы. Идеальное место для семейного отдыха и любителей гольфа.',
     imageUrl: 'https://placehold.co/800x600/F6EEE1/5A6B5D?text=Maxx+Royal',
-    link: '#',
+    link: '/hotels/maxx-royal-belek-golf-resort',
   },
   {
     id: '2',
@@ -62,7 +62,7 @@ export const hotels: Hotel[] = [
     tags: ['Ultra All Inclusive', 'Для семьи', 'Премиум', 'Первая линия'],
     description: 'Один из самых престижных отелей региона с великолепным белым песчаным пляжем, роскошными номерами и высочайшим уровнем обслуживания.',
     imageUrl: 'https://placehold.co/800x600/F6EEE1/5A6B5D?text=Regnum+Carya',
-    link: '#',
+    link: '/hotels/regnum-carya',
   },
   {
     id: '3',
@@ -71,7 +71,7 @@ export const hotels: Hotel[] = [
     tags: ['С животными', 'Для семьи', 'Wellness', 'Природа'],
     description: 'Уникальный концепт, объединяющий роскошь и природу. Отель расположен в сосновом лесу на берегу кристально чистого моря.',
     imageUrl: 'https://placehold.co/800x600/F6EEE1/5A6B5D?text=Nirvana+ME',
-    link: '#',
+    link: '/hotels/nirvana-mediterranean-excellence',
   },
   {
     id: '4',
@@ -80,7 +80,7 @@ export const hotels: Hotel[] = [
     tags: ['Премиум', 'Новый отель', 'Golf', 'Ultra All Inclusive'],
     description: 'Новый уровень роскоши на побережье Средиземного моря. Элегантный дизайн, безупречный сервис и гастрономические изыски.',
     imageUrl: 'https://placehold.co/800x600/F6EEE1/5A6B5D?text=Cullinan',
-    link: '#',
+    link: '/hotels/cullinan-belek',
   },
   {
     id: '5',
@@ -89,7 +89,7 @@ export const hotels: Hotel[] = [
     tags: ['Wellness', 'Для семьи', 'Первая линия', 'Премиум'],
     description: 'Идеальное сочетание комфорта и уединения в живописной бухте. Панорамные виды на море и горы Торос.',
     imageUrl: 'https://placehold.co/800x600/F6EEE1/5A6B5D?text=NG+Phaselis',
-    link: '#',
+    link: '/hotels/ng-phaselis-bay',
   },
   {
     id: '6',
@@ -98,7 +98,7 @@ export const hotels: Hotel[] = [
     tags: ['Для семьи', 'Уютный', 'Исторический центр'],
     description: 'Легендарное качество сервиса сети Barut. Отель с зеленой территорией и отличным пляжем, расположенный недалеко от античного города Сиде.',
     imageUrl: 'https://placehold.co/800x600/F6EEE1/5A6B5D?text=Barut+Hemera',
-    link: '#',
+    link: '/hotels/barut-hemera',
   },
   {
     id: '7',
@@ -107,7 +107,7 @@ export const hotels: Hotel[] = [
     tags: ['Для семьи', 'Аквапарк', 'Активный отдых'],
     description: 'Огромная зеленая территория у подножия гор. Отель славится масштабными шоу-программами и одним из лучших детских клубов.',
     imageUrl: 'https://placehold.co/800x600/F6EEE1/5A6B5D?text=Rixos+Tekirova',
-    link: '#',
+    link: '/hotels/rixos-premium-tekirova',
   },
   {
     id: '8',
@@ -116,7 +116,7 @@ export const hotels: Hotel[] = [
     tags: ['Тихий отдых', 'Только для взрослых', 'Гольф', 'SPA'],
     description: 'Бутик-отель в сельджукском стиле. Предлагает спокойный отдых, великолепный SPA-центр и доступ к лучшим гольф-полям.',
     imageUrl: 'https://placehold.co/800x600/F6EEE1/5A6B5D?text=Kempinski',
-    link: '#',
+    link: '/hotels/kempinski-hotel-the-dome',
   },
   {
     id: '9',
@@ -125,7 +125,7 @@ export const hotels: Hotel[] = [
     tags: ['Арт-отель', 'Премиум', 'Гастрономия', 'Белоснежный песок'],
     description: 'Концепция Art & Joy. Уникальная архитектура, три роскошных пляжа с белым песком и рестораны a la carte мирового уровня.',
     imageUrl: 'https://placehold.co/800x600/F6EEE1/5A6B5D?text=Lujo+Hotel',
-    link: '#',
+    link: '/hotels/lujo-hotel',
   },
 ];
 

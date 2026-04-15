@@ -37,29 +37,44 @@ export function HotelAnchorMenu({ sections }: HotelAnchorMenuProps) {
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
-      // Offset for floating header
-      const y = el.getBoundingClientRect().top + window.scrollY - 100;
+      // Offset for floating header (64px) + some breathing room (32px) = 96px
+      const y = el.getBoundingClientRect().top + window.scrollY - 96;
       window.scrollTo({ top: y, behavior: 'smooth' });
     }
   };
 
   return (
-    <nav className="flex flex-col gap-4 sticky top-32">
-      <h3 className="font-moniqa text-2xl text-secondary-text mb-4">Навигация</h3>
-      {sections.map((section) => (
-        <button
-          key={section.id}
-          onClick={() => scrollToSection(section.id)}
-          className={cn(
-            "text-left text-sm transition-all duration-300 relative pl-4 border-l-2 py-1",
-            activeSection === section.id
-              ? "text-evergreen-forest border-evergreen-forest font-semibold"
-              : "text-secondary-text border-transparent hover:text-primary-text hover:border-gray-300"
-          )}
-        >
-          {section.title}
-        </button>
-      ))}
-    </nav>
+    <div className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto no-scrollbar pb-8">
+      <h3 className="font-moniqa text-3xl text-secondary-text mb-6">Навигация</h3>
+      <nav className="flex flex-col gap-5">
+        {sections.map((section) => (
+          <button
+            key={section.id}
+            onClick={() => scrollToSection(section.id)}
+            className={cn(
+              "text-left text-[15px] transition-all duration-300 relative pl-5 py-1",
+              activeSection === section.id
+                ? "text-evergreen-forest font-semibold"
+                : "text-secondary-text hover:text-primary-text"
+            )}
+          >
+            {/* Custom active indicator for a cleaner look */}
+            {activeSection === section.id && (
+              <span className="absolute left-0 top-0 bottom-0 w-[3px] bg-evergreen-forest rounded-full" />
+            )}
+            {!activeSection && section.id && (
+               <span className="absolute left-[1px] top-1 bottom-1 w-[1px] bg-gray-200" />
+            )}
+
+            {/* Inactive line fallback */}
+             {activeSection !== section.id && (
+              <span className="absolute left-0 top-1 bottom-1 w-[2px] bg-gray-200 transition-colors group-hover:bg-gray-300 rounded-full" />
+            )}
+
+            {section.title}
+          </button>
+        ))}
+      </nav>
+    </div>
   );
 }
