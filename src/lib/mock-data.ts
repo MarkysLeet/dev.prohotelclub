@@ -10,7 +10,7 @@ export interface Hotel {
 
 export const hotels: Hotel[] = [
   {
-    id: 'hero-1',
+    id: 'adalya-bliss',
     name: 'ADALYA BLISS',
     location: 'Анталья',
     tags: ['Ultra All Inclusive', 'Новый отель', 'Для семьи'],
@@ -19,7 +19,7 @@ export const hotels: Hotel[] = [
     link: '/hotels/adalya-bliss',
   },
   {
-    id: 'hero-2',
+    id: 'doubletree-by-hilton-kemer',
     name: 'DoubleTree by Hilton Kemer',
     location: 'Кемер',
     tags: ['Premium', 'Стильный', 'Первая линия'],

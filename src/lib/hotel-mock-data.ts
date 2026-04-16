@@ -12,6 +12,12 @@ export interface HotelDetailData {
   location: string;
   shootingDate: string;
   heroImage?: string;
+  stars: number;
+  distanceToSea: string;
+  distanceToCity: string;
+  googleRating: number;
+  buildYear: number;
+  mealPlan: string;
   sections: HotelSection[];
 }
 
@@ -22,6 +28,12 @@ export const hotelDetailMockData: HotelDetailData[] = [
     location: 'Сиде, Эвренсеки',
     shootingDate: '06.04.2026',
     heroImage: 'https://storage.yandexcloud.net/arina-reels-storage/ADALYA%20BLISS.jfif',
+    stars: 5,
+    distanceToSea: 'Первая линия, 50м',
+    distanceToCity: '5 км до центра Сиде',
+    googleRating: 4.8,
+    buildYear: 2024,
+    mealPlan: 'Ultra All Inclusive',
     sections: [
       {
         id: 'entrance',
