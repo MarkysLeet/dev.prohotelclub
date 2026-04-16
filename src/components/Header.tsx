@@ -110,8 +110,8 @@ export default function Header() {
                 className="flex items-center gap-2 hover:text-white transition-colors duration-200"
               >
                 <ArrowLeft01Icon size={22} strokeWidth={1.5} />
-                <span className="text-sm font-century-gothic tracking-wide uppercase mt-[2px]">
-                  Назад
+                <span className="text-sm font-century-gothic tracking-wide uppercase mt-[2px] max-w-[200px] truncate" title={customTitle || "Назад"}>
+                  {customTitle || "Назад"}
                 </span>
               </button>
             ) : (
@@ -125,19 +125,13 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Center: Logo or Custom Title */}
-        <div className="absolute left-1/2 -translate-x-1/2 mt-1 flex items-center justify-center max-w-[50%] text-center">
-          {customTitle ? (
-            <span className="font-moniqa text-[clamp(24px,4vw,40px)] text-white tracking-wide leading-none select-none truncate">
-              {customTitle}
+        {/* Center: Logo */}
+        <div className="absolute left-1/2 -translate-x-1/2 mt-1 flex items-center justify-center text-center">
+          <Link href="/">
+            <span className="font-moniqa text-[clamp(24px,4vw,40px)] text-white tracking-wide leading-none select-none hover:opacity-80 transition-opacity cursor-pointer">
+              ProHotelClub
             </span>
-          ) : (
-            <Link href="/">
-              <span className="font-moniqa text-[clamp(24px,4vw,40px)] text-white tracking-wide leading-none select-none hover:opacity-80 transition-opacity cursor-pointer">
-                ProHotelClub
-              </span>
-            </Link>
-          )}
+          </Link>
         </div>
 
         {/* Right: Actions */}
