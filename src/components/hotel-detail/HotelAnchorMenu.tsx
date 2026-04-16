@@ -44,7 +44,7 @@ export function HotelAnchorMenu({ sections }: HotelAnchorMenuProps) {
   };
 
   return (
-    <div className="sticky top-32 max-h-[calc(100vh-10rem)] overflow-y-auto no-scrollbar pb-8 bg-white/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 shadow-sm">
+    <div className="w-full max-h-full overflow-y-auto no-scrollbar pb-8 bg-white/50 backdrop-blur-md p-6 rounded-2xl border border-gray-100 shadow-sm">
       <h3 className="font-century-gothic text-xs font-semibold text-secondary-text uppercase tracking-widest mb-6">Навигация</h3>
       <nav className="flex flex-col gap-4">
         {sections.map((section) => (

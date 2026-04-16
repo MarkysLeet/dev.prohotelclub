@@ -4,6 +4,7 @@ import { HotelAnchorMenu } from '@/components/hotel-detail/HotelAnchorMenu';
 import { HotelSection } from '@/components/hotel-detail/HotelSection';
 import { HotelPageClient } from './HotelPageClient';
 import Image from 'next/image';
+import Header from '@/components/Header';
 
 interface HotelPageProps {
   params: {
@@ -21,6 +22,7 @@ export default async function HotelPage({ params }: HotelPageProps) {
 
   return (
     <main className="min-h-screen bg-soft-sand relative pt-[56px] lg:pt-[64px]">
+      <Header />
       <HotelPageClient hotelName={hotelData.name} />
 
       <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12">
@@ -61,7 +63,7 @@ export default async function HotelPage({ params }: HotelPageProps) {
         {/* Content Area */}
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-24 items-start">
           {/* Sidebar Navigation */}
-          <aside className="w-full lg:w-1/4 hidden lg:block relative">
+          <aside className="w-full lg:w-1/4 hidden lg:block sticky top-32 self-start h-[calc(100vh-8rem)]">
              <HotelAnchorMenu sections={hotelData.sections} />
           </aside>
 
