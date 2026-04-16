@@ -16,6 +16,8 @@ import {
 } from "hugeicons-react";
 import { useAuth } from "@/lib/AuthContext";
 import { GlobalSearch } from "@/components/GlobalSearch";
+import { useHeaderStore } from "@/lib/useHeaderStore";
+import { ArrowLeft01Icon } from "hugeicons-react";
 
 const PAGE_INFO: Record<string, { title: string; icon: React.ElementType }> = {
   "/": { title: "Главная", icon: Home03Icon },
@@ -38,6 +40,7 @@ export default function Header() {
   }, [pathname]);
 
   const CurrentIcon = currentPageInfo.icon;
+  const { title: customTitle, showBack } = useHeaderStore();
 
   const handleUserIconClick = () => {
     if (!isAuth) {
@@ -101,13 +104,29 @@ export default function Header() {
           <div
             className="hidden md:flex items-center gap-2 text-soft-sand p-2 font-medium opacity-80"
           >
-            <CurrentIcon size={22} strokeWidth={1.5} />
-            <span className="text-sm font-century-gothic tracking-wide uppercase">{currentPageInfo.title}</span>
+            {showBack ? (
+              <button
+                onClick={() => router.back()}
+                className="flex items-center gap-2 hover:text-white transition-colors duration-200"
+              >
+                <ArrowLeft01Icon size={22} strokeWidth={1.5} />
+                <span className="text-sm font-century-gothic tracking-wide uppercase mt-[2px] max-w-[200px] truncate" title={customTitle || "Назад"}>
+                  {customTitle || "Назад"}
+                </span>
+              </button>
+            ) : (
+              <>
+                <CurrentIcon size={22} strokeWidth={1.5} />
+                <span className="text-sm font-century-gothic tracking-wide uppercase mt-[2px]">
+                  {currentPageInfo.title}
+                </span>
+              </>
+            )}
           </div>
         </div>
 
         {/* Center: Logo */}
-        <div className="absolute left-1/2 -translate-x-1/2 mt-1">
+        <div className="absolute left-1/2 -translate-x-1/2 mt-1 flex items-center justify-center text-center">
           <Link href="/">
             <span className="font-moniqa text-[clamp(24px,4vw,40px)] text-white tracking-wide leading-none select-none hover:opacity-80 transition-opacity cursor-pointer">
               ProHotelClub
