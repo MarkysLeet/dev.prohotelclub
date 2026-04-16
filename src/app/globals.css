@@ -17,3 +17,31 @@
     color: var(--color-primary-text);
   }
 }
+
+@layer base {
+  /* Custom scrollbar globally */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-soft-sand);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-evergreen-forest);
+    border-radius: 4px;
+    border: 2px solid var(--color-soft-sand);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-evergreen-hover);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-evergreen-forest) var(--color-soft-sand);
+  }
+}
