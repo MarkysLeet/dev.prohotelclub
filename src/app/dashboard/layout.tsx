@@ -39,19 +39,14 @@ export default function DashboardLayout({
   const { isAuth, user, logout, isLoading } = useAuth();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (isMounted && !isLoading && !isAuth) {
+    if (!isLoading && !isAuth) {
       router.push('/auth');
     }
-  }, [isAuth, isLoading, router, isMounted]);
+  }, [isAuth, isLoading, router]);
 
-  if (!isMounted || isLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-soft-sand flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-evergreen-forest/20 border-t-evergreen-forest rounded-full animate-spin"></div>
