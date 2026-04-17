@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { UserCircleIcon, SentIcon, FavouriteIcon } from 'hugeicons-react';
-import { storage, Comment } from '@/lib/storage';
+import { api, Comment } from '@/lib/api';
 import { useAuth } from '@/lib/AuthContext';
 import { useToast } from '@/components/ui/Toast';
 
@@ -17,13 +17,16 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
   const { toast } = useToast();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setComments(storage.getComments(hotelSlug));
-    }, 0);
-    return () => clearTimeout(timer);
+    let mounted = true;
+    async function fetchComments() {
+      const data = await api.getComments(hotelSlug);
+      if (mounted) setComments(data);
+    }
+    fetchComments();
+    return () => { mounted = false; };
   }, [hotelSlug]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
       toast('Необходимо авторизоваться для добавления комментариев', { type: 'error' });
@@ -31,36 +34,22 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
     }
 
     if (commentText.trim()) {
-      const newComment: Comment = {
-        id: `comment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        hotelSlug,
-        authorId: user.id,
-        authorName: user.name,
-        role: user.isAdmin ? 'Администратор' : 'Турагент',
-        date: new Date().toLocaleDateString('ru-RU', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric'
-        }),
-        text: commentText.trim(),
-        likesCount: 0,
-        likedBy: []
-      };
-
-      storage.addComment(newComment);
-      setComments(storage.getComments(hotelSlug));
+      await api.addComment(hotelSlug, commentText.trim(), user.id);
+      const updatedComments = await api.getComments(hotelSlug);
+      setComments(updatedComments);
       setCommentText('');
       toast('Комментарий успешно добавлен', { type: 'success' });
     }
   };
 
-  const handleLike = (commentId: string) => {
+  const handleLike = async (commentId: string) => {
     if (!user) {
       toast('Необходимо авторизоваться для оценки комментариев', { type: 'error' });
       return;
     }
-    storage.toggleLike(commentId, user.id);
-    setComments(storage.getComments(hotelSlug));
+    await api.toggleLike(commentId, user.id);
+    const updatedComments = await api.getComments(hotelSlug);
+    setComments(updatedComments);
   };
 
   return (

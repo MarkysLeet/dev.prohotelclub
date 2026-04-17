@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useFavorites } from '@/lib/useFavorites';
 import { motion, AnimatePresence } from 'framer-motion';
-import { hotels as defaultHotels, Hotel } from '@/lib/mock-data';
-import { storage } from '@/lib/storage';
-import { useEffect } from 'react';
+import { Hotel } from '@/lib/mock-data';
+import { api } from '@/lib/api';
 import Header from '@/components/Header';
 import {
   Search01Icon,
@@ -36,19 +35,23 @@ const getTagIcon = (tag: string) => {
   }
 };
 
-
-
 export default function HotelsPage() {
   const { isAuth } = useAuth();
-  const [hotelsList, setHotelsList] = useState<Hotel[]>(defaultHotels);
+  const [hotelsList, setHotelsList] = useState<Hotel[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    // Используем setTimeout чтобы не вызывать setState синхронно в useEffect
-    // что предотвращает ошибку react-hooks/set-state-in-effect
-    const timer = setTimeout(() => {
-      setHotelsList(storage.getHotels());
-    }, 0);
-    return () => clearTimeout(timer);
+    let mounted = true;
+    async function loadHotels() {
+      setIsLoading(true);
+      const data = await api.getHotels();
+      if (mounted) {
+        setHotelsList(data);
+        setIsLoading(false);
+      }
+    }
+    loadHotels();
+    return () => { mounted = false; };
   }, []);
 
   const LOCATIONS = useMemo(() => ['Все регионы', ...Array.from(new Set(hotelsList.map(h => h.location)))], [hotelsList]);
@@ -100,9 +103,6 @@ export default function HotelsPage() {
 
       <main className="flex-1 pt-[80px] lg:pt-[100px] pb-24">
         <div className="max-w-[1920px] mx-auto px-6 lg:px-[35px]">
-
-          {/* Header Section */}
-
 
           {/* Filters Section */}
           <motion.div
@@ -178,7 +178,11 @@ export default function HotelsPage() {
           </motion.div>
 
           {/* Grid Section */}
-          {filteredHotels.length > 0 ? (
+          {isLoading ? (
+            <div className="py-24 flex items-center justify-center">
+              <div className="w-8 h-8 border-4 border-evergreen-forest/30 border-t-evergreen-forest rounded-full animate-spin"></div>
+            </div>
+          ) : filteredHotels.length > 0 ? (
             <motion.div
               layout
               className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
@@ -195,14 +199,13 @@ export default function HotelsPage() {
                     className="h-full"
                   >
                     <HotelCard
-
-                    hotel={hotel}
-                    isFavorite={favorites.has(hotel.id)}
-                    onToggleFavorite={handleToggleFavorite}
-                    getTagIcon={getTagIcon}
-                    variant="collection"
-                    onTagClick={toggleTag}
-                  />
+                      hotel={hotel}
+                      isFavorite={favorites.has(hotel.id)}
+                      onToggleFavorite={handleToggleFavorite}
+                      getTagIcon={getTagIcon}
+                      variant="collection"
+                      onTagClick={toggleTag}
+                    />
                   </motion.div>
                 ))}
               </AnimatePresence>

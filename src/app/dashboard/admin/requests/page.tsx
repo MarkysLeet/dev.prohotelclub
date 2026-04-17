@@ -3,7 +3,7 @@
 import { useAuth } from '@/lib/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { storage, ReviewRequest } from '@/lib/storage';
+import { api, ReviewRequest } from '@/lib/api';
 import { Badge, Button } from '@/components/ui';
 import Link from 'next/link';
 import { ArrowLeft01Icon } from 'hugeicons-react';
@@ -17,16 +17,20 @@ export default function AdminRequestsPage() {
     if (user && !user.isAdmin) {
       router.push('/dashboard');
     } else {
-      const timer = setTimeout(() => {
-        setRequests(storage.getReviewRequests().reverse()); // Последние сверху
-      }, 0);
-      return () => clearTimeout(timer);
+      let mounted = true;
+      async function loadRequests() {
+        const data = await api.getReviewRequests();
+        if (mounted) setRequests(data);
+      }
+      loadRequests();
+      return () => { mounted = false; };
     }
   }, [user, router]);
 
-  const handleStatusChange = (id: string, newStatus: ReviewRequest['status']) => {
-    storage.updateReviewRequestStatus(id, newStatus);
-    setRequests(storage.getReviewRequests().reverse());
+  const handleStatusChange = async (id: string, newStatus: ReviewRequest['status']) => {
+    await api.updateReviewRequestStatus(id, newStatus);
+    const updated = await api.getReviewRequests();
+    setRequests(updated);
   };
 
   if (!user || !user.isAdmin) return null;

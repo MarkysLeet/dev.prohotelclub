@@ -1,5 +1,5 @@
 "use client";
-import { useAuth } from "@/lib/AuthContext";
+import { createClient } from "@/lib/supabase-browser";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -11,31 +11,83 @@ type AuthMode = "login" | "register";
 export default function AuthForm() {
   const [mode, setMode] = useState<AuthMode>("login");
   const [isLoading, setIsLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+
   const router = useRouter();
-  const { login } = useAuth();
+  const supabase = createClient();
 
   const toggleMode = () => {
     setMode((prev) => (prev === "login" ? "register" : "login"));
+    setErrorMsg(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMsg(null);
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      if (mode === "register") {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              name,
+            }
+          }
+        });
+
+        if (error) throw error;
+
+        // Auto sign in or show message to check email
+        router.push("/");
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) throw error;
+
+        router.push("/");
+      }
+    } catch (error: unknown) {
+      console.error("Auth error:", error);
+      if (error instanceof Error) {
+        setErrorMsg(error.message || "Произошла ошибка при авторизации");
+      } else {
+        setErrorMsg("Произошла ошибка при авторизации");
+      }
+    } finally {
       setIsLoading(false);
-      login(); router.push("/");
-    }, 1500);
+    }
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     setIsLoading(true);
-    // Simulate Google Auth
-    setTimeout(() => {
+    setErrorMsg(null);
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) throw error;
+    } catch (error: unknown) {
+      console.error("Google auth error:", error);
+      if (error instanceof Error) {
+        setErrorMsg(error.message || "Произошла ошибка при авторизации через Google");
+      } else {
+        setErrorMsg("Произошла ошибка при авторизации через Google");
+      }
       setIsLoading(false);
-      login(); router.push("/");
-    }, 1500);
+    }
   };
 
   const animationVariants = {
@@ -46,6 +98,11 @@ export default function AuthForm() {
 
   return (
     <div className="w-full flex flex-col">
+      {errorMsg && (
+        <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-xl text-sm border border-red-100">
+          {errorMsg}
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
         <AnimatePresence mode="wait">
           {mode === "register" && (
@@ -68,7 +125,9 @@ export default function AuthForm() {
                   <input
                     id="name"
                     type="text"
-                    required
+                    required={mode === "register"}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                     placeholder="Ваше имя"
                     className="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-evergreen-forest focus:border-evergreen-forest transition-colors text-primary-text placeholder-gray-400"
                   />
@@ -90,6 +149,8 @@ export default function AuthForm() {
               id="email"
               type="email"
               required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="agent@example.com"
               className="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-evergreen-forest focus:border-evergreen-forest transition-colors text-primary-text placeholder-gray-400"
             />
@@ -115,6 +176,8 @@ export default function AuthForm() {
               id="password"
               type="password"
               required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               className="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-evergreen-forest focus:border-evergreen-forest transition-colors text-primary-text placeholder-gray-400"
             />
@@ -169,6 +232,7 @@ export default function AuthForm() {
         {mode === "login" ? "У вас еще нет аккаунта? " : "Уже есть аккаунт? "}
         <button
           onClick={toggleMode}
+          type="button"
           className="text-evergreen-forest font-medium hover:underline focus:outline-none"
         >
           {mode === "login" ? "Зарегистрироваться" : "Войти"}

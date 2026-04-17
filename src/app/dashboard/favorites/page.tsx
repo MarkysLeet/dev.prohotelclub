@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo } from 'react';
-import { hotels } from '@/lib/mock-data';
+import { useMemo, useEffect, useState } from 'react';
+import { api } from '@/lib/api';
+import { Hotel } from '@/lib/mock-data';
 import { Button } from '@/components/ui';
 import { HotelCard } from '@/components/HotelCard';
 import { InformationCircleIcon } from 'hugeicons-react';
@@ -11,10 +12,25 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function FavoritesPage() {
   const { favorites, toggleFavorite } = useFavorites();
+  const [hotels, setHotels] = useState<Hotel[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    async function loadHotels() {
+      const data = await api.getHotels();
+      if (mounted) {
+        setHotels(data);
+        setIsLoading(false);
+      }
+    }
+    loadHotels();
+    return () => { mounted = false; };
+  }, []);
 
   const favoriteHotels = useMemo(() => {
     return hotels.filter(hotel => favorites.has(hotel.id));
-  }, [favorites]);
+  }, [favorites, hotels]);
 
   return (
     <div className="space-y-10">
@@ -29,7 +45,11 @@ export default function FavoritesPage() {
         )}
       </div>
 
-      {favoriteHotels.length > 0 ? (
+      {isLoading ? (
+        <div className="py-24 flex items-center justify-center">
+          <div className="w-8 h-8 border-4 border-evergreen-forest/30 border-t-evergreen-forest rounded-full animate-spin"></div>
+        </div>
+      ) : favoriteHotels.length > 0 ? (
         <motion.div layout className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           <AnimatePresence>
             {favoriteHotels.map((hotel) => (
@@ -43,12 +63,11 @@ export default function FavoritesPage() {
                 className="h-full"
               >
                 <HotelCard
-
-                hotel={hotel}
-                isFavorite={favorites.has(hotel.id)}
-                onToggleFavorite={(id) => toggleFavorite(id)}
-                variant="dashboard"
-              />
+                  hotel={hotel}
+                  isFavorite={favorites.has(hotel.id)}
+                  onToggleFavorite={(id) => toggleFavorite(id)}
+                  variant="dashboard"
+                />
               </motion.div>
             ))}
           </AnimatePresence>
