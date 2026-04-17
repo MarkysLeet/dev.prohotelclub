@@ -3,6 +3,7 @@ import { getHotelBySlug } from '@/lib/hotel-mock-data';
 import { HotelPageClient } from './HotelPageClient';
 import { HotelInteractiveContainer } from '@/components/hotel-detail/HotelInteractiveContainer';
 import { HotelComments } from '@/components/hotel-detail/HotelComments';
+import { HotelWidgetsPanel } from '@/components/hotel-detail/HotelWidgetsPanel';
 import Image from 'next/image';
 import Header from '@/components/Header';
 
@@ -47,10 +48,11 @@ export default async function HotelPage({ params }: HotelPageProps) {
           </div>
         </div>
 
-        {/* Hero Area */}
-        <div className="mb-12 h-auto lg:h-[500px]">
+        {/* Hero Area (60/40 Layout) */}
+        <div className="flex flex-col lg:flex-row gap-6 mb-16 h-auto lg:h-[500px]">
+          {/* Main Image (60%) */}
           {hotelData.heroImage && (
-            <div className="relative w-full h-[300px] md:h-[400px] lg:h-full rounded-2xl overflow-hidden shadow-sm">
+            <div className="relative w-full lg:w-[60%] h-[300px] md:h-[400px] lg:h-full rounded-2xl overflow-hidden shadow-sm">
               <Image
                 src={hotelData.heroImage}
                 alt={hotelData.name}
@@ -60,9 +62,14 @@ export default async function HotelPage({ params }: HotelPageProps) {
               />
             </div>
           )}
+
+          {/* Info Panel with Widgets (40%) */}
+          <div className="w-full lg:w-[40%] h-full">
+            <HotelWidgetsPanel hotelData={hotelData} />
+          </div>
         </div>
 
-        {/* Interactive Content Container */}
+        {/* Interactive Content Container (Grid of Buttons + Content Area) */}
         <HotelInteractiveContainer hotelData={hotelData} />
 
         {/* Comments Section Placeholder */}

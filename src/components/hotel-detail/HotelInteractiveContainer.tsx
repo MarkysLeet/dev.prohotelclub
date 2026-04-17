@@ -2,183 +2,144 @@
 
 import React, { useState } from 'react';
 import { HotelDetailData } from '@/lib/hotel-mock-data';
-import { StarIcon, WaveIcon, City01Icon, Location01Icon, GoogleIcon, Calendar01Icon, Restaurant01Icon } from 'hugeicons-react';
 import { MapModal } from '@/components/ui/MapModal';
 import { HotelSection } from './HotelSection';
 import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Building03Icon,
+  BedSingle02Icon,
+  Restaurant01Icon,
+  Tree02Icon,
+  SwimmingIcon,
+  WaveIcon,
+  FerrisWheelIcon,
+  MessageMultiple01Icon,
+  ThumbsUpIcon,
+  Note01Icon,
+  ArrowRight01Icon,
+  ArrowDown01Icon,
+  ArrowUp01Icon,
+  Coffee02Icon,
+  Location01Icon
+} from 'hugeicons-react';
 
 interface HotelInteractiveContainerProps {
   hotelData: HotelDetailData;
 }
 
+// Хелпер для подбора иконок по ID секции
+const getIconForSection = (id: string) => {
+  switch (id) {
+    case 'entrance': return <Building03Icon size={24} />;
+    case 'rooms': return <BedSingle02Icon size={24} />;
+    case 'dining': return <Restaurant01Icon size={24} />;
+    case 'bars': return <Coffee02Icon size={24} />;
+    case 'spa': return <Tree02Icon size={24} />;
+    case 'pools': return <SwimmingIcon size={24} />;
+    case 'beach': return <WaveIcon size={24} />;
+    case 'territory': return <Location01Icon size={24} />;
+    case 'entertainment': return <FerrisWheelIcon size={24} />;
+    case 'reviews': return <MessageMultiple01Icon size={24} />;
+    case 'pros-cons': return <ThumbsUpIcon size={24} />;
+    case 'resume': return <Note01Icon size={24} />;
+    default: return <ArrowRight01Icon size={24} />;
+  }
+};
+
 export function HotelInteractiveContainer({ hotelData }: HotelInteractiveContainerProps) {
-  const [activeSectionId, setActiveSectionId] = useState<string>(hotelData.sections[0]?.id || '');
+  // По умолчанию ничего не открыто
+  const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
   const [isMapOpen, setIsMapOpen] = useState(false);
 
   const activeSection = hotelData.sections.find(s => s.id === activeSectionId);
 
-  // Обработчики кликов по виджетам
-  const handleGoogleRatingClick = () => {
-    // В реальности здесь будет ссылка на Google Maps/Отзывы
-    window.open(`https://www.google.com/maps/search/${encodeURIComponent(hotelData.name + ' ' + hotelData.location)}`, '_blank');
-  };
+  // Глобальный слушатель для открытия карты из виджета в page.tsx (используем CustomEvent)
+  React.useEffect(() => {
+    const handleOpenMap = () => setIsMapOpen(true);
+    const handleOpenSection = (e: CustomEvent<{ id: string }>) => {
+      setActiveSectionId(e.detail.id);
+      setTimeout(() => {
+        document.getElementById('hotel-sections-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    };
 
-  const handleLocationClick = () => {
-    setIsMapOpen(true);
-  };
+    window.addEventListener('open-hotel-map', handleOpenMap);
+    window.addEventListener('open-hotel-section', handleOpenSection as EventListener);
 
-  const handleDiningClick = () => {
-    const diningSection = hotelData.sections.find(s => s.id === 'dining' || s.title.toLowerCase().includes('питан'));
-    if (diningSection) {
-      setActiveSectionId(diningSection.id);
-      // Плавный скролл к блоку табов, чтобы юзер видел, что контент переключился
-      document.getElementById('hotel-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
+    return () => {
+      window.removeEventListener('open-hotel-map', handleOpenMap);
+      window.removeEventListener('open-hotel-section', handleOpenSection as EventListener);
+    };
+  }, []);
 
-  const handleBeachClick = () => {
-    const beachSection = hotelData.sections.find(s => s.id === 'beach' || s.title.toLowerCase().includes('пляж'));
-    if (beachSection) {
-      setActiveSectionId(beachSection.id);
-      document.getElementById('hotel-tabs')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const toggleSection = (id: string) => {
+    if (activeSectionId === id) {
+      setActiveSectionId(null); // Закрываем, если уже открыто
+    } else {
+      setActiveSectionId(id);
+      // Небольшая задержка, чтобы контент успел отрендериться перед скроллом
+      setTimeout(() => {
+        document.getElementById('hotel-content-area')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
     }
   };
 
   return (
-    <div className="flex flex-col gap-16">
+    <div className="flex flex-col gap-12" id="hotel-sections-grid">
 
-      {/* Info Panel (Перенесенный из page.tsx для обеспечения интерактивности) */}
-      <div className="w-full bg-white/70 backdrop-blur-md rounded-2xl border border-gray-100 shadow-sm p-6 lg:p-8 flex flex-col justify-between">
-         <div className="space-y-6">
-            <h3 className="font-moniqa text-3xl text-primary-text mb-2">Общая информация</h3>
+      {/* Grid Navigation (Сетка карточек-кнопок) */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {hotelData.sections.map((section) => {
+          const isActive = activeSectionId === section.id;
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4">
-              {/* Stars */}
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest shrink-0">
-                  <StarIcon size={20} className="fill-current" />
-                </div>
-                <div>
-                  <p className="text-[11px] uppercase tracking-wider text-secondary-text font-semibold">Категория</p>
-                  <p className="text-primary-text font-medium text-sm">{hotelData.stars || 5} звёзд</p>
-                </div>
-              </div>
-
-              {/* Rating */}
-              <div
-                className="flex items-center gap-3 cursor-pointer group transition-all"
-                onClick={handleGoogleRatingClick}
-              >
-                <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest shrink-0 group-hover:bg-evergreen-forest group-hover:text-soft-sand transition-colors">
-                  <GoogleIcon size={20}  />
-                </div>
-                <div>
-                  <p className="text-[11px] uppercase tracking-wider text-secondary-text font-semibold">Google Rating</p>
-                  <p className="text-primary-text font-medium text-sm group-hover:text-evergreen-forest transition-colors">{hotelData.googleRating || 4.8} / 5</p>
-                </div>
-              </div>
-
-              {/* Distance to Sea */}
-              <div
-                className="flex items-center gap-3 cursor-pointer group transition-all"
-                onClick={handleBeachClick}
-              >
-                <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest shrink-0 group-hover:bg-evergreen-forest group-hover:text-soft-sand transition-colors">
-                  <WaveIcon size={20} />
-                </div>
-                <div>
-                  <p className="text-[11px] uppercase tracking-wider text-secondary-text font-semibold">До моря</p>
-                  <p className="text-primary-text font-medium text-sm group-hover:text-evergreen-forest transition-colors">{hotelData.distanceToSea || "Первая линия"}</p>
-                </div>
-              </div>
-
-              {/* Distance to City */}
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest shrink-0">
-                  <City01Icon size={20} />
-                </div>
-                <div>
-                  <p className="text-[11px] uppercase tracking-wider text-secondary-text font-semibold">До города</p>
-                  <p className="text-primary-text font-medium text-sm">{hotelData.distanceToCity || "5 км"}</p>
-                </div>
-              </div>
-
-              {/* Meal Plan */}
-              <div
-                className="flex items-center gap-3 cursor-pointer group transition-all"
-                onClick={handleDiningClick}
-              >
-                <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest shrink-0 group-hover:bg-evergreen-forest group-hover:text-soft-sand transition-colors">
-                  <Restaurant01Icon size={20} />
-                </div>
-                <div>
-                  <p className="text-[11px] uppercase tracking-wider text-secondary-text font-semibold">Питание</p>
-                  <p className="text-primary-text font-medium text-sm group-hover:text-evergreen-forest transition-colors">{hotelData.mealPlan || "Ultra All Inclusive"}</p>
-                </div>
-              </div>
-
-              {/* Build Year */}
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest shrink-0">
-                  <Calendar01Icon size={20} />
-                </div>
-                <div>
-                  <p className="text-[11px] uppercase tracking-wider text-secondary-text font-semibold">Год постройки</p>
-                  <p className="text-primary-text font-medium text-sm">{hotelData.buildYear || 2024}</p>
-                </div>
-              </div>
-            </div>
-         </div>
-
-         <div
-           className="mt-8 pt-6 border-t border-gray-100 flex items-center gap-3 cursor-pointer group transition-all"
-           onClick={handleLocationClick}
-         >
-            <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest shrink-0 group-hover:bg-evergreen-forest group-hover:text-soft-sand transition-colors">
-              <Location01Icon size={20} />
-            </div>
-            <p className="text-sm text-secondary-text leading-tight group-hover:text-evergreen-forest transition-colors">
-              <span className="block text-primary-text font-medium mb-0.5 group-hover:text-evergreen-forest transition-colors">Локация</span>
-              {hotelData.location}
-            </p>
-         </div>
-      </div>
-
-      {/* Interactive Tabs and Content */}
-      <div id="hotel-tabs" className="scroll-mt-24">
-        {/* Tabs Navigation */}
-        <div className="w-full bg-white/50 backdrop-blur-md p-2 rounded-2xl border border-gray-100 shadow-sm flex overflow-x-auto no-scrollbar mb-8">
-          {hotelData.sections.map((section) => (
+          return (
             <button
               key={section.id}
-              onClick={() => setActiveSectionId(section.id)}
-              className={`whitespace-nowrap px-6 py-3 rounded-xl font-century-gothic text-sm font-medium transition-all duration-300 ${
-                activeSectionId === section.id
-                  ? 'bg-evergreen-forest text-soft-sand shadow-sm'
-                  : 'text-secondary-text hover:text-primary-text hover:bg-white'
+              onClick={() => toggleSection(section.id)}
+              className={`flex flex-col items-center justify-center p-6 rounded-2xl border transition-all duration-300 group ${
+                isActive
+                  ? 'bg-evergreen-forest border-evergreen-forest text-soft-sand shadow-md'
+                  : 'bg-white border-gray-100 text-primary-text hover:border-evergreen-forest/30 hover:shadow-sm'
               }`}
             >
-              {section.title}
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 transition-colors ${
+                isActive ? 'bg-white/10' : 'bg-soft-sand group-hover:bg-evergreen-forest/5 text-evergreen-forest'
+              }`}>
+                {getIconForSection(section.id)}
+              </div>
+              <span className="font-century-gothic font-medium text-sm text-center">
+                {section.title}
+              </span>
+              <div className="mt-3">
+                {isActive ? (
+                   <ArrowUp01Icon size={16} className="opacity-70" />
+                ) : (
+                   <ArrowDown01Icon size={16} className="text-secondary-text opacity-50 group-hover:opacity-100 transition-opacity" />
+                )}
+              </div>
             </button>
-          ))}
-        </div>
+          );
+        })}
+      </div>
 
-        {/* Content Area */}
-        <div className="w-full min-h-[400px]">
-          <AnimatePresence mode="wait">
-            {activeSection && (
-              <motion.div
-                key={activeSection.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              >
+      {/* Content Area */}
+      <div id="hotel-content-area" className="w-full">
+        <AnimatePresence mode="wait">
+          {activeSection && (
+            <motion.div
+              key={activeSection.id}
+              initial={{ opacity: 0, y: -20, height: 0 }}
+              animate={{ opacity: 1, y: 0, height: 'auto' }}
+              exit={{ opacity: 0, y: -20, height: 0 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="overflow-hidden"
+            >
+              <div className="bg-white rounded-3xl p-8 lg:p-12 border border-gray-100 shadow-sm mt-4">
                 <HotelSection section={activeSection} />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       <MapModal
