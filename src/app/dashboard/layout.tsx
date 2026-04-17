@@ -13,7 +13,8 @@ import {
   FavouriteIcon,
   Settings01Icon,
   Logout01Icon,
-  Menu01Icon
+  Menu01Icon,
+  Shield01Icon
 } from 'hugeicons-react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -27,13 +28,15 @@ const navItems = [
   { href: '/dashboard/settings', label: 'Настройки', icon: Settings01Icon },
 ];
 
+const adminNavItem = { href: '/dashboard/admin', label: 'Панель администратора', icon: Shield01Icon };
+
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { isAuth, logout } = useAuth();
+  const { isAuth, user, logout } = useAuth();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -68,6 +71,24 @@ export default function DashboardLayout({
         )}>
           <div className="p-6 flex-1 overflow-y-auto">
             <nav className="space-y-1">
+              {user?.isAdmin && (
+                <>
+                  <Link
+                    href={adminNavItem.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm mb-4",
+                      pathname.startsWith(adminNavItem.href)
+                        ? "bg-[#D4AF37]/10 text-[#D4AF37]"
+                        : "text-secondary-text hover:bg-soft-sand hover:text-primary-text"
+                    )}
+                  >
+                    <adminNavItem.icon size={20} strokeWidth={1.5} />
+                    {adminNavItem.label}
+                  </Link>
+                  <div className="w-full h-px bg-gray-100 my-2" />
+                </>
+              )}
               {navItems.map((item) => {
                 const isActive = pathname === item.href;
                 const Icon = item.icon;

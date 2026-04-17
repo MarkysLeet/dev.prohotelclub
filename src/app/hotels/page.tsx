@@ -3,7 +3,9 @@
 import { useState, useMemo } from 'react';
 import { useFavorites } from '@/lib/useFavorites';
 import { motion, AnimatePresence } from 'framer-motion';
-import { hotels } from '@/lib/mock-data';
+import { hotels as defaultHotels, Hotel } from '@/lib/mock-data';
+import { storage } from '@/lib/storage';
+import { useEffect } from 'react';
 import Header from '@/components/Header';
 import {
   Search01Icon,
@@ -34,11 +36,23 @@ const getTagIcon = (tag: string) => {
   }
 };
 
-const LOCATIONS = ['Все регионы', ...Array.from(new Set(hotels.map(h => h.location)))];
-const ALL_TAGS = Array.from(new Set(hotels.flatMap(h => h.tags)));
+
 
 export default function HotelsPage() {
   const { isAuth } = useAuth();
+  const [hotelsList, setHotelsList] = useState<Hotel[]>(defaultHotels);
+  
+  useEffect(() => {
+    // Используем setTimeout чтобы не вызывать setState синхронно в useEffect
+    // что предотвращает ошибку react-hooks/set-state-in-effect
+    const timer = setTimeout(() => {
+      setHotelsList(storage.getHotels());
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const LOCATIONS = useMemo(() => ['Все регионы', ...Array.from(new Set(hotelsList.map(h => h.location)))], [hotelsList]);
+  const ALL_TAGS = useMemo(() => Array.from(new Set(hotelsList.flatMap(h => h.tags))), [hotelsList]);
   const { toast } = useToast();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
@@ -70,7 +84,7 @@ export default function HotelsPage() {
   };
 
   const filteredHotels = useMemo(() => {
-    return hotels.filter(hotel => {
+    return hotelsList.filter(hotel => {
       const matchesSearch = hotel.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                            hotel.description.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesLocation = selectedLocation === 'Все регионы' || hotel.location === selectedLocation;
@@ -78,7 +92,7 @@ export default function HotelsPage() {
 
       return matchesSearch && matchesLocation && matchesTags;
     });
-  }, [searchQuery, selectedLocation, selectedTags]);
+  }, [hotelsList, searchQuery, selectedLocation, selectedTags]);
 
   return (
     <div className="min-h-screen bg-soft-sand font-century-gothic flex flex-col">

@@ -3,8 +3,17 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  isAdmin: boolean;
+  hasActiveSubscription: boolean;
+}
+
 interface AuthContextType {
   isAuth: boolean;
+  user: User | null;
   login: () => void;
   logout: () => void;
 }
@@ -19,28 +28,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     return false;
   });
+
+  const [user, setUser] = useState<User | null>(() => {
+    if (typeof window !== 'undefined') {
+      const storedUser = localStorage.getItem("authUser");
+      if (storedUser) {
+        return JSON.parse(storedUser);
+      }
+    }
+    return null;
+  });
   const router = useRouter();
 
   // Keep localStorage in sync if state changes elsewhere
   useEffect(() => {
     if (isAuth) {
       localStorage.setItem("isAuth", "true");
+      if (user) {
+        localStorage.setItem("authUser", JSON.stringify(user));
+      }
     } else {
       localStorage.removeItem("isAuth");
+      localStorage.removeItem("authUser");
     }
-  }, [isAuth]);
+  }, [isAuth, user]);
 
   const login = () => {
     setIsAuth(true);
+    // Для демо-целей хардкодим пользователя. 
+    // Администратор с активной подпиской.
+    setUser({
+      id: '1',
+      name: 'Виктор Грозан',
+      email: 'viktor@grozan.studio',
+      isAdmin: true,
+      hasActiveSubscription: true,
+    });
   };
 
   const logout = () => {
     setIsAuth(false);
+    setUser(null);
     router.push("/");
   };
 
   return (
-    <AuthContext.Provider value={{ isAuth, login, logout }}>
+    <AuthContext.Provider value={{ isAuth, user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
