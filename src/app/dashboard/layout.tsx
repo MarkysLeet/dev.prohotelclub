@@ -36,15 +36,28 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { isAuth, user, logout } = useAuth();
+  const { isAuth, user, logout, isLoading } = useAuth();
   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (!isAuth) {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted && !isLoading && !isAuth) {
       router.push('/auth');
     }
-  }, [isAuth, router]);
+  }, [isAuth, isLoading, router, isMounted]);
+
+  if (!isMounted || isLoading) {
+    return (
+      <div className="min-h-screen bg-soft-sand flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-evergreen-forest/20 border-t-evergreen-forest rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   if (!isAuth) return null;
 

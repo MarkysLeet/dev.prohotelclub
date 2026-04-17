@@ -1,11 +1,31 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/AuthContext";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import AuthForm from "@/components/AuthForm";
 
 export default function AuthPage() {
+  const { isAuth, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && isAuth) {
+      router.push("/dashboard");
+    }
+  }, [isAuth, isLoading, router]);
+
+  if (isLoading || isAuth) {
+    return (
+      <div className="min-h-screen bg-soft-sand flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-evergreen-forest/20 border-t-evergreen-forest rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   return (
     <main className="h-[100dvh] flex bg-soft-sand overflow-hidden font-century-gothic">
       {/* Left side: Image */}
