@@ -29,7 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const supabase = createClient();
 
-  const fetchUserProfile = React.useCallback(async (userId: string, email: string) => {
+  const fetchUserProfile = React.useCallback(async function fetchProfile(userId: string, email: string, retries = 3) {
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -50,20 +50,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           hasActiveSubscription: data.has_active_subscription
         });
         setIsAuth(true);
+        setIsLoading(false);
+      } else if (retries > 0) {
+        // Wait for the trigger to create the profile
+        setTimeout(() => fetchProfile(userId, email, retries - 1), 1000);
       } else {
-        // Fallback if profile doesn't exist yet but user is authenticated
-        setUser({
-           id: userId,
-           name: 'Агент',
-           email: email,
-           isAdmin: false,
-           hasActiveSubscription: false
-        });
-        setIsAuth(true);
+        console.error('Profile not found after retries for user:', userId);
+        // Do not authorize user if profile is missing to prevent bugs
+        setIsAuth(false);
+        setUser(null);
+        setIsLoading(false);
       }
     } catch (error) {
       console.error('Error in fetchUserProfile:', error);
-    } finally {
       setIsLoading(false);
     }
   }, [supabase]);

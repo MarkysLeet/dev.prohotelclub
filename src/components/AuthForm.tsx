@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail01Icon, LockPasswordIcon, UserIcon } from "hugeicons-react";
+import { Eye, EyeOff } from "lucide-react";
 
 type AuthMode = "login" | "register";
 
@@ -15,6 +16,7 @@ export default function AuthForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
 
   const router = useRouter();
@@ -59,7 +61,17 @@ export default function AuthForm() {
     } catch (error: unknown) {
       console.error("Auth error:", error);
       if (error instanceof Error) {
-        setErrorMsg(error.message || "Произошла ошибка при авторизации");
+        let msg = error.message;
+        if (msg.includes("Email not confirmed")) {
+          msg = "Email не подтвержден. Пожалуйста, проверьте вашу почту.";
+        } else if (msg.includes("Invalid login credentials")) {
+          msg = "Неверный email или пароль.";
+        } else if (msg.includes("User already registered")) {
+          msg = "Пользователь с таким email уже зарегистрирован.";
+        } else if (msg.includes("Password should be at least")) {
+          msg = "Пароль должен содержать минимум 6 символов.";
+        }
+        setErrorMsg(msg || "Произошла ошибка при авторизации");
       } else {
         setErrorMsg("Произошла ошибка при авторизации");
       }
@@ -174,13 +186,25 @@ export default function AuthForm() {
             </div>
             <input
               id="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-evergreen-forest focus:border-evergreen-forest transition-colors text-primary-text placeholder-gray-400"
+              className="w-full pl-11 pr-12 py-3 sm:py-3.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-evergreen-forest focus:border-evergreen-forest transition-colors text-primary-text placeholder-gray-400"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 pr-4 flex items-center text-secondary-text hover:text-evergreen-forest transition-colors"
+              aria-label={showPassword ? "Скрыть пароль" : "Показать пароль"}
+            >
+              {showPassword ? (
+                <EyeOff size={20} strokeWidth={1.5} />
+              ) : (
+                <Eye size={20} strokeWidth={1.5} />
+              )}
+            </button>
           </div>
         </motion.div>
 
