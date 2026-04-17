@@ -1,25 +1,61 @@
+"use client";
+
 import { notFound } from 'next/navigation';
 import { getHotelBySlug } from '@/lib/hotel-mock-data';
+import { storage } from '@/lib/storage';
 import { HotelPageClient } from './HotelPageClient';
 import { HotelInteractiveContainer } from '@/components/hotel-detail/HotelInteractiveContainer';
 import { HotelComments } from '@/components/hotel-detail/HotelComments';
 import { HotelWidgetsPanel } from '@/components/hotel-detail/HotelWidgetsPanel';
 import Image from 'next/image';
 import Header from '@/components/Header';
+import { use, useEffect, useState } from 'react';
+import { HotelDetailData } from '@/lib/hotel-mock-data';
+import { useAuth } from '@/lib/AuthContext';
+import { useToast } from '@/components/ui/Toast';
 
 interface HotelPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
-export default async function HotelPage({ params }: HotelPageProps) {
-  const { slug } = await params;
-  const hotelData = getHotelBySlug(slug);
+export default function HotelPage({ params }: HotelPageProps) {
+  const { slug } = use(params);
+  const [hotelData, setHotelData] = useState<HotelDetailData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const { success } = useToast();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const data = storage.getHotelDetailBySlug(slug) || getHotelBySlug(slug);
+      if (data) {
+        setHotelData(data);
+      }
+      setLoading(false);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [slug]);
+
+  if (loading) {
+    return <div className="min-h-screen bg-soft-sand pt-[64px]" />;
+  }
 
   if (!hotelData) {
     notFound();
   }
+
+  const handleReviewRequest = () => {
+    if (!user) return;
+    storage.addReviewRequest({
+      hotelId: hotelData.slug,
+      hotelName: hotelData.name,
+      userId: user.id,
+      userName: user.name
+    });
+    success('Запрос на обзор успешно отправлен!');
+  };
 
   return (
     <main className="min-h-screen bg-soft-sand relative pt-[56px] lg:pt-[64px]">
@@ -45,6 +81,13 @@ export default async function HotelPage({ params }: HotelPageProps) {
             <button className="px-6 py-3 bg-white text-evergreen-forest border border-gray-200 rounded-xl font-medium font-century-gothic text-sm transition-all hover:bg-gray-50 hover:border-gray-300 duration-300 shadow-sm flex items-center justify-center">
               Концепция отеля
             </button>
+            {user?.hasActiveSubscription && (
+              <button 
+                onClick={handleReviewRequest}
+                className="px-6 py-3 bg-[#D4AF37] text-white rounded-xl font-medium font-century-gothic text-sm transition-all hover:bg-[#B5952F] duration-300 shadow-sm flex items-center justify-center">
+                Запросить обзор
+              </button>
+            )}
           </div>
         </div>
 
@@ -72,8 +115,8 @@ export default async function HotelPage({ params }: HotelPageProps) {
         {/* Interactive Content Container (Grid of Buttons + Content Area) */}
         <HotelInteractiveContainer hotelData={hotelData} />
 
-        {/* Comments Section Placeholder */}
-        <HotelComments />
+        {/* Comments Section */}
+        <HotelComments hotelSlug={slug} />
       </div>
     </main>
   );
