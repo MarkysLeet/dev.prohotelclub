@@ -1,7 +1,13 @@
-"use client";
+import re
+
+with open('src/components/hotel-detail/HotelComments.tsx', 'r') as f:
+    content = f.read()
+
+# Replace components to handle replies
+new_content = """"use client";
 
 import React, { useState, useEffect } from 'react';
-import { UserCircleIcon, SentIcon, FavouriteIcon, MessageMultiple02Icon } from 'hugeicons-react';
+import { UserCircleIcon, SentIcon, FavouriteIcon, ReplyIcon } from 'hugeicons-react';
 import { api, Comment } from '@/lib/api';
 import { useAuth } from '@/lib/AuthContext';
 import { useToast } from '@/components/ui/Toast';
@@ -101,7 +107,7 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
                 onClick={() => setReplyingTo(replyingTo === item.id ? null : item.id)}
                 className="flex items-center gap-1.5 text-xs font-medium text-secondary-text hover:text-evergreen-forest transition-colors"
               >
-                <MessageMultiple02Icon size={16} />
+                <ReplyIcon size={16} />
                 <span>Ответить</span>
               </button>
             )}
@@ -197,3 +203,7 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
     </div>
   );
 }
+"""
+
+with open('src/components/hotel-detail/HotelComments.tsx', 'w') as f:
+    f.write(new_content)
