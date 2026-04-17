@@ -1,11 +1,10 @@
 import { notFound } from 'next/navigation';
 import { getHotelBySlug } from '@/lib/hotel-mock-data';
-import { HotelAnchorMenu } from '@/components/hotel-detail/HotelAnchorMenu';
-import { HotelSection } from '@/components/hotel-detail/HotelSection';
 import { HotelPageClient } from './HotelPageClient';
+import { HotelInteractiveContainer } from '@/components/hotel-detail/HotelInteractiveContainer';
+import { HotelComments } from '@/components/hotel-detail/HotelComments';
 import Image from 'next/image';
 import Header from '@/components/Header';
-import { StarIcon, WaveIcon, City01Icon, Location01Icon, GoogleIcon, Calendar01Icon, Restaurant01Icon } from 'hugeicons-react';
 
 interface HotelPageProps {
   params: {
@@ -49,10 +48,9 @@ export default async function HotelPage({ params }: HotelPageProps) {
         </div>
 
         {/* Hero Area */}
-        <div className="flex flex-col lg:flex-row gap-6 mb-16 h-auto lg:h-[500px]">
-          {/* Main Image */}
+        <div className="mb-12 h-auto lg:h-[500px]">
           {hotelData.heroImage && (
-            <div className="relative w-full lg:w-[60%] h-[300px] md:h-[400px] lg:h-full rounded-2xl overflow-hidden shadow-sm">
+            <div className="relative w-full h-[300px] md:h-[400px] lg:h-full rounded-2xl overflow-hidden shadow-sm">
               <Image
                 src={hotelData.heroImage}
                 alt={hotelData.name}
@@ -62,105 +60,13 @@ export default async function HotelPage({ params }: HotelPageProps) {
               />
             </div>
           )}
-
-          {/* Info Panel */}
-          <div className="w-full lg:w-[40%] bg-white/70 backdrop-blur-md rounded-2xl border border-gray-100 shadow-sm p-6 lg:p-8 flex flex-col justify-between">
-             <div className="space-y-6">
-                <h3 className="font-moniqa text-3xl text-primary-text mb-2">Общая информация</h3>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4">
-                  {/* Stars */}
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest shrink-0">
-                      <StarIcon size={20} className="fill-current" />
-                    </div>
-                    <div>
-                      <p className="text-[11px] uppercase tracking-wider text-secondary-text font-semibold">Категория</p>
-                      <p className="text-primary-text font-medium text-sm">{hotelData.stars || 5} звёзд</p>
-                    </div>
-                  </div>
-
-                  {/* Rating */}
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest shrink-0">
-                      <GoogleIcon size={20}  />
-                    </div>
-                    <div>
-                      <p className="text-[11px] uppercase tracking-wider text-secondary-text font-semibold">Google Rating</p>
-                      <p className="text-primary-text font-medium text-sm">{hotelData.googleRating || 4.8} / 5</p>
-                    </div>
-                  </div>
-
-                  {/* Distance to Sea */}
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest shrink-0">
-                      <WaveIcon size={20} />
-                    </div>
-                    <div>
-                      <p className="text-[11px] uppercase tracking-wider text-secondary-text font-semibold">До моря</p>
-                      <p className="text-primary-text font-medium text-sm">{hotelData.distanceToSea || "Первая линия"}</p>
-                    </div>
-                  </div>
-
-                  {/* Distance to City */}
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest shrink-0">
-                      <City01Icon size={20} />
-                    </div>
-                    <div>
-                      <p className="text-[11px] uppercase tracking-wider text-secondary-text font-semibold">До города</p>
-                      <p className="text-primary-text font-medium text-sm">{hotelData.distanceToCity || "5 км"}</p>
-                    </div>
-                  </div>
-
-                  {/* Meal Plan */}
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest shrink-0">
-                      <Restaurant01Icon size={20} />
-                    </div>
-                    <div>
-                      <p className="text-[11px] uppercase tracking-wider text-secondary-text font-semibold">Питание</p>
-                      <p className="text-primary-text font-medium text-sm">{hotelData.mealPlan || "Ultra All Inclusive"}</p>
-                    </div>
-                  </div>
-
-                  {/* Build Year */}
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest shrink-0">
-                      <Calendar01Icon size={20} />
-                    </div>
-                    <div>
-                      <p className="text-[11px] uppercase tracking-wider text-secondary-text font-semibold">Год постройки</p>
-                      <p className="text-primary-text font-medium text-sm">{hotelData.buildYear || 2024}</p>
-                    </div>
-                  </div>
-                </div>
-             </div>
-
-             <div className="mt-8 pt-6 border-t border-gray-100 flex items-center gap-3">
-                <Location01Icon size={20} className="text-evergreen-forest shrink-0" />
-                <p className="text-sm text-secondary-text leading-tight">
-                  <span className="block text-primary-text font-medium mb-0.5">Локация</span>
-                  {hotelData.location}
-                </p>
-             </div>
-          </div>
         </div>
 
-        {/* Content Area */}
-        <div className="flex flex-col lg:flex-row gap-12 lg:gap-24 items-start">
-          {/* Sidebar Navigation */}
-          <aside className="w-full lg:w-1/4 hidden lg:block sticky top-32 self-start h-[calc(100vh-8rem)]">
-             <HotelAnchorMenu sections={hotelData.sections} />
-          </aside>
+        {/* Interactive Content Container */}
+        <HotelInteractiveContainer hotelData={hotelData} />
 
-          {/* Sections */}
-          <div className="w-full lg:w-3/4 flex flex-col gap-16">
-            {hotelData.sections.map((section) => (
-              <HotelSection key={section.id} section={section} />
-            ))}
-          </div>
-        </div>
+        {/* Comments Section Placeholder */}
+        <HotelComments />
       </div>
     </main>
   );
