@@ -23,13 +23,12 @@ export function HotelSection({ section }: HotelSectionProps) {
           {section.content}
         </p>
       </div>
-      <HotelMediaSkeleton count={section.mediaCount} />
+      {section.mediaCount > 0 && <HotelMediaSkeleton count={section.mediaCount} />}
     </div>
   );
 
-  // Удален max-w-7xl mx-auto px-4, так как теперь мы внутри сетки Two-Column Layout
   return (
-    <section id={section.id} className="scroll-mt-32 py-16 relative border-b border-gray-200/50 last:border-0">
+    <section className="pb-16 relative">
       {section.isPaywalled && !isPro ? (
         <HotelPaywallOverlay>
           {content}
