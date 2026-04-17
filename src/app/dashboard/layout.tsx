@@ -54,7 +54,7 @@ export default function DashboardLayout({
 
       <div className="flex flex-1 pt-[56px] lg:pt-[64px] max-w-[1920px] w-full mx-auto relative">
         {/* Mobile menu toggle */}
-        <div className="lg:hidden fixed bottom-6 right-6 z-50">
+        <div className="lg:hidden fixed bottom-6 right-6 z-[90]">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="w-14 h-14 bg-evergreen-forest text-white rounded-full flex items-center justify-center shadow-lg"
@@ -66,7 +66,7 @@ export default function DashboardLayout({
         {/* Sidebar */}
         <aside className={cn(
           "fixed lg:sticky top-[56px] lg:top-[64px] h-[calc(100vh-56px)] lg:h-[calc(100vh-64px)]",
-          "w-64 bg-white border-r border-gray-100 flex flex-col z-40 transition-transform duration-300 ease-in-out lg:translate-x-0",
+          "w-64 bg-white border-r border-gray-100 flex flex-col z-[80] transition-transform duration-300 ease-in-out lg:translate-x-0",
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         )}>
           <div className="p-6 flex-1 overflow-y-auto">
@@ -131,7 +131,7 @@ export default function DashboardLayout({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 lg:hidden"
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-[80] lg:hidden"
             />
           )}
         </AnimatePresence>
