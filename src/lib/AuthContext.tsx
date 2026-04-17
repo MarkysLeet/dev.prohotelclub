@@ -10,6 +10,8 @@ export interface User {
   email: string;
   isAdmin: boolean;
   hasActiveSubscription: boolean;
+  notifyLikes: boolean;
+  notifyReplies: boolean;
 }
 
 interface AuthContextType {
@@ -47,7 +49,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           name: data.name || 'Агент',
           email: data.email || email,
           isAdmin: data.is_admin,
-          hasActiveSubscription: data.has_active_subscription
+          hasActiveSubscription: data.has_active_subscription,
+          notifyLikes: data.notify_likes ?? true,
+          notifyReplies: data.notify_replies ?? true
         });
         setIsAuth(true);
         setIsLoading(false);
