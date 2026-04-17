@@ -3,7 +3,7 @@
 import { useAuth } from '@/lib/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { storage } from '@/lib/storage';
+import { api } from '@/lib/api';
 import { Hotel } from '@/lib/mock-data';
 import { Button } from '@/components/ui';
 import Link from 'next/link';
@@ -19,10 +19,13 @@ export default function AdminHotelsPage() {
     if (user && !user.isAdmin) {
       router.push('/dashboard');
     } else {
-      const timer = setTimeout(() => {
-        setHotels(storage.getHotels());
-      }, 0);
-      return () => clearTimeout(timer);
+      let mounted = true;
+      async function loadHotels() {
+        const data = await api.getHotels();
+        if (mounted) setHotels(data);
+      }
+      loadHotels();
+      return () => { mounted = false; };
     }
   }, [user, router]);
 

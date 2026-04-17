@@ -3,7 +3,7 @@
 import { useAuth } from '@/lib/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
-import { storage } from '@/lib/storage';
+import { api } from '@/lib/api';
 import { Hotel } from '@/lib/mock-data';
 import { Button, Input, useToast } from '@/components/ui';
 import Link from 'next/link';
@@ -30,14 +30,16 @@ function HotelFormContent() {
     if (user && !user.isAdmin) {
       router.push('/dashboard');
     } else if (editId) {
-      const timer = setTimeout(() => {
-        const hotels = storage.getHotels();
+      let mounted = true;
+      async function loadHotel() {
+        const hotels = await api.getHotels();
         const hotel = hotels.find(h => h.id === editId);
-        if (hotel) {
+        if (mounted && hotel) {
           setFormData(hotel);
         }
-      }, 0);
-      return () => clearTimeout(timer);
+      }
+      loadHotel();
+      return () => { mounted = false; };
     }
   }, [user, router, editId]);
 
@@ -58,7 +60,7 @@ function HotelFormContent() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.name || !formData.location || !formData.description) {
@@ -78,11 +80,11 @@ function HotelFormContent() {
       link: `/hotels/${slug}`
     };
 
-    storage.saveHotel(hotelToSave);
+    await api.saveHotel(hotelToSave);
     
     // Также создаем базовые данные для детальной страницы, если это новый отель
     if (!editId) {
-      storage.saveHotelDetail({
+      await api.saveHotelDetail({
         slug,
         name: hotelToSave.name,
         location: hotelToSave.location,

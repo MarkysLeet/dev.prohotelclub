@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { createClient } from "./supabase-browser";
 
 export interface User {
   id: string;
@@ -14,66 +15,118 @@ export interface User {
 interface AuthContextType {
   isAuth: boolean;
   user: User | null;
-  login: () => void;
-  logout: () => void;
+  isLoading: boolean;
+  logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  // Initialize state from localStorage if available, otherwise false
-  const [isAuth, setIsAuth] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem("isAuth") === "true";
-    }
-    return false;
-  });
-
-  const [user, setUser] = useState<User | null>(() => {
-    if (typeof window !== 'undefined') {
-      const storedUser = localStorage.getItem("authUser");
-      if (storedUser) {
-        return JSON.parse(storedUser);
-      }
-    }
-    return null;
-  });
+  const [isAuth, setIsAuth] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const supabase = createClient();
 
-  // Keep localStorage in sync if state changes elsewhere
-  useEffect(() => {
-    if (isAuth) {
-      localStorage.setItem("isAuth", "true");
-      if (user) {
-        localStorage.setItem("authUser", JSON.stringify(user));
+  const fetchUserProfile = React.useCallback(async (userId: string, email: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+         console.error('Error fetching profile:', error);
       }
-    } else {
-      localStorage.removeItem("isAuth");
-      localStorage.removeItem("authUser");
-    }
-  }, [isAuth, user]);
 
-  const login = () => {
-    setIsAuth(true);
-    // Для демо-целей хардкодим пользователя. 
-    // Администратор с активной подпиской.
-    setUser({
-      id: '1',
-      name: 'Виктор Грозан',
-      email: 'viktor@grozan.studio',
-      isAdmin: true,
-      hasActiveSubscription: true,
-    });
+      if (data) {
+        setUser({
+          id: data.id,
+          name: data.name || 'Агент',
+          email: data.email || email,
+          isAdmin: data.is_admin,
+          hasActiveSubscription: data.has_active_subscription
+        });
+        setIsAuth(true);
+      } else {
+        // Fallback if profile doesn't exist yet but user is authenticated
+        setUser({
+           id: userId,
+           name: 'Агент',
+           email: email,
+           isAdmin: false,
+           hasActiveSubscription: false
+        });
+        setIsAuth(true);
+      }
+    } catch (error) {
+      console.error('Error in fetchUserProfile:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [supabase]);
+
+  const refreshUser = async () => {
+    setIsLoading(true);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+       await fetchUserProfile(session.user.id, session.user.email!);
+    } else {
+       setIsAuth(false);
+       setUser(null);
+       setIsLoading(false);
+    }
   };
 
-  const logout = () => {
-    setIsAuth(false);
-    setUser(null);
-    router.push("/");
+  useEffect(() => {
+    let mounted = true;
+
+    async function getInitialSession() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (mounted) {
+        if (session?.user) {
+          await fetchUserProfile(session.user.id, session.user.email!);
+        } else {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    getInitialSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (!mounted) return;
+
+        if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+          if (session?.user) {
+            await fetchUserProfile(session.user.id, session.user.email!);
+          }
+        } else if (event === 'SIGNED_OUT') {
+          setIsAuth(false);
+          setUser(null);
+          setIsLoading(false);
+          router.push("/");
+        }
+      }
+    );
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [router, supabase.auth, fetchUserProfile]);
+
+  const logout = async () => {
+    setIsLoading(true);
+    await supabase.auth.signOut();
+    // onAuthStateChange will handle state updates and redirect
   };
 
   return (
-    <AuthContext.Provider value={{ isAuth, user, login, logout }}>
+    <AuthContext.Provider value={{ isAuth, user, isLoading, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

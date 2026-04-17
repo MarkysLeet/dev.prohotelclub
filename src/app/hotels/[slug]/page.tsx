@@ -1,8 +1,6 @@
 "use client";
 
 import { notFound } from 'next/navigation';
-import { getHotelBySlug } from '@/lib/hotel-mock-data';
-import { storage } from '@/lib/storage';
 import { HotelPageClient } from './HotelPageClient';
 import { HotelInteractiveContainer } from '@/components/hotel-detail/HotelInteractiveContainer';
 import { HotelComments } from '@/components/hotel-detail/HotelComments';
@@ -11,6 +9,7 @@ import Image from 'next/image';
 import Header from '@/components/Header';
 import { use, useEffect, useState } from 'react';
 import { HotelDetailData } from '@/lib/hotel-mock-data';
+import { api } from '@/lib/api';
 import { useAuth } from '@/lib/AuthContext';
 import { useToast } from '@/components/ui/Toast';
 
@@ -28,32 +27,33 @@ export default function HotelPage({ params }: HotelPageProps) {
   const { success } = useToast();
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      const data = storage.getHotelDetailBySlug(slug) || getHotelBySlug(slug);
-      if (data) {
-        setHotelData(data);
+    let mounted = true;
+    async function fetchHotel() {
+      const data = await api.getHotelDetailBySlug(slug);
+      if (mounted) {
+        if (data) {
+          setHotelData(data);
+        }
+        setLoading(false);
       }
-      setLoading(false);
-    }, 0);
-    return () => clearTimeout(timer);
+    }
+    fetchHotel();
+    return () => { mounted = false; };
   }, [slug]);
 
   if (loading) {
-    return <div className="min-h-screen bg-soft-sand pt-[64px]" />;
+    return <div className="min-h-screen bg-soft-sand pt-[64px] flex items-center justify-center">
+      <div className="w-8 h-8 border-4 border-evergreen-forest/30 border-t-evergreen-forest rounded-full animate-spin"></div>
+    </div>;
   }
 
   if (!hotelData) {
     notFound();
   }
 
-  const handleReviewRequest = () => {
+  const handleReviewRequest = async () => {
     if (!user) return;
-    storage.addReviewRequest({
-      hotelId: hotelData.slug,
-      hotelName: hotelData.name,
-      userId: user.id,
-      userName: user.name
-    });
+    await api.addReviewRequest(hotelData.slug, hotelData.name, user.id);
     success('Запрос на обзор успешно отправлен!');
   };
 
