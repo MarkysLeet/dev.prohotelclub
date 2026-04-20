@@ -160,13 +160,11 @@ export const api = {
   // --- Комментарии ---
   getComments: async (hotelSlug: string): Promise<Comment[]> => {
     const supabase = createClient();
+
+    // Получаем сами комментарии
     const { data: comments, error: commentsError } = await supabase
       .from('comments')
-      .select(`
-        *,
-        profiles (name, is_admin),
-        comment_likes (user_id)
-      `)
+      .select('*')
       .eq('hotel_slug', hotelSlug)
       .order('created_at', { ascending: false });
 
@@ -175,19 +173,47 @@ export const api = {
       return [];
     }
 
-    const allComments: Comment[] = comments.map(c => ({
-      id: c.id,
-      hotelSlug: c.hotel_slug,
-      authorId: c.author_id,
-      authorName: c.profiles?.name || 'Unknown',
-      role: c.profiles?.is_admin ? 'Администратор' : 'Турагент',
-      date: new Date(c.created_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
-      text: c.text,
-      likesCount: c.comment_likes?.length || 0,
-      likedBy: c.comment_likes?.map((l: { user_id: string }) => l.user_id) || [],
-      parentId: c.parent_id || undefined,
-      replies: []
-    }));
+    if (!comments || comments.length === 0) return [];
+
+    // Получаем авторов
+    const authorIds = [...new Set(comments.map(c => c.author_id))];
+    const { data: profilesData } = await supabase
+      .from('profiles')
+      .select('id, name, is_admin')
+      .in('id', authorIds);
+
+    const profilesMap = new Map(profilesData?.map(p => [p.id, p]) || []);
+
+    // Получаем лайки
+    const commentIds = comments.map(c => c.id);
+    const { data: likesData } = await supabase
+      .from('comment_likes')
+      .select('*')
+      .in('comment_id', commentIds);
+
+    const likesMap = new Map();
+    likesData?.forEach(like => {
+      if (!likesMap.has(like.comment_id)) likesMap.set(like.comment_id, []);
+      likesMap.get(like.comment_id).push(like.user_id);
+    });
+
+    const allComments: Comment[] = comments.map(c => {
+      const profile = profilesMap.get(c.author_id);
+      const likedBy = likesMap.get(c.id) || [];
+      return {
+        id: c.id,
+        hotelSlug: c.hotel_slug,
+        authorId: c.author_id,
+        authorName: profile?.name || 'Unknown',
+        role: profile?.is_admin ? 'Администратор' : 'Турагент',
+        date: new Date(c.created_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
+        text: c.text,
+        likesCount: likedBy.length,
+        likedBy,
+        parentId: c.parent_id || undefined,
+        replies: []
+      };
+    });
 
     // Build tree
     const rootComments = allComments.filter(c => !c.parentId);
@@ -321,6 +347,7 @@ export const api = {
       return [];
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return data.map((n: any) => ({
       id: n.id,
       userId: n.user_id,
