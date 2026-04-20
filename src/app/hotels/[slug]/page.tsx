@@ -1,6 +1,6 @@
 "use client";
 
-import { notFound } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { HotelPageClient } from './HotelPageClient';
 import { HotelInteractiveContainer } from '@/components/hotel-detail/HotelInteractiveContainer';
 import { HotelComments } from '@/components/hotel-detail/HotelComments';
@@ -25,6 +25,7 @@ export default function HotelPage({ params }: HotelPageProps) {
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const { success } = useToast();
+  const router = useRouter();
 
   useEffect(() => {
     let mounted = true;
@@ -48,7 +49,8 @@ export default function HotelPage({ params }: HotelPageProps) {
   }
 
   if (!hotelData) {
-    notFound();
+    router.replace('/404');
+    return null;
   }
 
   const handleReviewRequest = async () => {
