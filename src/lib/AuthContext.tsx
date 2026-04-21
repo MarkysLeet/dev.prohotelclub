@@ -73,13 +73,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshUser = async () => {
     setIsLoading(true);
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) {
-       await fetchUserProfile(session.user.id, session.user.email!);
-    } else {
-       setIsAuth(false);
-       setUser(null);
-       setIsLoading(false);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+         await fetchUserProfile(session.user.id, session.user.email!);
+      } else {
+         setIsAuth(false);
+         setUser(null);
+      }
+    } catch (error) {
+      console.error('Error refreshing user:', error);
+      setIsAuth(false);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -87,13 +94,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let mounted = true;
 
     async function getInitialSession() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (mounted) {
-        if (session?.user) {
-          await fetchUserProfile(session.user.id, session.user.email!);
-        } else {
-          setIsLoading(false);
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+
+        if (mounted) {
+          if (session?.user) {
+            await fetchUserProfile(session.user.id, session.user.email!);
+          } else {
+            setIsLoading(false);
+          }
         }
+      } catch (error) {
+        console.error('Error getting initial session:', error);
+        if (mounted) setIsLoading(false);
       }
     }
 
@@ -124,8 +138,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     setIsLoading(true);
-    await supabase.auth.signOut();
-    // onAuthStateChange will handle state updates and redirect
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Error during logout:', error);
+    } finally {
+      setIsAuth(false);
+      setUser(null);
+      setIsLoading(false);
+      router.push("/");
+    }
   };
 
   return (
