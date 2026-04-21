@@ -18,10 +18,17 @@ export default function FavoritesPage() {
   useEffect(() => {
     let mounted = true;
     async function loadHotels() {
-      const data = await api.getHotels();
-      if (mounted) {
-        setHotels(data);
-        setIsLoading(false);
+      try {
+        const data = await api.getHotels();
+        if (mounted) {
+          setHotels(data);
+        }
+      } catch (error) {
+        console.error('Error loading hotels:', error);
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     }
     loadHotels();

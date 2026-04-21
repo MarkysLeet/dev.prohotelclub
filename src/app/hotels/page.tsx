@@ -44,10 +44,17 @@ export default function HotelsPage() {
     let mounted = true;
     async function loadHotels() {
       setIsLoading(true);
-      const data = await api.getHotels();
-      if (mounted) {
-        setHotelsList(data);
-        setIsLoading(false);
+      try {
+        const data = await api.getHotels();
+        if (mounted) {
+          setHotelsList(data);
+        }
+      } catch (error) {
+        console.error('Error loading hotels:', error);
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     }
     loadHotels();
