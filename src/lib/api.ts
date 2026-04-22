@@ -372,13 +372,32 @@ export const api = {
     if (error) console.error('Error marking notifications as read:', error);
   },
 
-  updateProfileSettings: async (userId: string, notifyLikes: boolean, notifyReplies: boolean): Promise<void> => {
+
+  updateProfileName: async (userId: string, name: string): Promise<void> => {
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('profiles')
+      .update({ name })
+      .eq('id', userId);
+
+    if (error) console.error('Error updating profile name:', error);
+  },
+
+  deleteAccount: async (): Promise<{error: unknown}> => {
+    const supabase = createClient();
+    const { error } = await supabase.rpc('delete_user');
+    return { error };
+  },
+
+  updateProfileSettings: async (userId: string, notifyLikes: boolean, notifyReplies: boolean, notifyEmailUpdates: boolean, notifyMarketing: boolean): Promise<void> => {
     const supabase = createClient();
     const { error } = await supabase
       .from('profiles')
       .update({
         notify_likes: notifyLikes,
-        notify_replies: notifyReplies
+        notify_replies: notifyReplies,
+        notify_email_updates: notifyEmailUpdates,
+        notify_marketing: notifyMarketing
       })
       .eq('id', userId);
 

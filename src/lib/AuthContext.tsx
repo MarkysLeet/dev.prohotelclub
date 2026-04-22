@@ -12,6 +12,8 @@ export interface User {
   hasActiveSubscription: boolean;
   notifyLikes: boolean;
   notifyReplies: boolean;
+  notifyEmailUpdates: boolean;
+  notifyMarketing: boolean;
 }
 
 interface AuthContextType {
@@ -51,7 +53,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           isAdmin: data.is_admin,
           hasActiveSubscription: data.has_active_subscription,
           notifyLikes: data.notify_likes ?? true,
-          notifyReplies: data.notify_replies ?? true
+          notifyReplies: data.notify_replies ?? true,
+          notifyEmailUpdates: data.notify_email_updates ?? true,
+          notifyMarketing: data.notify_marketing ?? false
         });
         setIsAuth(true);
         setIsLoading(false);
