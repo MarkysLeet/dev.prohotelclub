@@ -5,6 +5,7 @@ import { HotelPageClient } from './HotelPageClient';
 import { HotelInteractiveContainer } from '@/components/hotel-detail/HotelInteractiveContainer';
 import { HotelComments } from '@/components/hotel-detail/HotelComments';
 import { HotelWidgetsPanel } from '@/components/hotel-detail/HotelWidgetsPanel';
+import { SimilarHotels } from '@/components/hotel-detail/SimilarHotels';
 import { HotelPageSkeleton } from '@/components/hotel-detail/HotelPageSkeleton';
 import Image from 'next/image';
 import Header from '@/components/Header';
@@ -121,8 +122,15 @@ export default function HotelPage({ params }: HotelPageProps) {
         {/* Interactive Content Container (Grid of Buttons + Content Area) */}
         <HotelInteractiveContainer hotelData={hotelData} />
 
-        {/* Comments Section */}
-        <HotelComments hotelSlug={slug} />
+        {/* Two Column Layout for Comments and Similar Hotels */}
+        <div className="flex flex-col lg:flex-row gap-8 mt-8">
+          <div className="w-full lg:w-[65%]">
+            <HotelComments hotelSlug={slug} />
+          </div>
+          <div className="w-full lg:w-[35%] pt-8">
+            <SimilarHotels />
+          </div>
+        </div>
       </div>
     </main>
   );

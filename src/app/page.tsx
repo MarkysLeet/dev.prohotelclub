@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import AboutUs from "@/components/AboutUs";
+import RecentNews from "@/components/RecentNews";
 
 export default function Home() {
   return (
@@ -8,7 +8,7 @@ export default function Home() {
       <Header />
       <div className="pt-[56px] lg:pt-[64px] w-full">
         <Hero />
-        <AboutUs />
+        <RecentNews />
       </div>
     </main>
   );

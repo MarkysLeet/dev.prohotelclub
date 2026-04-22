@@ -8,7 +8,7 @@ import {
     UserIcon,
   Menu01Icon,
   Cancel01Icon,
-  Building04Icon,
+  Building04Icon, InformationCircleIcon,
   Home03Icon,
   FavouriteIcon,
   Login03Icon,
@@ -367,6 +367,19 @@ export default function Header() {
           >
             <Building04Icon size={20} strokeWidth={1.5} />
             Коллекция
+          </Link>
+
+          <Link
+            href="/about"
+            onClick={() => setIsMenuOpen(false)}
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium text-sm ${
+              pathname === "/about"
+                ? "bg-evergreen-forest/10 text-evergreen-forest"
+                : "text-secondary-text hover:bg-soft-sand hover:text-primary-text"
+            }`}
+          >
+            <InformationCircleIcon size={20} strokeWidth={1.5} />
+            О проекте
           </Link>
 
           {isAuth && (
