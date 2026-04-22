@@ -19,6 +19,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui';
 import { HotelCard } from '@/components/HotelCard';
+import { HotelCardSkeleton } from '@/components/HotelCardSkeleton';
 import { useAuth } from '@/lib/AuthContext';
 import { useToast } from '@/components/ui/Toast';
 import { useRouter } from 'next/navigation';
@@ -179,8 +180,10 @@ export default function HotelsPage() {
 
           {/* Grid Section */}
           {isLoading ? (
-            <div className="py-24 flex items-center justify-center">
-              <div className="w-8 h-8 border-4 border-evergreen-forest/30 border-t-evergreen-forest rounded-full animate-spin"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <HotelCardSkeleton key={i} variant="collection" />
+              ))}
             </div>
           ) : filteredHotels.length > 0 ? (
             <motion.div
