@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { HotelDetailData } from '@/lib/hotel-mock-data';
 import { MapModal } from '@/components/ui/MapModal';
 import { HotelSection } from './HotelSection';
+import { api } from '@/lib/api';
+import { useAuth } from '@/lib/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Building03Icon,
@@ -50,6 +52,20 @@ export function HotelInteractiveContainer({ hotelData }: HotelInteractiveContain
   // По умолчанию ничего не открыто
   const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
   const [isMapOpen, setIsMapOpen] = useState(false);
+  const [isHotelPurchased, setIsHotelPurchased] = useState(false);
+  const { user } = useAuth();
+
+  React.useEffect(() => {
+    let mounted = true;
+    async function checkPurchase() {
+      if (user) {
+        const purchased = await api.checkHotelAccess(hotelData.slug, user.id);
+        if (mounted) setIsHotelPurchased(purchased);
+      }
+    }
+    checkPurchase();
+    return () => { mounted = false; };
+  }, [hotelData.slug, user]);
 
   const activeSection = hotelData.sections.find(s => s.id === activeSectionId);
 
@@ -135,7 +151,7 @@ export function HotelInteractiveContainer({ hotelData }: HotelInteractiveContain
               className="overflow-hidden"
             >
               <div className="bg-white rounded-3xl p-8 lg:p-12 border border-gray-100 shadow-sm mt-4">
-                <HotelSection section={activeSection} />
+                <HotelSection section={activeSection} isPro={user?.hasActiveSubscription || isHotelPurchased} hotelSlug={hotelData.slug} onPurchaseSuccess={() => setIsHotelPurchased(true)} />
               </div>
             </motion.div>
           )}

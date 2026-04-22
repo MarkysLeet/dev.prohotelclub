@@ -6,12 +6,13 @@ import { HotelMediaSkeleton } from './HotelMediaSkeleton';
 import { HotelPaywallOverlay } from './HotelPaywallOverlay';
 
 interface HotelSectionProps {
+  isPro?: boolean;
+  hotelSlug?: string;
+  onPurchaseSuccess?: () => void;
   section: IHotelSection;
 }
 
-export function HotelSection({ section }: HotelSectionProps) {
-  // Имитация переменной (по ТЗ)
-  const isPro = false;
+export function HotelSection({ section, isPro = false, hotelSlug, onPurchaseSuccess }: HotelSectionProps) {
 
   const content = (
     <div className="flex flex-col gap-8">
@@ -30,7 +31,7 @@ export function HotelSection({ section }: HotelSectionProps) {
   return (
     <section className="pb-16 relative">
       {section.isPaywalled && !isPro ? (
-        <HotelPaywallOverlay>
+        <HotelPaywallOverlay hotelSlug={hotelSlug} onPurchaseSuccess={onPurchaseSuccess}>
           {content}
         </HotelPaywallOverlay>
       ) : (

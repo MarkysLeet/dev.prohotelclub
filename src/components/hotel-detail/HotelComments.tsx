@@ -141,6 +141,12 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
                     placeholder="Напишите ответ..."
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        if (replyText.trim()) handleSubmit(e as unknown as React.FormEvent, item.id);
+                      }
+                    }}
                     className="w-full bg-white border border-gray-200 rounded-xl p-3 pr-12 text-primary-text font-century-gothic text-[13px] min-h-[80px] resize-none focus:outline-none focus:border-evergreen-forest focus:ring-1 focus:ring-evergreen-forest transition-all"
                     autoFocus
                   />
@@ -189,6 +195,12 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
             <textarea
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  if (commentText.trim()) handleSubmit(e as unknown as React.FormEvent);
+                }
+              }}
               placeholder="Оставьте свой комментарий или заметку об отеле..."
               className="w-full bg-white border border-gray-200 rounded-2xl p-4 pr-14 text-primary-text font-century-gothic text-sm min-h-[60px] resize-none focus:outline-none focus:border-evergreen-forest focus:ring-1 focus:ring-evergreen-forest transition-all"
             />
