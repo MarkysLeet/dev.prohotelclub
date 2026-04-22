@@ -449,5 +449,38 @@ export const api = {
       .update({ status })
       .eq('id', requestId);
     if (error) console.error('Error updating review request status:', error);
+  },
+
+  // --- Покупки отелей ---
+  buyHotelAccess: async (hotelSlug: string, userId: string, amount: number = 250): Promise<{success: boolean, error?: unknown}> => {
+    const supabase = createClient();
+    const { error } = await supabase.from('hotel_purchases').insert({
+      user_id: userId,
+      hotel_slug: hotelSlug,
+      amount: amount
+    });
+
+    if (error) {
+      console.error('Error buying hotel access:', error);
+      return { success: false, error };
+    }
+    return { success: true };
+  },
+
+  checkHotelAccess: async (hotelSlug: string, userId: string): Promise<boolean> => {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('hotel_purchases')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('hotel_slug', hotelSlug)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error checking hotel access:', error);
+      return false;
+    }
+
+    return !!data;
   }
 };

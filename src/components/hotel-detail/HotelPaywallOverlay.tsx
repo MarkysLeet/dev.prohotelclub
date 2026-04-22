@@ -1,22 +1,56 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useToast } from '@/components/ui/Toast';
 import { Locker01Icon } from 'hugeicons-react';
+import { useRouter } from 'next/navigation';
+import { api } from '@/lib/api';
+import { useAuth } from '@/lib/AuthContext';
 
 interface HotelPaywallOverlayProps {
   children: React.ReactNode;
+  hotelSlug?: string;
+  onPurchaseSuccess?: () => void;
 }
 
-export function HotelPaywallOverlay({ children }: HotelPaywallOverlayProps) {
-  const { toast } = useToast();
+export function HotelPaywallOverlay({ children, hotelSlug, onPurchaseSuccess }: HotelPaywallOverlayProps) {
+  const { success, error: toastError } = useToast();
+  const router = useRouter();
+  const { user } = useAuth();
+  const [isBuying, setIsBuying] = useState(false);
 
-  const handlePaywallClick = () => {
-    toast('Имитация редиректа на страницу оформления Pro-подписки', { type: 'info' });
+  const handleSubscribe = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    router.push('/dashboard/subscription');
+  };
+
+  const handleBuyHotel = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user) {
+      toastError('Необходимо авторизоваться для покупки');
+      router.push('/auth');
+      return;
+    }
+    if (!hotelSlug) return;
+
+    setIsBuying(true);
+    try {
+      const { success: purchaseSuccess } = await api.buyHotelAccess(hotelSlug, user.id);
+      if (purchaseSuccess) {
+        success('Доступ к отелю успешно приобретен!');
+        if (onPurchaseSuccess) onPurchaseSuccess();
+      } else {
+        toastError('Произошла ошибка при покупке');
+      }
+    } catch {
+      toastError('Ошибка сети');
+    } finally {
+      setIsBuying(false);
+    }
   };
 
   return (
-    <div className="relative group cursor-pointer" onClick={handlePaywallClick}>
+    <div className="relative group cursor-pointer" >
       {/* Размытый контент с плавным затуханием снизу */}
       <div
         className="blur-md select-none opacity-60 pointer-events-none transition-opacity duration-300 group-hover:opacity-40"
@@ -38,11 +72,23 @@ export function HotelPaywallOverlay({ children }: HotelPaywallOverlayProps) {
           <div>
             <h3 className="font-moniqa text-4xl font-medium text-primary-text mb-3">Закрытый контент</h3>
             <p className="text-secondary-text text-[15px] mb-6 font-century-gothic">
-              Эта информация доступна только участникам Pro Hotel Club.
+              Эта информация доступна по подписке или при покупке отдельного отеля.
             </p>
-            <span className="inline-flex items-center justify-center w-full py-4 bg-evergreen-forest text-soft-sand rounded-xl font-medium text-sm transition-colors group-hover:bg-evergreen-hover">
-              Получить доступ
-            </span>
+            <div className="flex flex-col gap-3 w-full">
+              <button
+                onClick={handleSubscribe}
+                className="inline-flex items-center justify-center w-full py-3.5 bg-evergreen-forest text-soft-sand rounded-xl font-medium text-sm transition-colors hover:bg-evergreen-hover"
+              >
+                Оформить подписку
+              </button>
+              <button
+                onClick={handleBuyHotel}
+                disabled={isBuying}
+                className="inline-flex items-center justify-center w-full py-3.5 bg-white text-evergreen-forest border border-gray-200 rounded-xl font-medium text-sm transition-colors hover:bg-gray-50 hover:border-gray-300 disabled:opacity-50"
+              >
+                {isBuying ? 'Покупка...' : 'Купить доступ (250 руб.)'}
+              </button>
+            </div>
           </div>
         </div>
       </div>
