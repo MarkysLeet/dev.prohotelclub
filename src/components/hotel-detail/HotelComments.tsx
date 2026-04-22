@@ -10,6 +10,29 @@ interface HotelCommentsProps {
   hotelSlug: string;
 }
 
+
+const ReplyList = ({ replies, renderComment }: { replies: Comment[], renderComment: (item: Comment, isReply: boolean) => React.ReactNode }) => {
+  const [visibleCount, setVisibleCount] = useState(1);
+
+  const showMore = () => {
+    setVisibleCount(prev => Math.min(prev + 5, replies.length));
+  };
+
+  return (
+    <>
+      {replies.slice(0, visibleCount).map(reply => renderComment(reply, true))}
+      {visibleCount < replies.length && (
+        <button
+          onClick={showMore}
+          className="text-xs font-medium text-evergreen-forest hover:text-evergreen-hover transition-colors mt-2 flex items-center gap-1 ml-6 sm:ml-10"
+        >
+          Показать еще ответы ({Math.min(5, replies.length - visibleCount)})
+        </button>
+      )}
+    </>
+  );
+};
+
 export function HotelComments({ hotelSlug }: HotelCommentsProps) {
   const [commentText, setCommentText] = useState('');
   const [replyText, setReplyText] = useState('');
@@ -67,19 +90,19 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
     const hasLiked = user ? item.likedBy.includes(user.id) : false;
 
     return (
-      <div key={item.id} className={`flex gap-4 items-start ${isReply ? 'mt-6 ml-8 sm:ml-12 border-l-2 border-gray-100 pl-4 sm:pl-6' : ''}`}>
-        <div className={`rounded-full bg-white border border-gray-100 flex items-center justify-center shrink-0 shadow-sm ${isReply ? 'w-10 h-10' : 'w-12 h-12'}`}>
-          <UserCircleIcon size={isReply ? 20 : 24} className="text-secondary-text" />
+      <div key={item.id} className={`flex gap-3 items-start ${isReply ? 'mt-3 ml-6 sm:ml-10 border-l-2 border-gray-100 pl-3 sm:pl-4' : ''}`}>
+        <div className={`rounded-full bg-white border border-gray-100 flex items-center justify-center shrink-0 shadow-sm ${isReply ? 'w-8 h-8' : 'w-8 h-8'}`}>
+          <UserCircleIcon size={isReply ? 16 : 20} className="text-secondary-text" />
         </div>
-        <div className="flex-1 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
+        <div className="flex-1 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
             <div>
               <h4 className="font-century-gothic font-bold text-primary-text">{item.authorName}</h4>
               <p className="font-century-gothic text-xs text-evergreen-forest mt-0.5">{item.role}</p>
             </div>
             <span className="font-century-gothic text-xs text-secondary-text">{item.date}</span>
           </div>
-          <p className="font-century-gothic text-sm leading-relaxed text-secondary-text mb-4">
+          <p className="font-century-gothic text-[13px] leading-relaxed text-secondary-text mb-2">
             {item.text}
           </p>
 
@@ -118,7 +141,7 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
                     placeholder="Напишите ответ..."
-                    className="w-full bg-white border border-gray-200 rounded-xl p-3 pr-12 text-primary-text font-century-gothic text-sm min-h-[80px] resize-none focus:outline-none focus:border-evergreen-forest focus:ring-1 focus:ring-evergreen-forest transition-all"
+                    className="w-full bg-white border border-gray-200 rounded-xl p-3 pr-12 text-primary-text font-century-gothic text-[13px] min-h-[80px] resize-none focus:outline-none focus:border-evergreen-forest focus:ring-1 focus:ring-evergreen-forest transition-all"
                     autoFocus
                   />
                   <div className="absolute bottom-3 right-3 flex gap-2">
@@ -143,8 +166,8 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
 
           {/* Render Replies */}
           {item.replies && item.replies.length > 0 && (
-            <div className="mt-2 space-y-4">
-              {item.replies.map(reply => renderComment(reply, true))}
+            <div className="mt-2 space-y-3">
+              <ReplyList replies={item.replies} renderComment={renderComment} />
             </div>
           )}
         </div>
@@ -153,13 +176,13 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-24 border-t border-gray-200/50 pt-16 mb-16">
+    <div className="w-full border-t border-gray-200/50 pt-8 mt-8 mb-8">
       <h3 className="font-moniqa text-4xl text-primary-text mb-8">Комментарии коллег</h3>
 
       {/* Форма добавления комментария */}
       {user ? (
         <form onSubmit={(e) => handleSubmit(e)} className="mb-12 flex gap-4 items-start">
-          <div className="w-12 h-12 rounded-full bg-evergreen-forest/10 flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 rounded-full bg-evergreen-forest/10 flex items-center justify-center shrink-0">
             <UserCircleIcon size={24} className="text-evergreen-forest" />
           </div>
           <div className="flex-1 relative">
@@ -167,20 +190,20 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
               placeholder="Оставьте свой комментарий или заметку об отеле..."
-              className="w-full bg-white border border-gray-200 rounded-2xl p-4 pr-14 text-primary-text font-century-gothic text-base min-h-[100px] resize-none focus:outline-none focus:border-evergreen-forest focus:ring-1 focus:ring-evergreen-forest transition-all"
+              className="w-full bg-white border border-gray-200 rounded-2xl p-4 pr-14 text-primary-text font-century-gothic text-sm min-h-[60px] resize-none focus:outline-none focus:border-evergreen-forest focus:ring-1 focus:ring-evergreen-forest transition-all"
             />
             <button
               type="submit"
               disabled={!commentText.trim()}
-              className="absolute bottom-4 right-4 w-10 h-10 bg-evergreen-forest text-soft-sand rounded-xl flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-evergreen-hover transition-colors"
+              className="absolute bottom-4 right-4 w-8 h-8 bg-evergreen-forest text-soft-sand rounded-xl flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-evergreen-hover transition-colors"
             >
               <SentIcon size={20} />
             </button>
           </div>
         </form>
       ) : (
-        <div className="mb-12 p-6 bg-white border border-gray-100 rounded-2xl text-center">
-          <p className="font-century-gothic text-secondary-text mb-4">
+        <div className="mb-12 p-4 bg-white border border-gray-100 rounded-2xl text-center">
+          <p className="font-century-gothic text-secondary-text mb-2">
             Пожалуйста, авторизуйтесь, чтобы оставлять комментарии
           </p>
         </div>
