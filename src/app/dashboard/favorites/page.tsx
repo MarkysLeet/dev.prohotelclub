@@ -5,6 +5,7 @@ import { api } from '@/lib/api';
 import { Hotel } from '@/lib/mock-data';
 import { Button } from '@/components/ui';
 import { HotelCard } from '@/components/HotelCard';
+import { HotelCardSkeleton } from '@/components/HotelCardSkeleton';
 import { InformationCircleIcon } from 'hugeicons-react';
 import Link from 'next/link';
 import { useFavorites } from '@/lib/useFavorites';
@@ -46,8 +47,10 @@ export default function FavoritesPage() {
       </div>
 
       {isLoading ? (
-        <div className="py-24 flex items-center justify-center">
-          <div className="w-8 h-8 border-4 border-evergreen-forest/30 border-t-evergreen-forest rounded-full animate-spin"></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <HotelCardSkeleton key={i} variant="dashboard" />
+          ))}
         </div>
       ) : favoriteHotels.length > 0 ? (
         <motion.div layout className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">

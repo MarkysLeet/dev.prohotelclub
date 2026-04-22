@@ -5,6 +5,7 @@ import { HotelPageClient } from './HotelPageClient';
 import { HotelInteractiveContainer } from '@/components/hotel-detail/HotelInteractiveContainer';
 import { HotelComments } from '@/components/hotel-detail/HotelComments';
 import { HotelWidgetsPanel } from '@/components/hotel-detail/HotelWidgetsPanel';
+import { HotelPageSkeleton } from '@/components/hotel-detail/HotelPageSkeleton';
 import Image from 'next/image';
 import Header from '@/components/Header';
 import { use, useEffect, useState } from 'react';
@@ -43,9 +44,12 @@ export default function HotelPage({ params }: HotelPageProps) {
   }, [slug]);
 
   if (loading) {
-    return <div className="min-h-screen bg-soft-sand pt-[64px] flex items-center justify-center">
-      <div className="w-8 h-8 border-4 border-evergreen-forest/30 border-t-evergreen-forest rounded-full animate-spin"></div>
-    </div>;
+    return (
+      <main className="min-h-screen bg-soft-sand relative pt-[56px] lg:pt-[64px]">
+        <Header />
+        <HotelPageSkeleton />
+      </main>
+    );
   }
 
   if (!hotelData) {

@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(false);
       } else if (retries > 0) {
         // Wait for the trigger to create the profile
-        setTimeout(() => fetchProfile(userId, email, retries - 1), 1000);
+        setTimeout(() => fetchProfile(userId, email, retries - 1), 500); // 500ms instead of 1000ms
       } else {
         console.error('Profile not found after retries for user:', userId);
         // Do not authorize user if profile is missing to prevent bugs
@@ -67,19 +67,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error) {
       console.error('Error in fetchUserProfile:', error);
+      setIsAuth(false);
+      setUser(null);
       setIsLoading(false);
     }
   }, [supabase]);
 
   const refreshUser = async () => {
     setIsLoading(true);
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) {
-       await fetchUserProfile(session.user.id, session.user.email!);
-    } else {
-       setIsAuth(false);
-       setUser(null);
-       setIsLoading(false);
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) throw error;
+
+      if (session?.user) {
+         await fetchUserProfile(session.user.id, session.user.email!);
+      } else {
+         setIsAuth(false);
+         setUser(null);
+         setIsLoading(false);
+      }
+    } catch (error) {
+      console.error('Error refreshing user:', error);
+      setIsAuth(false);
+      setUser(null);
+      setIsLoading(false);
     }
   };
 
@@ -87,11 +98,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let mounted = true;
 
     async function getInitialSession() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (mounted) {
-        if (session?.user) {
-          await fetchUserProfile(session.user.id, session.user.email!);
-        } else {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+
+        if (mounted) {
+          if (session?.user) {
+            await fetchUserProfile(session.user.id, session.user.email!);
+          } else {
+            setIsLoading(false);
+          }
+        }
+      } catch (error) {
+        console.error('Error getting initial session:', error);
+        if (mounted) {
+          setIsAuth(false);
+          setUser(null);
           setIsLoading(false);
         }
       }
@@ -106,6 +128,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
           if (session?.user) {
             await fetchUserProfile(session.user.id, session.user.email!);
+          } else {
+            setIsAuth(false);
+            setUser(null);
+            setIsLoading(false);
           }
         } else if (event === 'SIGNED_OUT') {
           setIsAuth(false);
@@ -124,8 +150,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     setIsLoading(true);
-    await supabase.auth.signOut();
-    // onAuthStateChange will handle state updates and redirect
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    } finally {
+      // Ensure we clear state even if API fails
+      setIsAuth(false);
+      setUser(null);
+      setIsLoading(false);
+      router.push("/");
+    }
   };
 
   return (
