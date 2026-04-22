@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
+import { LoadingSpinner } from "@/components/ui";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -21,7 +22,7 @@ export default function AuthPage() {
   if (isLoading || isAuth) {
     return (
       <div className="min-h-screen bg-soft-sand flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-evergreen-forest/20 border-t-evergreen-forest rounded-full animate-spin"></div>
+        <LoadingSpinner />
       </div>
     );
   }

@@ -125,6 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = async () => {
     setIsLoading(true);
     await supabase.auth.signOut();
+    router.push("/");
     // onAuthStateChange will handle state updates and redirect
   };
 

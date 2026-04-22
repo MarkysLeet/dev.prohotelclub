@@ -17,7 +17,7 @@ import {
   InformationCircleIcon
 } from 'hugeicons-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui';
+import { Button, LoadingSpinner } from '@/components/ui';
 import { HotelCard } from '@/components/HotelCard';
 import { useAuth } from '@/lib/AuthContext';
 import { useToast } from '@/components/ui/Toast';
@@ -180,7 +180,7 @@ export default function HotelsPage() {
           {/* Grid Section */}
           {isLoading ? (
             <div className="py-24 flex items-center justify-center">
-              <div className="w-8 h-8 border-4 border-evergreen-forest/30 border-t-evergreen-forest rounded-full animate-spin"></div>
+              <LoadingSpinner />
             </div>
           ) : filteredHotels.length > 0 ? (
             <motion.div

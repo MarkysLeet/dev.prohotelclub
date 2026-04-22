@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/AuthContext';
+import { LoadingSpinner } from "@/components/ui";
 import Header from '@/components/Header';
 import {
   DashboardSquare01Icon,
@@ -46,7 +47,8 @@ export default function DashboardLayout({
   }, []);
 
   useEffect(() => {
-    if (isMounted && !isLoading && !isAuth) {
+    // Only redirect if mounted, not loading, not auth, and NOT actively logging out (we handle that in AuthContext)
+    if (isMounted && !isLoading && !isAuth && window.location.pathname.startsWith('/dashboard')) {
       router.push('/auth');
     }
   }, [isAuth, isLoading, router, isMounted]);
@@ -54,7 +56,7 @@ export default function DashboardLayout({
   if (!isMounted || isLoading) {
     return (
       <div className="min-h-screen bg-soft-sand flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-evergreen-forest/20 border-t-evergreen-forest rounded-full animate-spin"></div>
+        <LoadingSpinner />
       </div>
     );
   }

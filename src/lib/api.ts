@@ -1,3 +1,11 @@
+export interface NewsItem {
+  id: string;
+  title: string;
+  content: string;
+  imageUrl?: string;
+  date: string;
+}
+
 import { createClient } from './supabase-browser';
 import { Hotel } from './mock-data';
 import { HotelDetailData } from './hotel-mock-data';
@@ -430,5 +438,26 @@ export const api = {
       .update({ status })
       .eq('id', requestId);
     if (error) console.error('Error updating review request status:', error);
+  }
+  ,
+  // --- Новости ---
+  getNews: async (): Promise<NewsItem[]> => {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('news')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching news:', error);
+      return [];
+    }
+    return data.map(n => ({
+      id: n.id,
+      title: n.title,
+      content: n.content,
+      imageUrl: n.image_url,
+      date: new Date(n.created_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+    }));
   }
 };

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from 'react';
@@ -15,6 +16,7 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
   const [replyText, setReplyText] = useState('');
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
+  const [visibleReplies, setVisibleReplies] = useState<{ [key: string]: number }>({});
   const { user } = useAuth();
   const { toast } = useToast();
 
@@ -53,6 +55,13 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>, parentId?: string) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e as unknown as React.FormEvent, parentId);
+    }
+  };
+
   const handleLike = async (commentId: string) => {
     if (!user) {
       toast('Необходимо авторизоваться для оценки комментариев', { type: 'error' });
@@ -66,20 +75,31 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
   const renderComment = (item: Comment, isReply: boolean = false) => {
     const hasLiked = user ? item.likedBy.includes(user.id) : false;
 
+    const repliesLimit = visibleReplies[item.id] || 1;
+    const hasMoreReplies = item.replies && item.replies.length > repliesLimit;
+    const visibleRepliesList = item.replies ? item.replies.slice(0, repliesLimit) : [];
+
+    const handleLoadMoreReplies = () => {
+      setVisibleReplies(prev => ({
+        ...prev,
+        [item.id]: (prev[item.id] || 1) + 5
+      }));
+    };
+
     return (
-      <div key={item.id} className={`flex gap-4 items-start ${isReply ? 'mt-6 ml-8 sm:ml-12 border-l-2 border-gray-100 pl-4 sm:pl-6' : ''}`}>
-        <div className={`rounded-full bg-white border border-gray-100 flex items-center justify-center shrink-0 shadow-sm ${isReply ? 'w-10 h-10' : 'w-12 h-12'}`}>
-          <UserCircleIcon size={isReply ? 20 : 24} className="text-secondary-text" />
+      <div key={item.id} className={`flex gap-3 items-start ${isReply ? 'mt-4 ml-6 sm:ml-8 border-l-2 border-gray-100 pl-3 sm:pl-4' : ''}`}>
+        <div className={`rounded-full bg-white border border-gray-100 flex items-center justify-center shrink-0 shadow-sm ${isReply ? 'w-8 h-8' : 'w-10 h-10'}`}>
+          <UserCircleIcon size={isReply ? 18 : 20} className="text-secondary-text" />
         </div>
-        <div className="flex-1 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
+        <div className="flex-1 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+          <div className="flex items-center justify-between mb-2">
             <div>
               <h4 className="font-century-gothic font-bold text-primary-text">{item.authorName}</h4>
-              <p className="font-century-gothic text-xs text-evergreen-forest mt-0.5">{item.role}</p>
+              <p className="font-century-gothic text-[10px] text-evergreen-forest mt-0.5">{item.role}</p>
             </div>
             <span className="font-century-gothic text-xs text-secondary-text">{item.date}</span>
           </div>
-          <p className="font-century-gothic text-sm leading-relaxed text-secondary-text mb-4">
+          <p className="font-century-gothic text-sm leading-relaxed text-secondary-text mb-3">
             {item.text}
           </p>
 
@@ -117,6 +137,7 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
                   <textarea
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(e, item.id)}
                     placeholder="Напишите ответ..."
                     className="w-full bg-white border border-gray-200 rounded-xl p-3 pr-12 text-primary-text font-century-gothic text-sm min-h-[80px] resize-none focus:outline-none focus:border-evergreen-forest focus:ring-1 focus:ring-evergreen-forest transition-all"
                     autoFocus
@@ -142,10 +163,20 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
           )}
 
           {/* Render Replies */}
-          {item.replies && item.replies.length > 0 && (
-            <div className="mt-2 space-y-4">
-              {item.replies.map(reply => renderComment(reply, true))}
+          {visibleRepliesList.length > 0 && (
+            <div className="mt-2 space-y-3">
+              {visibleRepliesList.map(reply => renderComment(reply, true))}
             </div>
+          )}
+
+          {/* Load More Replies Button */}
+          {hasMoreReplies && (
+            <button
+              onClick={handleLoadMoreReplies}
+              className="mt-4 text-xs font-medium text-evergreen-forest hover:text-evergreen-hover transition-colors flex items-center gap-1"
+            >
+              Показать остальные ответы ({item.replies!.length - repliesLimit})
+            </button>
           )}
         </div>
       </div>
@@ -158,16 +189,17 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
 
       {/* Форма добавления комментария */}
       {user ? (
-        <form onSubmit={(e) => handleSubmit(e)} className="mb-12 flex gap-4 items-start">
-          <div className="w-12 h-12 rounded-full bg-evergreen-forest/10 flex items-center justify-center shrink-0">
+        <form onSubmit={(e) => handleSubmit(e)} className="mb-12 flex gap-3 items-start">
+          <div className="w-10 h-10 rounded-full bg-evergreen-forest/10 flex items-center justify-center shrink-0">
             <UserCircleIcon size={24} className="text-evergreen-forest" />
           </div>
           <div className="flex-1 relative">
             <textarea
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e)}
               placeholder="Оставьте свой комментарий или заметку об отеле..."
-              className="w-full bg-white border border-gray-200 rounded-2xl p-4 pr-14 text-primary-text font-century-gothic text-base min-h-[100px] resize-none focus:outline-none focus:border-evergreen-forest focus:ring-1 focus:ring-evergreen-forest transition-all"
+              className="w-full bg-white border border-gray-200 rounded-xl p-4 pr-14 text-primary-text font-century-gothic text-base min-h-[100px] resize-none focus:outline-none focus:border-evergreen-forest focus:ring-1 focus:ring-evergreen-forest transition-all"
             />
             <button
               type="submit"
@@ -179,7 +211,7 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
           </div>
         </form>
       ) : (
-        <div className="mb-12 p-6 bg-white border border-gray-100 rounded-2xl text-center">
+        <div className="mb-12 p-6 bg-white border border-gray-100 rounded-xl text-center">
           <p className="font-century-gothic text-secondary-text mb-4">
             Пожалуйста, авторизуйтесь, чтобы оставлять комментарии
           </p>

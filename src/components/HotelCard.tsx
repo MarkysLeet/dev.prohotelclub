@@ -36,15 +36,17 @@ export function HotelCard({
     >
       {/* Image Area */}
       <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
-        <Image
-          src={hotel.imageUrl}
-          alt={hotel.name}
-          fill
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
-        {/* Overlay gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <Link href={hotel.link || `/hotels/${hotel.id}`} className="absolute inset-0 z-0">
+          <Image
+            src={hotel.imageUrl}
+            alt={hotel.name}
+            fill
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+          {/* Overlay gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        </Link>
 
         {/* Favorite Button */}
         <button
