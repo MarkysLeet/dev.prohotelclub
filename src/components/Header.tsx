@@ -308,11 +308,14 @@ export default function Header() {
                 </button>
                 <Link href="/auth" className="hidden lg:flex">
                   <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-5 py-2 rounded-xl text-sm font-medium transition-colors"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="group relative overflow-hidden text-soft-sand border border-soft-sand/30 hover:border-soft-sand/60 px-6 py-2 rounded-xl text-sm font-century-gothic transition-colors duration-500 ease-cinematic"
                   >
-                    Войти
+                    <span className="relative z-10 group-hover:text-evergreen-forest transition-colors duration-500 ease-cinematic">
+                      Войти
+                    </span>
+                    <div className="absolute inset-0 bg-soft-sand translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-cinematic" />
                   </motion.button>
                 </Link>
               </>
