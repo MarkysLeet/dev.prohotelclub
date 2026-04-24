@@ -119,7 +119,7 @@ export function HotelInteractiveContainer({ hotelData }: HotelInteractiveContain
               }`}
             >
               <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 transition-colors ${
-                isActive ? 'bg-white/10' : 'bg-soft-sand group-hover:bg-evergreen-forest/5 text-evergreen-forest'
+                isActive ? 'bg-white/10' : 'bg-soft-sand group-hover:bg-evergreen-forest group-hover:text-soft-sand text-evergreen-forest'
               }`}>
                 {getIconForSection(section.id)}
               </div>

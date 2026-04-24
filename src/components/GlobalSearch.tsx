@@ -109,7 +109,7 @@ export function GlobalSearch() {
             aria-label="Search"
             className="text-soft-sand hover:text-white transition-colors duration-200 flex items-center justify-center p-2"
           >
-            <Search01Icon size={26} strokeWidth={1.5} />
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}><Search01Icon size={26} strokeWidth={1.5} /></motion.div>
           </motion.button>
         ) : (
           <motion.div

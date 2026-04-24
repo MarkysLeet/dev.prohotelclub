@@ -130,9 +130,9 @@ export default function Header() {
             className="text-soft-sand hover:text-white transition-colors duration-200 flex items-center justify-center p-2 -ml-2 z-[100] relative"
           >
             {isMenuOpen ? (
-              <Cancel01Icon size={28} strokeWidth={1.5} />
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}><Cancel01Icon size={28} strokeWidth={1.5} /></motion.div>
             ) : (
-              <Menu01Icon size={28} strokeWidth={1.5} />
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}><Menu01Icon size={28} strokeWidth={1.5} /></motion.div>
             )}
           </button>
 
@@ -141,10 +141,10 @@ export default function Header() {
           >
             {showBack ? (
               <button
-                onClick={() => router.back()}
+                onClick={() => pathname.startsWith('/hotels/') ? router.push('/hotels') : router.back()}
                 className="flex items-center gap-2 hover:text-white transition-colors duration-200"
               >
-                <ArrowLeft01Icon size={22} strokeWidth={1.5} />
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}><ArrowLeft01Icon size={22} strokeWidth={1.5} /></motion.div>
                 <span className="text-sm font-century-gothic tracking-wide uppercase mt-[2px] max-w-[200px] truncate" title={customTitle || "Назад"}>
                   {customTitle || "Назад"}
                 </span>
@@ -188,7 +188,7 @@ export default function Header() {
                 onClick={handleNotifClick}
                 className="text-soft-sand hover:text-white transition-colors duration-200 flex items-center justify-center p-2 relative"
               >
-                <Notification01Icon size={26} strokeWidth={1.5} />
+                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}><Notification01Icon size={26} strokeWidth={1.5} /></motion.div>
                 {unreadCount > 0 && (
                   <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full">
                     {unreadCount}
@@ -249,7 +249,7 @@ export default function Header() {
                   aria-expanded={isDropdownOpen}
                   className="text-soft-sand hover:text-white transition-colors duration-200 flex items-center justify-center p-2 -mr-2"
                 >
-                  <UserIcon size={26} strokeWidth={1.5} />
+                  <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}><UserIcon size={26} strokeWidth={1.5} /></motion.div>
                 </button>
 
                 <AnimatePresence>
@@ -304,7 +304,7 @@ export default function Header() {
                   aria-expanded={isDropdownOpen}
                   className="lg:hidden text-soft-sand hover:text-white transition-colors duration-200 flex items-center justify-center p-2 -mr-2"
                 >
-                  <UserIcon size={26} strokeWidth={1.5} />
+                  <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}><UserIcon size={26} strokeWidth={1.5} /></motion.div>
                 </button>
                 <Link href="/auth" className="hidden lg:flex">
                   <motion.button

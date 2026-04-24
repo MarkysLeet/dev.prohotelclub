@@ -26,24 +26,24 @@ export default function HeroSlider() {
         <h1 className="font-moniqa text-[120px] leading-[0.85] text-primary-text mb-12">
           EXCLUSIVE<br />HOTELS
         </h1>
+      </div>
 
-        {/* Pagination Dots */}
-        <div className="absolute bottom-12 flex gap-3">
+      {/* Right Dynamic Side (Image & L-Shape Text Cutout) */}
+      <div className="w-[60%] h-full relative">
+        {/* Pagination Dots (centered in the left 15% 'tail' of the image) */}
+        <div className="absolute bottom-12 left-[7.5%] -translate-x-1/2 flex gap-3 z-20">
           {hotels.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentIndex(index)}
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentIndex ? "bg-evergreen-forest w-6" : "bg-secondary-text/30 hover:bg-secondary-text/60"
+                index === currentIndex ? "bg-white w-6" : "bg-white/50 hover:bg-white/80"
               }`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
         </div>
-      </div>
 
-      {/* Right Dynamic Side (Image & L-Shape Text Cutout) */}
-      <div className="w-[60%] h-full relative">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentHotel.id}
