@@ -31,19 +31,6 @@ export default function HeroSlider() {
       {/* Right Dynamic Side (Image & L-Shape Text Cutout) */}
       <div className="w-[60%] h-full relative">
         {/* Pagination Dots (centered in the left 15% 'tail' of the image) */}
-        <div className="absolute bottom-12 left-[7.5%] -translate-x-1/2 flex gap-3 z-20">
-          {hotels.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentIndex ? "bg-white w-6" : "bg-white/50 hover:bg-white/80"
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
-
         <AnimatePresence mode="wait">
           <motion.div
             key={currentHotel.id}
@@ -98,6 +85,20 @@ export default function HeroSlider() {
             </div>
           </motion.div>
         </AnimatePresence>
+
+        {/* Pagination Dots (centered in the left 15% 'tail' of the image) */}
+        <div className="absolute bottom-12 left-[7.5%] -translate-x-1/2 flex gap-3 z-50">
+          {hotels.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentIndex(index)}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                index === currentIndex ? "bg-white w-6" : "bg-white/50 hover:bg-white/80"
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );
