@@ -39,8 +39,8 @@ export function HotelWidgetsPanel({ hotelData }: HotelWidgetsPanelProps) {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 gap-4">
             {/* Stars */}
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest shrink-0">
+            <div className="flex items-center gap-3 group">
+              <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest shrink-0 group-hover:bg-evergreen-forest group-hover:text-soft-sand transition-colors">
                 <StarIcon size={20} className="fill-current" />
               </div>
               <div>
@@ -78,8 +78,8 @@ export function HotelWidgetsPanel({ hotelData }: HotelWidgetsPanelProps) {
             </div>
 
             {/* Distance to City */}
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest shrink-0">
+            <div className="flex items-center gap-3 group">
+              <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest shrink-0 group-hover:bg-evergreen-forest group-hover:text-soft-sand transition-colors">
                 <City01Icon size={20} />
               </div>
               <div>
@@ -103,8 +103,8 @@ export function HotelWidgetsPanel({ hotelData }: HotelWidgetsPanelProps) {
             </div>
 
             {/* Build Year */}
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest shrink-0">
+            <div className="flex items-center gap-3 group">
+              <div className="w-10 h-10 rounded-full bg-soft-sand flex items-center justify-center text-evergreen-forest shrink-0 group-hover:bg-evergreen-forest group-hover:text-soft-sand transition-colors">
                 <Calendar01Icon size={20} />
               </div>
               <div>
