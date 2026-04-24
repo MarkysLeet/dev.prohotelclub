@@ -86,8 +86,10 @@ export default function HeroSlider() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Pagination Dots (centered in the left 15% 'tail' of the image) */}
-        <div className="absolute bottom-12 left-[7.5%] -translate-x-1/2 flex gap-3 z-50">
+                <div
+          className="absolute bottom-12 flex gap-3 z-[100]"
+          style={{ left: '7.5%', transform: 'translateX(-50%)' }}
+        >
           {hotels.map((_, index) => (
             <button
               key={index}
@@ -99,6 +101,7 @@ export default function HeroSlider() {
             />
           ))}
         </div>
+
       </div>
     </section>
   );
