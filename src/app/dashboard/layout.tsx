@@ -19,6 +19,7 @@ import {
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import Footer from "@/components/Footer";
 const navItems = [
   { href: '/dashboard', label: 'Обзор', icon: DashboardSquare01Icon },
   { href: '/dashboard/profile', label: 'Профиль', icon: UserIcon },
@@ -160,6 +161,7 @@ export default function DashboardLayout({
               {children}
             </motion.div>
           </div>
+          <Footer />
         </main>
       </div>
     </div>

@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import RecentNews from "@/components/RecentNews";
 
+import Footer from "@/components/Footer";
 export default function Home() {
   return (
     <main className="min-h-screen flex flex-col bg-soft-sand overflow-hidden">
@@ -10,6 +11,7 @@ export default function Home() {
         <Hero />
         <RecentNews />
       </div>
+      <Footer />
     </main>
   );
 }
