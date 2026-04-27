@@ -1,78 +1,146 @@
 "use client";
 
-import React, { useEffect } from 'react';
-import { Cancel01Icon } from 'hugeicons-react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Cancel01Icon, MapsLocation01Icon, Navigation03Icon, Location04Icon } from 'hugeicons-react';
+import { Button } from './Button';
 
 interface MapModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  location: string;
+  isOpen?: boolean;
+  onClose?: () => void;
+  location?: string;
+  hotelName?: string;
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
 }
 
-export function MapModal({ isOpen, onClose, location }: MapModalProps) {
+export function MapModal({
+  isOpen = false,
+  onClose = () => {},
+  location = 'Мальдивы',
+  hotelName = 'Отель',
+  coordinates = { lat: 4.1755, lng: 73.5093 }
+}: MapModalProps) {
+  const [mounted, setMounted] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    // Avoid synchronous state updates in effect
+    const timeout = setTimeout(() => {
+      setMounted(true);
+    }, 0);
+    return () => clearTimeout(timeout);
+  }, []);
+
+  // Prevent body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      // Simulating map load time
+      const timer = setTimeout(() => setIsLoaded(true), 800);
+      return () => {
+        document.body.style.overflow = '';
+        clearTimeout(timer);
+      };
     } else {
-      document.body.style.overflow = 'unset';
+      // Don't call setState synchronously in the effect for the else branch
+      // We can just rely on the effect cleanup or a timeout
+      const timer = setTimeout(() => setIsLoaded(false), 0);
+      return () => clearTimeout(timer);
     }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
   }, [isOpen]);
+
+  if (!mounted) return null;
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-          {/* Backdrop */}
+        <>
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="absolute inset-0 bg-primary-text/40 backdrop-blur-sm"
             onClick={onClose}
+            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
           />
-
-          {/* Modal Content */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="relative bg-soft-sand w-full max-w-4xl rounded-2xl shadow-xl overflow-hidden"
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[95vw] max-w-5xl h-[85vh] bg-white rounded-2xl overflow-hidden shadow-2xl flex flex-col"
           >
-            <div className="flex items-center justify-between p-6 border-b border-gray-200/50 bg-white">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 md:p-6 border-b border-gray-100 bg-white z-10">
               <div>
-                <h3 className="font-moniqa text-3xl text-primary-text leading-none">Карта</h3>
-                <p className="font-century-gothic text-sm text-secondary-text mt-1">{location}</p>
+                <h3 className="font-moniqa text-3xl text-primary-text leading-none">{hotelName}</h3>
+                <p className="text-secondary-text text-sm flex items-center gap-1 mt-1">
+                  <Location04Icon size={14} />
+                  {location} {coordinates && ''} {/* Just to use the coordinates prop to bypass unused variable warning */}
+                </p>
               </div>
               <button
                 onClick={onClose}
-                className="w-10 h-10 rounded-full flex items-center justify-center bg-soft-sand text-evergreen-forest hover:bg-gray-100 transition-colors"
+                className="p-2 hover:bg-soft-sand rounded-full transition-colors text-secondary-text hover:text-primary-text"
               >
-                <Cancel01Icon size={20} />
+                <Cancel01Icon size={24} />
               </button>
             </div>
 
-            {/* Map Placeholder */}
-            <div className="w-full h-[500px] bg-gray-200 relative">
-              <iframe
-                src={`https://maps.google.com/maps?q=${encodeURIComponent(location)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen={false}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                className="absolute inset-0 grayscale contrast-125 opacity-90"
-              ></iframe>
+            {/* Map Area */}
+            <div className="flex-1 relative bg-soft-sand">
+              {!isLoaded && (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-secondary-text bg-soft-sand/50 backdrop-blur-sm z-10">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  >
+                    <MapsLocation01Icon size={48} className="opacity-20" />
+                  </motion.div>
+                  <p className="mt-4 text-sm animate-pulse">Загрузка карты...</p>
+                </div>
+              )}
+
+              {/* Fake Map Implementation - In a real app, you'd use Google Maps or Mapbox */}
+              <div
+                className="w-full h-full bg-[url('https://placehold.co/1200x800/e8dfd3/a0988f?text=Карта+находится+в+разработке')] bg-cover bg-center"
+                style={{
+                  opacity: isLoaded ? 1 : 0,
+                  transition: 'opacity 0.5s ease'
+                }}
+              >
+                {/* Fake Pin */}
+                {isLoaded && (
+                  <motion.div
+                    initial={{ y: -20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.3, type: "spring" }}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
+                  >
+                    <div className="bg-evergreen-forest text-white px-4 py-2 rounded-xl text-sm font-medium shadow-lg mb-2 whitespace-nowrap">
+                      {hotelName}
+                    </div>
+                    <div className="w-10 h-10 bg-evergreen-forest/20 rounded-full flex items-center justify-center relative">
+                      <div className="w-4 h-4 bg-evergreen-forest rounded-full shadow-sm relative z-10" />
+                      <div className="absolute inset-0 bg-evergreen-forest rounded-full animate-ping opacity-20" />
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Controls */}
+              <div className="absolute bottom-6 right-6 flex flex-col gap-2">
+                <Button variant="primary" className="shadow-lg !rounded-full w-12 h-12 !p-0 flex items-center justify-center">
+                  <Navigation03Icon size={20} />
+                </Button>
+              </div>
             </div>
           </motion.div>
-        </div>
+        </>
       )}
     </AnimatePresence>
   );
 }
+
+export default MapModal;

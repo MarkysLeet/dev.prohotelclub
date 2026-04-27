@@ -1,3 +1,4 @@
+"use client";
 import { useState, useEffect } from 'react';
 
 const SEARCH_HISTORY_KEY = 'prohotelclub_search_history';

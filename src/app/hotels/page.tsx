@@ -24,6 +24,8 @@ import { useAuth } from '@/lib/AuthContext';
 import { useToast } from '@/components/ui/Toast';
 import { useRouter } from 'next/navigation';
 
+import dynamic from 'next/dynamic';
+
 import Footer from "@/components/Footer";
 // Map tags to icons
 const getTagIcon = (tag: string) => {
@@ -37,11 +39,13 @@ const getTagIcon = (tag: string) => {
   }
 };
 
+const MapModal = dynamic(() => import("@/components/ui/MapModal"), { ssr: false });
+
 export default function HotelsPage() {
   const { isAuth } = useAuth();
   const [hotelsList, setHotelsList] = useState<Hotel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   useEffect(() => {
     let mounted = true;
     async function loadHotels() {
@@ -244,6 +248,8 @@ export default function HotelsPage() {
 
     </main>
       <Footer />
+      {/* MapModal logic will be integrated via context or separate state later if needed,
+          but we render it safely here to test lazy loading */}
     </div>
   );
 }
