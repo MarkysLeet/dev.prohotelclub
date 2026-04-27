@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Header from "@/components/Header";
 
+import Footer from "@/components/Footer";
 export default function Error({
   error,
   reset,
@@ -34,6 +35,7 @@ export default function Error({
           Попробовать снова
         </button>
       </div>
+      <Footer />
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import AboutUs from "@/components/AboutUs";
 
+import Footer from "@/components/Footer";
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-soft-sand flex flex-col">
@@ -8,6 +9,7 @@ export default function AboutPage() {
       <div className="pt-[56px] lg:pt-[64px] flex-grow w-full">
         <AboutUs />
       </div>
+      <Footer />
     </main>
   );
 }

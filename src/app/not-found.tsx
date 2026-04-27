@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Header from "@/components/Header";
 
+import Footer from "@/components/Footer";
 export default function NotFound() {
   return (
     <main className="min-h-screen flex flex-col bg-soft-sand overflow-hidden font-century-gothic">
@@ -22,6 +23,7 @@ export default function NotFound() {
           Вернуться на главную
         </Link>
       </div>
+      <Footer />
     </main>
   );
 }

@@ -24,6 +24,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { useToast } from '@/components/ui/Toast';
 import { useRouter } from 'next/navigation';
 
+import Footer from "@/components/Footer";
 // Map tags to icons
 const getTagIcon = (tag: string) => {
   switch (tag.toLowerCase()) {
@@ -240,7 +241,9 @@ export default function HotelsPage() {
           )}
 
         </div>
-      </main>
+
+    </main>
+      <Footer />
     </div>
   );
 }

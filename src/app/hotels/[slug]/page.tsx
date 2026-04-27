@@ -15,6 +15,7 @@ import { api } from '@/lib/api';
 import { useAuth } from '@/lib/AuthContext';
 import { useToast } from '@/components/ui/Toast';
 
+import Footer from "@/components/Footer";
 interface HotelPageProps {
   params: Promise<{
     slug: string;
@@ -49,7 +50,8 @@ export default function HotelPage({ params }: HotelPageProps) {
       <main className="min-h-screen bg-soft-sand relative pt-[56px] lg:pt-[64px]">
         <Header />
         <HotelPageSkeleton />
-      </main>
+        <Footer />
+    </main>
     );
   }
 
