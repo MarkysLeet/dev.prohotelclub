@@ -17,7 +17,7 @@ export default function DashboardOverview() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Profile Card */}
-        <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100 flex flex-col justify-between">
+        <div className="bg-white rounded-xl shadow-sm p-6 sm:p-8 border border-gray-100 flex flex-col justify-between">
           <div>
             <h2 className="text-xl font-medium text-primary-text mb-1">{userProfile.name}</h2>
             <p className="text-secondary-text mb-6">{userProfile.company}</p>
@@ -31,7 +31,7 @@ export default function DashboardOverview() {
         </div>
 
         {/* Quick Actions / Stats */}
-        <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100 flex flex-col justify-between">
+        <div className="bg-white rounded-xl shadow-sm p-6 sm:p-8 border border-gray-100 flex flex-col justify-between">
           <div>
             <h3 className="text-lg font-medium text-primary-text mb-4 flex items-center gap-2">
               <Download01Icon size={20} className="text-evergreen-forest" /> Доступно скачиваний
@@ -48,8 +48,8 @@ export default function DashboardOverview() {
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100">
-        <div className="flex items-center justify-between mb-6">
+      <div className="bg-white rounded-xl shadow-sm p-6 sm:p-8 border border-gray-100">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
           <h2 className="text-xl font-medium text-primary-text flex items-center gap-2">
             <TimeQuarterIcon size={20} className="text-evergreen-forest" /> Последние операции
           </h2>
@@ -59,12 +59,12 @@ export default function DashboardOverview() {
         </div>
         <div className="space-y-4">
           {recentTransactions.map((trx) => (
-            <div key={trx.id} className="flex items-center justify-between py-3 border-b border-gray-50 last:border-0">
+            <div key={trx.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-3 border-b border-gray-50 last:border-0 gap-2">
               <div>
                 <p className="font-medium text-primary-text text-sm">{trx.description}</p>
                 <p className="text-xs text-secondary-text mt-1">{trx.date}</p>
               </div>
-              <div className="text-right">
+              <div className="text-left sm:text-right w-full sm:w-auto">
                 <p className="font-medium text-primary-text">${trx.amount}</p>
                 <Badge variant={trx.status === 'completed' ? 'success' : 'warning'} className="mt-1 text-[10px] px-2 py-0.5">
                   {trx.status === 'completed' ? 'Оплачено' : 'В обработке'}

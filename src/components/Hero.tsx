@@ -160,7 +160,7 @@ export default function Hero() {
             Создано экспертами для экспертов индустрии.
           </p>
 
-          <Link href="/about" className="mt-8 flex items-center justify-center border border-evergreen-forest text-evergreen-forest font-century-gothic text-[clamp(16px,4vw,20px)] rounded-[26px] hover:bg-evergreen-forest hover:text-soft-sand transition-colors duration-200 px-8 py-3 w-full sm:w-auto">
+          <Link href="/about" className="mt-8 flex items-center justify-center border border-evergreen-forest text-evergreen-forest font-century-gothic text-[clamp(16px,4vw,20px)] rounded-[26px] hover:bg-evergreen-forest hover:text-soft-sand transition-colors duration-200 px-8 py-3 w-full sm:w-auto flex-shrink-0">
             Подробнее о нас
           </Link>
 

@@ -150,8 +150,8 @@ export default function DashboardLayout({
         </AnimatePresence>
 
         {/* Main Content */}
-        <main className="flex-1 min-w-0">
-          <div className="p-6 lg:p-10 max-w-5xl mx-auto">
+        <main className="flex-1 min-w-0 w-full">
+          <div className="p-4 sm:p-6 lg:p-10 max-w-5xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

@@ -54,7 +54,7 @@ export default function AuthPage() {
       </motion.div>
 
       {/* Right side: Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 h-full">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 h-full overflow-y-auto">
         <motion.div
           className="w-full max-w-sm sm:max-w-md flex flex-col justify-center h-full max-h-[850px]"
           initial={{ opacity: 0, y: 20 }}

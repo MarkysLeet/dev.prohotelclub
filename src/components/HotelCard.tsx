@@ -120,7 +120,7 @@ export function HotelCard({
         </p>
 
         {variant === 'collection' ? (
-          <div className="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
+          <div className="mt-auto pt-4 border-t border-gray-100 flex flex-row items-center justify-between gap-2 flex-wrap">
             <Link href={hotel.link || `/hotels/${hotel.id}`} className="text-evergreen-forest text-sm font-medium flex items-center gap-2 hover:opacity-80 transition-opacity">
               Подробнее
             </Link>

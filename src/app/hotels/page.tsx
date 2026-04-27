@@ -113,7 +113,7 @@ export default function HotelsPage() {
             className="mb-12 space-y-6"
           >
             {/* Search & Location Row */}
-            <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <div className="relative flex-1">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-secondary-text">
                   <Search01Icon size={20} strokeWidth={1.5} />
@@ -127,7 +127,7 @@ export default function HotelsPage() {
                 />
               </div>
 
-              <div className="relative md:w-64">
+              <div className="relative w-full sm:w-64 flex-shrink-0">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-secondary-text">
                   <Location01Icon size={20} strokeWidth={1.5} />
                 </div>
@@ -149,7 +149,7 @@ export default function HotelsPage() {
             </div>
 
             {/* Tags Row */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 items-center">
               <div className="flex items-center gap-2 text-secondary-text mr-2 text-sm font-medium">
                 <FilterIcon size={16} /> Фильтры:
               </div>
