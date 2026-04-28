@@ -1,13 +1,30 @@
 "use client";
 
-import { userProfile, transactions } from '@/lib/mock-data';
-import { Badge, Button } from '@/components/ui';
+import { transactions } from '@/lib/mock-data';
+import { Badge, Button, Skeleton } from '@/components/ui';
 import { ArrowRight01Icon, TimeQuarterIcon, Download01Icon } from 'hugeicons-react';
 import Link from 'next/link';
+import { useAuth } from '@/lib/AuthContext';
 
 export default function DashboardOverview() {
+  const { user, isLoading } = useAuth();
   const recentTransactions = transactions.slice(0, 3);
 
+  if (isLoading) {
+    return (
+      <div className="space-y-10">
+        <Skeleton className="h-16 w-48 rounded-lg" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Skeleton className="h-64 rounded-xl" />
+          <Skeleton className="h-64 rounded-xl" />
+        </div>
+        <Skeleton className="h-96 rounded-xl" />
+      </div>
+    );
+  }
+
+  // We fallback to standard strings if not available
+  const planName = user?.hasActiveSubscription ? "Professional" : "Базовый";
 
   return (
     <div className="space-y-10">
@@ -19,9 +36,11 @@ export default function DashboardOverview() {
         {/* Profile Card */}
         <div className="bg-white rounded-xl shadow-sm p-6 sm:p-8 border border-gray-100 flex flex-col justify-between">
           <div>
-            <h2 className="text-xl font-medium text-primary-text mb-1">{userProfile.name}</h2>
-            <p className="text-secondary-text mb-6">{userProfile.company}</p>
-            <Badge variant="primary" className="mb-4">Тариф {userProfile.plan}</Badge>
+            <h2 className="text-xl font-medium text-primary-text mb-1">{user?.name || "Агент"}</h2>
+            <p className="text-secondary-text mb-6">{user?.company || "Не указана"}</p>
+            <Badge variant={user?.hasActiveSubscription ? "success" : "warning"} className="mb-4">
+              Тариф {planName}
+            </Badge>
           </div>
           <Link href="/dashboard/profile">
             <Button variant="ghost" className="w-full justify-start px-0 text-evergreen-forest">
@@ -36,8 +55,10 @@ export default function DashboardOverview() {
             <h3 className="text-lg font-medium text-primary-text mb-4 flex items-center gap-2">
               <Download01Icon size={20} className="text-evergreen-forest" /> Доступно скачиваний
             </h3>
-            <div className="text-4xl font-moniqa text-primary-text">Неограниченно</div>
-            <p className="text-sm text-secondary-text mt-2">В рамках тарифа {userProfile.plan}</p>
+            <div className="text-4xl font-moniqa text-primary-text">
+              {user?.hasActiveSubscription ? "Неограниченно" : "0"}
+            </div>
+            <p className="text-sm text-secondary-text mt-2">В рамках тарифа {planName}</p>
           </div>
           <Link href="/dashboard/subscription">
             <Button variant="secondary" size="sm" className="w-fit mt-6">

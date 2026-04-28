@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "./supabase-browser";
 
 export interface User {
+  company: string;
   id: string;
   name: string;
   email: string;
@@ -50,6 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           id: data.id,
           name: data.name || 'Агент',
           email: data.email || email,
+          company: data.company || '',
           isAdmin: data.is_admin,
           hasActiveSubscription: data.has_active_subscription,
           notifyLikes: data.notify_likes ?? true,
