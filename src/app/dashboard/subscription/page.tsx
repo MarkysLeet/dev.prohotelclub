@@ -1,57 +1,138 @@
 "use client";
 
+import { useState } from "react";
 import { CheckmarkBadge01Icon } from "hugeicons-react";
-import { Button } from "@/components/ui";
+import { Button, useToast } from "@/components/ui";
+import { useAuth } from "@/lib/AuthContext";
+
+const PLANS = [
+  { id: "1_month", title: "1 месяц", price: "1 299 ₽", period: "за 30 дней" },
+  { id: "3_months", title: "3 месяца", price: "3 599 ₽", period: "за 90 дней", popular: true },
+  { id: "1_year", title: "1 год", price: "13 299 ₽", period: "за 365 дней", highlight: true },
+];
 
 export default function SubscriptionPage() {
+  const { user } = useAuth();
+  const { success, error } = useToast();
+  const [selectedPlan, setSelectedPlan] = useState<string>("1_year");
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Check if user has an active subscription and when it ends
+  const hasActiveSubscription = user?.hasActiveSubscription;
+  const subscriptionEndsAt = user?.subscriptionEndsAt ? new Date(user.subscriptionEndsAt) : null;
+
+  // Logic to allow renewing if less than 30 days left
+  let canRenew = true;
+  let daysLeft = 0;
+
+  if (hasActiveSubscription && subscriptionEndsAt) {
+    const now = new Date();
+    const diffTime = subscriptionEndsAt.getTime() - now.getTime();
+    daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    // Prevent renewal if more than 30 days left
+    if (daysLeft > 30) {
+      canRenew = false;
+    }
+  }
+
+  const handleSubscribe = async () => {
+    setIsProcessing(true);
+    try {
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      success('Подписка успешно оформлена!');
+    } catch {
+      error('Ошибка при оформлении подписки');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   return (
     <div className="space-y-10">
       <h1 className="font-moniqa text-[clamp(40px,5vw,72px)] text-primary-text leading-none">
-        Моя подписка
+        Управление подпиской
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Current Plan Card */}
-        <div className="bg-white rounded-xl shadow-sm p-8 border-2 border-evergreen-forest relative overflow-hidden">
-          <div className="absolute top-0 right-0 bg-evergreen-forest text-soft-sand px-4 py-1 rounded-bl-xl text-sm font-medium">
-            Текущий тариф
+      {hasActiveSubscription && subscriptionEndsAt && (
+        <div className="bg-white rounded-xl shadow-sm p-6 sm:p-8 border-2 border-evergreen-forest/20 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-medium text-primary-text mb-1">Ваша подписка активна</h2>
+            <p className="text-secondary-text">
+              Действует до {subscriptionEndsAt.toLocaleDateString('ru-RU')} (осталось {daysLeft} дней)
+            </p>
           </div>
-          <h2 className="font-moniqa text-4xl text-primary-text mb-2 mt-4">Professional</h2>
-          <div className="flex items-end gap-2 mb-6">
-            <span className="text-3xl font-medium text-primary-text">$99</span>
-            <span className="text-secondary-text pb-1">/ месяц</span>
+          {!canRenew && (
+            <div className="bg-amber-50 text-amber-800 px-4 py-2 rounded-lg text-sm border border-amber-200">
+              Продление будет доступно за 30 дней до окончания
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {PLANS.map((plan) => (
+          <div
+            key={plan.id}
+            onClick={() => setSelectedPlan(plan.id)}
+            className={`bg-white rounded-xl shadow-sm p-6 sm:p-8 border-2 cursor-pointer transition-all duration-300 relative overflow-hidden flex flex-col ${
+              selectedPlan === plan.id
+                ? "border-evergreen-forest shadow-md scale-[1.02]"
+                : "border-gray-100 hover:border-evergreen-forest/50 hover:shadow-md"
+            }`}
+          >
+            {plan.popular && (
+              <div className="absolute top-0 right-0 bg-evergreen-forest/10 text-evergreen-forest px-4 py-1 rounded-bl-xl text-xs font-medium">
+                Популярный
+              </div>
+            )}
+            {plan.highlight && (
+              <div className="absolute top-0 right-0 bg-[#D4AF37] text-white px-4 py-1 rounded-bl-xl text-xs font-medium">
+                Выгодно
+              </div>
+            )}
+
+            <h3 className="font-moniqa text-3xl text-primary-text mb-2 mt-2">{plan.title}</h3>
+            <div className="flex items-end gap-2 mb-2">
+              <span className="text-3xl font-medium text-primary-text">{plan.price}</span>
+            </div>
+            <p className="text-secondary-text text-sm mb-6">{plan.period}</p>
+
+            <ul className="space-y-3 mb-8 flex-1">
+              {[
+                "Доступ ко всем премиум отелям",
+                "Скачивание медиа в высоком качестве",
+                "Безлимитный просмотр",
+                plan.id === "1_year" ? "Приоритетная поддержка" : null
+              ].filter(Boolean).map((item, i) => (
+                <li key={i} className="flex items-start gap-3 text-sm text-primary-text">
+                  <CheckmarkBadge01Icon size={18} className="text-evergreen-forest shrink-0 mt-0.5" strokeWidth={1.5} />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center mx-auto mb-4 ${
+              selectedPlan === plan.id ? "border-evergreen-forest" : "border-gray-300"
+            }`}>
+              {selectedPlan === plan.id && <div className="w-2.5 h-2.5 bg-evergreen-forest rounded-full" />}
+            </div>
           </div>
-
-          <ul className="space-y-4 mb-8">
-            {[
-              "Доступ ко всем премиум отелям",
-              "Скачивание медиа в высоком качестве",
-              "Приоритетная поддержка",
-              "Аналитика бронирований"
-            ].map((item, i) => (
-              <li key={i} className="flex items-center gap-3 text-primary-text">
-                <CheckmarkBadge01Icon size={20} className="text-evergreen-forest shrink-0" strokeWidth={1.5} />
-                <span>{item}</span>
-              </li>
-            ))}
-          </ul>
-
-          <Button variant="secondary" className="w-full">
-            Управление подпиской
-          </Button>
-        </div>
-
-        {/* Upgrade Card */}
-        <div className="bg-white/50 rounded-xl p-8 border border-gray-200 flex flex-col justify-center items-center text-center">
-          <h3 className="font-moniqa text-3xl text-primary-text mb-4">Нужно больше возможностей?</h3>
-          <p className="text-secondary-text mb-8 max-w-sm">
-            Свяжитесь с нами для перехода на тариф Enterprise с индивидуальными условиями и API доступом.
-          </p>
-          <Button variant="primary">
-            Связаться с отделом продаж
-          </Button>
-        </div>
+        ))}
       </div>
+
+      <div className="flex justify-end pt-4">
+        <Button
+          size="default"
+          onClick={handleSubscribe}
+          disabled={!canRenew || isProcessing}
+          className="w-full sm:w-auto min-w-[200px]"
+        >
+          {isProcessing ? "Обработка..." : hasActiveSubscription ? "Продлить подписку" : "Оформить подписку"}
+        </Button>
+      </div>
+
     </div>
   );
 }

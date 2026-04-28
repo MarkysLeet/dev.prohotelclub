@@ -24,7 +24,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { useToast } from '@/components/ui/Toast';
 import { useRouter } from 'next/navigation';
 
-import dynamic from 'next/dynamic';
+// import dynamic from 'next/dynamic';
 
 import Footer from "@/components/Footer";
 // Map tags to icons
@@ -39,7 +39,7 @@ const getTagIcon = (tag: string) => {
   }
 };
 
-const MapModal = dynamic(() => import("@/components/ui/MapModal"), { ssr: false });
+// const MapModal = dynamic(() => import("@/components/ui/MapModal"), { ssr: false });
 
 export default function HotelsPage() {
   const { isAuth } = useAuth();

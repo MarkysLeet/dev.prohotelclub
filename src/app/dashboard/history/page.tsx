@@ -31,7 +31,7 @@ export default function HistoryPage() {
                     <p className="text-sm text-secondary-text mt-1">{trx.id}</p>
                   </td>
                   <td className="p-6 text-primary-text">{trx.date}</td>
-                  <td className="p-6 font-medium text-primary-text">${trx.amount}</td>
+                  <td className="p-6 font-medium text-primary-text">{trx.amount} ₽</td>
                   <td className="p-6">
                     <Badge variant={trx.status === 'completed' ? 'success' : 'warning'}>
                       {trx.status === 'completed' ? 'Оплачено' : 'В обработке'}
