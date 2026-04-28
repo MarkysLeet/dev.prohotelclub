@@ -373,6 +373,17 @@ export const api = {
   },
 
 
+
+  updateProfileData: async (userId: string, name: string, company: string): Promise<void> => {
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('profiles')
+      .update({ name, company })
+      .eq('id', userId);
+
+    if (error) console.error('Error updating profile data:', error);
+  },
+
   updateProfileName: async (userId: string, name: string): Promise<void> => {
     const supabase = createClient();
     const { error } = await supabase
