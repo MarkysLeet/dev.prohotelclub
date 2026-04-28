@@ -86,7 +86,7 @@ export default function DashboardOverview() {
                 <p className="text-xs text-secondary-text mt-1">{trx.date}</p>
               </div>
               <div className="text-left sm:text-right w-full sm:w-auto">
-                <p className="font-medium text-primary-text">${trx.amount}</p>
+                <p className="font-medium text-primary-text">{trx.amount} ₽</p>
                 <Badge variant={trx.status === 'completed' ? 'success' : 'warning'} className="mt-1 text-[10px] px-2 py-0.5">
                   {trx.status === 'completed' ? 'Оплачено' : 'В обработке'}
                 </Badge>

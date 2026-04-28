@@ -11,6 +11,7 @@ export interface User {
   email: string;
   isAdmin: boolean;
   hasActiveSubscription: boolean;
+  subscriptionEndsAt: string | null;
   notifyLikes: boolean;
   notifyReplies: boolean;
   notifyEmailUpdates: boolean;
@@ -54,6 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           company: data.company || '',
           isAdmin: data.is_admin,
           hasActiveSubscription: data.has_active_subscription,
+          subscriptionEndsAt: data.subscription_ends_at || null,
           notifyLikes: data.notify_likes ?? true,
           notifyReplies: data.notify_replies ?? true,
           notifyEmailUpdates: data.notify_email_updates ?? true,
