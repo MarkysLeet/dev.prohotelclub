@@ -72,13 +72,44 @@ export function PaymentModal({ isOpen, onClose, onSuccess, planTitle, planPrice 
                   </div>
                 </div>
 
+
                 <div className="space-y-4">
-                  <p className="text-sm text-secondary-text">
-                    Это симуляция оплаты. В будущем здесь будет интеграция с реальной платежной системой. Нажмите кнопку ниже для подтверждения оплаты.
+                  <p className="text-sm text-secondary-text mb-4">
+                    Введите данные карты для симуляции оплаты.
                   </p>
 
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-secondary-text mb-1">Номер карты</label>
+                      <input
+                        type="text"
+                        placeholder="0000 0000 0000 0000"
+                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-evergreen-forest/50"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-secondary-text mb-1">Срок действия</label>
+                        <input
+                          type="text"
+                          placeholder="MM/YY"
+                          className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-evergreen-forest/50"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-secondary-text mb-1">CVC</label>
+                        <input
+                          type="text"
+                          placeholder="123"
+                          className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-evergreen-forest/50"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
                   <Button
-                    className="w-full flex items-center justify-center gap-2"
+                    className="w-full flex items-center justify-center gap-2 mt-6"
                     onClick={handlePayment}
                     disabled={isProcessing}
                   >
@@ -86,6 +117,7 @@ export function PaymentModal({ isOpen, onClose, onSuccess, planTitle, planPrice 
                     {isProcessing ? "Обработка платежа..." : "Оплатить (Тест)"}
                   </Button>
                 </div>
+
               </div>
             </motion.div>
           </div>

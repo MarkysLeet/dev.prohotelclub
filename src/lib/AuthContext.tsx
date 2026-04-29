@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email: data.email || email,
           company: data.company || '',
           isAdmin: data.is_admin,
-          hasActiveSubscription: data.has_active_subscription,
+          hasActiveSubscription: data.has_active_subscription || false,
           subscriptionEndsAt: data.subscription_ends_at || null,
           notifyLikes: data.notify_likes ?? true,
           notifyReplies: data.notify_replies ?? true,
