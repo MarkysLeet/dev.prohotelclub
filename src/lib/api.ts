@@ -467,32 +467,11 @@ export const api = {
   updateSubscription: async (userId: string, months: number): Promise<{success: boolean, error?: unknown}> => {
     const supabase = createClient();
 
-    // Получаем текущего пользователя для проверки, когда заканчивается его текущая подписка
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('subscription_ends_at')
-      .eq('id', userId)
-      .single();
-
-    let newEndDate = new Date();
-
-    if (profile?.subscription_ends_at) {
-      const currentEnd = new Date(profile.subscription_ends_at);
-      if (currentEnd > newEndDate) {
-        newEndDate = currentEnd;
-      }
-    }
-
-    // Прибавляем нужное количество месяцев
-    newEndDate.setMonth(newEndDate.getMonth() + months);
-
-    const { error } = await supabase
-      .from('profiles')
-      .update({
-        has_active_subscription: true,
-        subscription_ends_at: newEndDate.toISOString()
-      })
-      .eq('id', userId);
+    // Используем RPC функцию для обхода RLS ограничений
+    const { error } = await supabase.rpc('update_user_subscription', {
+      user_id: userId,
+      months: months
+    });
 
     if (error) {
       console.error('Error updating subscription:', error);
