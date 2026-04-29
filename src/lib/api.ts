@@ -462,6 +462,43 @@ export const api = {
     if (error) console.error('Error updating review request status:', error);
   },
 
+
+  // --- Подписки ---
+  updateSubscription: async (userId: string, months: number): Promise<{success: boolean, error?: unknown}> => {
+    const supabase = createClient();
+
+    // Используем RPC функцию для обхода RLS ограничений
+    const { data, error } = await supabase.rpc('update_user_subscription', {
+      user_id: userId,
+      months: months
+    });
+
+    if (error) {
+      console.error('Error updating subscription from RPC:', error);
+
+      // Fallback try to update table directly just in case RPC fails because of some permissions issue
+      const { data: profile } = await supabase.from('profiles').select('subscription_ends_at').eq('id', userId).single();
+      let newEndDate = new Date();
+      if (profile?.subscription_ends_at) {
+        const currentEnd = new Date(profile.subscription_ends_at);
+        if (currentEnd > newEndDate) newEndDate = currentEnd;
+      }
+      newEndDate.setMonth(newEndDate.getMonth() + months);
+
+      const { error: updateError } = await supabase.from('profiles').update({
+        has_active_subscription: true,
+        subscription_ends_at: newEndDate.toISOString()
+      }).eq('id', userId);
+
+      if (updateError) {
+        console.error('Error updating subscription via table update:', updateError);
+        return { success: false, error: updateError };
+      }
+    }
+
+    return { success: true };
+  },
+
   // --- Покупки отелей ---
   buyHotelAccess: async (hotelSlug: string, userId: string, amount: number = 250): Promise<{success: boolean, error?: unknown}> => {
     const supabase = createClient();
