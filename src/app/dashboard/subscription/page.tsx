@@ -4,18 +4,21 @@ import { useState } from "react";
 import { CheckmarkBadge01Icon } from "hugeicons-react";
 import { Button, useToast } from "@/components/ui";
 import { useAuth } from "@/lib/AuthContext";
+import { api } from "@/lib/api";
+import { PaymentModal } from "@/components/subscription/PaymentModal";
 
 const PLANS = [
-  { id: "1_month", title: "1 месяц", price: "1 299 ₽", period: "за 30 дней" },
-  { id: "3_months", title: "3 месяца", price: "3 599 ₽", period: "за 90 дней", popular: true },
-  { id: "1_year", title: "1 год", price: "13 299 ₽", period: "за 365 дней", highlight: true },
+  { id: "1_month", title: "1 месяц", price: "1 299 ₽", period: "за 30 дней", months: 1 },
+  { id: "3_months", title: "3 месяца", price: "3 599 ₽", period: "за 90 дней", popular: true, months: 3 },
+  { id: "1_year", title: "1 год", price: "13 299 ₽", period: "за 365 дней", highlight: true, months: 12 },
 ];
 
 export default function SubscriptionPage() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const { success, error } = useToast();
   const [selectedPlan, setSelectedPlan] = useState<string>("1_year");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   // Check if user has an active subscription and when it ends
   const hasActiveSubscription = user?.hasActiveSubscription;
@@ -36,14 +39,31 @@ export default function SubscriptionPage() {
     }
   }
 
-  const handleSubscribe = async () => {
+  const handleSubscribeClick = () => {
+    setIsPaymentModalOpen(true);
+  };
+
+  const handlePaymentSuccess = async () => {
+    setIsPaymentModalOpen(false);
+    if (!user) {
+      error("Необходимо авторизоваться");
+      return;
+    }
+
+    const plan = PLANS.find(p => p.id === selectedPlan);
+    if (!plan) return;
+
     setIsProcessing(true);
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      success('Подписка успешно оформлена!');
+      const res = await api.updateSubscription(user.id, plan.months);
+      if (res.success) {
+        await refreshUser();
+        success('Подписка успешно оформлена!');
+      } else {
+        error('Ошибка при оформлении подписки в базе данных');
+      }
     } catch {
-      error('Ошибка при оформлении подписки');
+      error('Произошла ошибка при оформлении подписки');
     } finally {
       setIsProcessing(false);
     }
@@ -125,7 +145,7 @@ export default function SubscriptionPage() {
       <div className="flex justify-end pt-4">
         <Button
           size="default"
-          onClick={handleSubscribe}
+          onClick={handleSubscribeClick}
           disabled={!canRenew || isProcessing}
           className="w-full sm:w-auto min-w-[200px]"
         >
@@ -133,6 +153,15 @@ export default function SubscriptionPage() {
         </Button>
       </div>
 
+      {isPaymentModalOpen && (
+        <PaymentModal
+          isOpen={isPaymentModalOpen}
+          onClose={() => setIsPaymentModalOpen(false)}
+          onSuccess={handlePaymentSuccess}
+          planTitle={PLANS.find(p => p.id === selectedPlan)?.title || ""}
+          planPrice={PLANS.find(p => p.id === selectedPlan)?.price || ""}
+        />
+      )}
     </div>
   );
 }

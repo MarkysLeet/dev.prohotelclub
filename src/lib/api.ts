@@ -462,6 +462,46 @@ export const api = {
     if (error) console.error('Error updating review request status:', error);
   },
 
+
+  // --- Подписки ---
+  updateSubscription: async (userId: string, months: number): Promise<{success: boolean, error?: unknown}> => {
+    const supabase = createClient();
+
+    // Получаем текущего пользователя для проверки, когда заканчивается его текущая подписка
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('subscription_ends_at')
+      .eq('id', userId)
+      .single();
+
+    let newEndDate = new Date();
+
+    if (profile?.subscription_ends_at) {
+      const currentEnd = new Date(profile.subscription_ends_at);
+      if (currentEnd > newEndDate) {
+        newEndDate = currentEnd;
+      }
+    }
+
+    // Прибавляем нужное количество месяцев
+    newEndDate.setMonth(newEndDate.getMonth() + months);
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({
+        has_active_subscription: true,
+        subscription_ends_at: newEndDate.toISOString()
+      })
+      .eq('id', userId);
+
+    if (error) {
+      console.error('Error updating subscription:', error);
+      return { success: false, error };
+    }
+
+    return { success: true };
+  },
+
   // --- Покупки отелей ---
   buyHotelAccess: async (hotelSlug: string, userId: string, amount: number = 250): Promise<{success: boolean, error?: unknown}> => {
     const supabase = createClient();
