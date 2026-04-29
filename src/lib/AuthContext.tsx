@@ -94,6 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
          setUser(null);
          setIsLoading(false);
       }
+      setIsLoading(false);
     } catch (error) {
       console.error('Error refreshing user:', error);
       setIsAuth(false);
