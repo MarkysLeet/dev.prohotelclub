@@ -15,8 +15,57 @@ interface PaymentModalProps {
 
 export function PaymentModal({ isOpen, onClose, onSuccess, planTitle, planPrice }: PaymentModalProps) {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [cardNumber, setCardNumber] = useState("");
+  const [expiryDate, setExpiryDate] = useState("");
+  const [cvc, setCvc] = useState("");
+
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, ""); // Remove non-digits
+    if (value.length > 16) {
+      value = value.substring(0, 16);
+    }
+    // Add spaces every 4 digits
+    const parts = [];
+    for (let i = 0; i < value.length; i += 4) {
+      parts.push(value.substring(i, i + 4));
+    }
+    setCardNumber(parts.join(" "));
+  };
+
+  const handleExpiryDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, ""); // Remove non-digits
+
+    // Handle manual deletion of slash
+    if (expiryDate.endsWith('/') && e.target.value.length < expiryDate.length) {
+       value = value.substring(0, value.length - 1);
+    }
+
+    if (value.length > 4) {
+      value = value.substring(0, 4);
+    }
+
+    if (value.length > 2) {
+      setExpiryDate(`${value.substring(0, 2)}/${value.substring(2)}`);
+    } else if (value.length === 2 && expiryDate.length < 3) {
+      setExpiryDate(`${value}/`);
+    } else {
+      setExpiryDate(value);
+    }
+  };
+
+  const handleCvcChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value.replace(/\D/g, ""); // Remove non-digits
+    if (value.length > 3) {
+      value = value.substring(0, 3);
+    }
+    setCvc(value);
+  };
+
+  const isValid = cardNumber.length === 19 && expiryDate.length === 5 && cvc.length === 3;
 
   const handlePayment = async () => {
+    if (!isValid) return;
+
     setIsProcessing(true);
     // Имитация процесса оплаты (заглушка)
     await new Promise(resolve => setTimeout(resolve, 1500));
@@ -83,6 +132,8 @@ export function PaymentModal({ isOpen, onClose, onSuccess, planTitle, planPrice 
                       <label className="block text-sm font-medium text-secondary-text mb-1">Номер карты</label>
                       <input
                         type="text"
+                        value={cardNumber}
+                        onChange={handleCardNumberChange}
                         placeholder="0000 0000 0000 0000"
                         className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-evergreen-forest/50"
                       />
@@ -93,6 +144,8 @@ export function PaymentModal({ isOpen, onClose, onSuccess, planTitle, planPrice 
                         <label className="block text-sm font-medium text-secondary-text mb-1">Срок действия</label>
                         <input
                           type="text"
+                          value={expiryDate}
+                          onChange={handleExpiryDateChange}
                           placeholder="MM/YY"
                           className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-evergreen-forest/50"
                         />
@@ -101,6 +154,8 @@ export function PaymentModal({ isOpen, onClose, onSuccess, planTitle, planPrice 
                         <label className="block text-sm font-medium text-secondary-text mb-1">CVC</label>
                         <input
                           type="text"
+                          value={cvc}
+                          onChange={handleCvcChange}
                           placeholder="123"
                           className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-evergreen-forest/50"
                         />
@@ -111,7 +166,7 @@ export function PaymentModal({ isOpen, onClose, onSuccess, planTitle, planPrice 
                   <Button
                     className="w-full flex items-center justify-center gap-2 mt-6"
                     onClick={handlePayment}
-                    disabled={isProcessing}
+                    disabled={isProcessing || !isValid}
                   >
                     <CreditCardIcon size={20} />
                     {isProcessing ? "Обработка платежа..." : "Оплатить (Тест)"}
