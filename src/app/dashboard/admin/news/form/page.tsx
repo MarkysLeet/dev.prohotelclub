@@ -13,7 +13,7 @@ function NewsFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get('id');
-  const { success } = useToast();
+  const { success, error: showError } = useToast();
 
   const [formData, setFormData] = useState({
     title: '',
@@ -22,6 +22,7 @@ function NewsFormContent() {
     imageUrl: '',
     publishedAt: new Date().toISOString().slice(0, 16) // Format: YYYY-MM-DDThh:mm
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (user && !user.isAdmin) {
@@ -29,16 +30,20 @@ function NewsFormContent() {
     } else if (editId) {
       let mounted = true;
       async function loadNews() {
-        const newsList = await api.getAdminNews();
-        const news = newsList.find((n: NewsItem) => n.id === editId);
-        if (mounted && news) {
-          setFormData({
-            title: news.title,
-            category: news.category,
-            content: news.content,
-            imageUrl: news.imageUrl || '',
-            publishedAt: new Date(news.publishedAt).toISOString().slice(0, 16)
-          });
+        try {
+          const newsList = await api.getAdminNews();
+          const news = newsList.find((n: NewsItem) => n.id === editId);
+          if (mounted && news) {
+            setFormData({
+              title: news.title,
+              category: news.category,
+              content: news.content,
+              imageUrl: news.imageUrl || '',
+              publishedAt: new Date(news.publishedAt).toISOString().slice(0, 16)
+            });
+          }
+        } catch (error) {
+           console.error("Error loading news:", error);
         }
       }
       loadNews();
@@ -51,17 +56,32 @@ function NewsFormContent() {
 
     if (!formData.title || !formData.content) return;
 
-    await api.saveNews({
-      id: editId || undefined,
-      title: formData.title,
-      category: formData.category,
-      content: formData.content,
-      imageUrl: formData.imageUrl || null,
-      publishedAt: new Date(formData.publishedAt).toISOString()
-    });
+    const publishedDate = new Date(formData.publishedAt);
+    if (isNaN(publishedDate.getTime())) {
+      showError('Пожалуйста, введите корректную дату и время');
+      return;
+    }
 
-    success(editId ? 'Новость обновлена' : 'Новость опубликована');
-    router.push('/dashboard/admin/news');
+    setIsSubmitting(true);
+    try {
+      await api.saveNews({
+        id: editId || undefined,
+        title: formData.title,
+        category: formData.category,
+        content: formData.content,
+        imageUrl: formData.imageUrl || null,
+        publishedAt: publishedDate.toISOString()
+      });
+
+      success(editId ? 'Новость обновлена' : 'Новость опубликована');
+      router.refresh();
+      router.push('/dashboard/admin/news');
+    } catch (err) {
+      console.error('Error saving news:', err);
+      showError('Произошла ошибка при сохранении новости');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!user || !user.isAdmin) return null;
@@ -125,10 +145,10 @@ function NewsFormContent() {
 
         <div className="pt-6 border-t border-gray-100 flex justify-end gap-4">
           <Link href="/dashboard/admin/news">
-            <Button type="button" variant="ghost">Отмена</Button>
+            <Button type="button" variant="ghost" disabled={isSubmitting}>Отмена</Button>
           </Link>
-          <Button type="submit">
-            {editId ? 'Сохранить изменения' : 'Опубликовать'}
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Сохранение...' : (editId ? 'Сохранить изменения' : 'Опубликовать')}
           </Button>
         </div>
       </form>
