@@ -7,7 +7,7 @@ import { api } from '@/lib/api';
 import { Hotel } from '@/lib/mock-data';
 import { Button } from '@/components/ui';
 import Link from 'next/link';
-import { ArrowLeft01Icon, PlusSignIcon, Edit01Icon } from 'hugeicons-react';
+import { ArrowLeft01Icon, PlusSignIcon, Edit01Icon, Delete01Icon } from 'hugeicons-react';
 import Image from 'next/image';
 
 export default function AdminHotelsPage() {
@@ -28,6 +28,14 @@ export default function AdminHotelsPage() {
       return () => { mounted = false; };
     }
   }, [user, router]);
+
+  const handleDelete = async (id: string) => {
+    if (confirm('Вы уверены, что хотите удалить этот отель? Это действие необратимо.')) {
+      await api.deleteHotel(id);
+      const data = await api.getHotels();
+      setHotels(data);
+    }
+  };
 
   if (!user || !user.isAdmin) return null;
 
@@ -73,6 +81,15 @@ export default function AdminHotelsPage() {
                     <Edit01Icon size={16} /> Редактировать
                   </Button>
                 </Link>
+                <Button
+                  variant="dangerOutline"
+                  className="px-3"
+                  size="sm"
+                  onClick={() => handleDelete(hotel.id)}
+                  title="Удалить отель"
+                >
+                  <Delete01Icon size={16} />
+                </Button>
               </div>
             </div>
           </div>

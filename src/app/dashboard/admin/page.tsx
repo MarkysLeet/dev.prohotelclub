@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { Shield01Icon, Building04Icon, SentIcon } from 'hugeicons-react';
+import { Shield01Icon, Building04Icon, SentIcon, NewsIcon, UserMultipleIcon } from 'hugeicons-react';
 import { Button } from '@/components/ui';
 
 export default function AdminDashboard() {
@@ -41,6 +41,42 @@ export default function AdminDashboard() {
           <Link href="/dashboard/admin/hotels">
             <Button className="w-full justify-center">
               Перейти к отелям
+            </Button>
+          </Link>
+        </div>
+
+        {/* Управление новостями */}
+        <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100 flex flex-col justify-between">
+          <div>
+            <div className="w-12 h-12 rounded-full bg-evergreen-forest/10 flex items-center justify-center mb-6">
+              <NewsIcon size={24} className="text-evergreen-forest" />
+            </div>
+            <h2 className="text-xl font-medium text-primary-text mb-2">Управление новостями</h2>
+            <p className="text-secondary-text mb-8">
+              Публикуйте обновления базы, отчеты с инспекций и новости платформы. Поддерживается отложенная публикация.
+            </p>
+          </div>
+          <Link href="/dashboard/admin/news">
+            <Button className="w-full justify-center">
+              Перейти к новостям
+            </Button>
+          </Link>
+        </div>
+
+        {/* Управление пользователями */}
+        <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-100 flex flex-col justify-between">
+          <div>
+            <div className="w-12 h-12 rounded-full bg-evergreen-forest/10 flex items-center justify-center mb-6">
+              <UserMultipleIcon size={24} className="text-evergreen-forest" />
+            </div>
+            <h2 className="text-xl font-medium text-primary-text mb-2">Пользователи</h2>
+            <p className="text-secondary-text mb-8">
+              Просматривайте базу агентов, управляйте правами доступа (назначение администраторов) и удаляйте аккаунты.
+            </p>
+          </div>
+          <Link href="/dashboard/admin/users">
+            <Button className="w-full justify-center">
+              Управление пользователями
             </Button>
           </Link>
         </div>

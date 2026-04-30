@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { UserCircleIcon, SentIcon, FavouriteIcon, MessageMultiple02Icon } from 'hugeicons-react';
+import { UserCircleIcon, SentIcon, FavouriteIcon, MessageMultiple02Icon, Delete01Icon } from 'hugeicons-react';
 import { api, Comment } from '@/lib/api';
 import { useAuth } from '@/lib/AuthContext';
 import { useToast } from '@/components/ui/Toast';
@@ -76,6 +76,16 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
     }
   };
 
+
+  const handleDeleteComment = async (commentId: string) => {
+    if (confirm('Удалить этот комментарий?')) {
+      await api.deleteComment(commentId);
+      const updatedComments = await api.getComments(hotelSlug);
+      setComments(updatedComments);
+      toast('Комментарий удален', { type: 'success' });
+    }
+  };
+
   const handleLike = async (commentId: string) => {
     if (!user) {
       toast('Необходимо авторизоваться для оценки комментариев', { type: 'error' });
@@ -128,6 +138,17 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
                 <span>Ответить</span>
               </button>
             )}
+
+            {user?.isAdmin && (
+              <button
+                onClick={() => handleDeleteComment(item.id)}
+                className="flex items-center gap-1.5 text-xs font-medium text-red-400 hover:text-red-600 transition-colors ml-auto"
+                title="Удалить комментарий (Админ)"
+              >
+                <Delete01Icon size={16} />
+              </button>
+            )}
+
           </div>
 
           {/* Reply Form */}

@@ -30,6 +30,28 @@ export interface Notification {
   hotelSlug?: string;
 }
 
+
+export interface NewsItem {
+  id: string;
+  title: string;
+  content: string;
+  category: string;
+  imageUrl: string | null;
+  publishedAt: string;
+  createdAt: string;
+}
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  company: string;
+  isAdmin: boolean;
+  hasActiveSubscription: boolean;
+  subscriptionEndsAt: string | null;
+  createdAt: string;
+}
+
 export interface ReviewRequest {
   id: string;
   hotelId: string;
@@ -42,6 +64,77 @@ export interface ReviewRequest {
 
 export const api = {
   // --- Отели ---
+
+  // --- Новости ---
+  getNews: async (): Promise<NewsItem[]> => {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('news')
+      .select('*')
+      .lte('published_at', new Date().toISOString())
+      .order('published_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching news:', error);
+      return [];
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return data.map((n: any) => ({
+      id: n.id,
+      title: n.title,
+      content: n.content,
+      category: n.category,
+      imageUrl: n.image_url,
+      publishedAt: n.published_at,
+      createdAt: n.created_at
+    }));
+  },
+
+  getAdminNews: async (): Promise<NewsItem[]> => {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('news')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching admin news:', error);
+      return [];
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return data.map((n: any) => ({
+      id: n.id,
+      title: n.title,
+      content: n.content,
+      category: n.category,
+      imageUrl: n.image_url,
+      publishedAt: n.published_at,
+      createdAt: n.created_at
+    }));
+  },
+
+  saveNews: async (news: Partial<NewsItem>): Promise<void> => {
+    const supabase = createClient();
+    const { error } = await supabase.from('news').upsert({
+      id: news.id,
+      title: news.title,
+      content: news.content,
+      category: news.category,
+      image_url: news.imageUrl,
+      published_at: news.publishedAt,
+    });
+
+    if (error) console.error('Error saving news:', error);
+  },
+
+  deleteNews: async (newsId: string): Promise<void> => {
+    const supabase = createClient();
+    const { error } = await supabase.from('news').delete().eq('id', newsId);
+    if (error) console.error('Error deleting news:', error);
+  },
+
   getHotels: async (): Promise<Hotel[]> => {
     const supabase = createClient();
     const { data, error } = await supabase.from('hotels').select('*');
@@ -75,6 +168,13 @@ export const api = {
   },
 
   // --- Детали Отеля ---
+
+  deleteHotel: async (hotelId: string): Promise<void> => {
+    const supabase = createClient();
+    const { error } = await supabase.from('hotels').delete().eq('id', hotelId);
+    if (error) console.error('Error deleting hotel:', error);
+  },
+
   getHotelDetailBySlug: async (slug: string): Promise<HotelDetailData | null> => {
     const supabase = createClient();
     const { data: detailData, error: detailError } = await supabase
@@ -238,6 +338,13 @@ export const api = {
     });
 
     return rootComments;
+  },
+
+
+  deleteComment: async (commentId: string): Promise<void> => {
+    const supabase = createClient();
+    const { error } = await supabase.from('comments').delete().eq('id', commentId);
+    if (error) console.error('Error deleting comment:', error);
   },
 
   addComment: async (hotelSlug: string, text: string, userId: string, parentId?: string): Promise<void> => {
@@ -416,6 +523,57 @@ export const api = {
   },
 
   // --- Запросы на обзор ---
+
+  // --- Пользователи (Admin) ---
+  getAllProfiles: async (): Promise<UserProfile[]> => {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching all profiles:', error);
+      return [];
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return data.map((p: any) => ({
+      id: p.id,
+      name: p.name || '',
+      email: p.email || '',
+      company: p.company || '',
+      isAdmin: p.is_admin,
+      hasActiveSubscription: p.has_active_subscription,
+      subscriptionEndsAt: p.subscription_ends_at,
+      createdAt: p.created_at
+    }));
+  },
+
+  updateUserProfileAsAdmin: async (userId: string, data: Partial<UserProfile>): Promise<void> => {
+    const supabase = createClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updates: any = {};
+    if (data.name !== undefined) updates.name = data.name;
+    if (data.company !== undefined) updates.company = data.company;
+    if (data.isAdmin !== undefined) updates.is_admin = data.isAdmin;
+    if (data.hasActiveSubscription !== undefined) updates.has_active_subscription = data.hasActiveSubscription;
+    if (data.subscriptionEndsAt !== undefined) updates.subscription_ends_at = data.subscriptionEndsAt;
+
+    const { error } = await supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', userId);
+
+    if (error) console.error('Error updating user profile:', error);
+  },
+
+  deleteUserAsAdmin: async (userId: string): Promise<void> => {
+    const supabase = createClient();
+    const { error } = await supabase.rpc('admin_delete_user', { target_user_id: userId });
+    if (error) console.error('Error deleting user as admin:', error);
+  },
+
   getReviewRequests: async (): Promise<ReviewRequest[]> => {
     const supabase = createClient();
     const { data, error } = await supabase
@@ -468,7 +626,7 @@ export const api = {
     const supabase = createClient();
 
     // Используем RPC функцию для обхода RLS ограничений
-    const { data, error } = await supabase.rpc('update_user_subscription', {
+    const { error } = await supabase.rpc('update_user_subscription', {
       user_id: userId,
       months: months
     });
