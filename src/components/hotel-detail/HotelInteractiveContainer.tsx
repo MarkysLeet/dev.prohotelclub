@@ -7,44 +7,34 @@ import { HotelSection } from './HotelSection';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Building03Icon,
-  BedSingle02Icon,
-  Restaurant01Icon,
-  Tree02Icon,
-  SwimmingIcon,
-  WaveIcon,
-  FerrisWheelIcon,
-  MessageMultiple01Icon,
-  ThumbsUpIcon,
-  Note01Icon,
-  ArrowRight01Icon,
-  ArrowDown01Icon,
-  ArrowUp01Icon,
-  Coffee02Icon,
-  Location01Icon
-} from 'hugeicons-react';
+import * as HugeIcons from 'hugeicons-react';
 
 interface HotelInteractiveContainerProps {
   hotelData: HotelDetailData;
 }
 
-// Хелпер для подбора иконок по ID секции
-const getIconForSection = (id: string) => {
-  switch (id) {
-    case 'entrance': return <Building03Icon size={24} />;
-    case 'rooms': return <BedSingle02Icon size={24} />;
-    case 'dining': return <Restaurant01Icon size={24} />;
-    case 'bars': return <Coffee02Icon size={24} />;
-    case 'spa': return <Tree02Icon size={24} />;
-    case 'pools': return <SwimmingIcon size={24} />;
-    case 'beach': return <WaveIcon size={24} />;
-    case 'territory': return <Location01Icon size={24} />;
-    case 'entertainment': return <FerrisWheelIcon size={24} />;
-    case 'reviews': return <MessageMultiple01Icon size={24} />;
-    case 'pros-cons': return <ThumbsUpIcon size={24} />;
-    case 'resume': return <Note01Icon size={24} />;
-    default: return <ArrowRight01Icon size={24} />;
+// Helper to map string icon name to HugeIcons component
+const getDynamicIcon = (iconName?: string, defaultId?: string) => {
+        if (iconName && (HugeIcons as Record<string, React.ElementType>)[iconName]) {
+        const IconComponent = (HugeIcons as Record<string, React.ElementType>)[iconName];
+    return <IconComponent size={20} />;
+  }
+
+  // Fallback to legacy id-based mapping
+  switch (defaultId) {
+    case 'entrance': return <HugeIcons.Building03Icon size={20} />;
+    case 'rooms': return <HugeIcons.BedSingle02Icon size={20} />;
+    case 'dining': return <HugeIcons.Restaurant01Icon size={20} />;
+    case 'bars': return <HugeIcons.Coffee02Icon size={20} />;
+    case 'spa': return <HugeIcons.Tree02Icon size={20} />;
+    case 'pools': return <HugeIcons.SwimmingIcon size={20} />;
+    case 'beach': return <HugeIcons.WaveIcon size={20} />;
+    case 'territory': return <HugeIcons.Location01Icon size={20} />;
+    case 'entertainment': return <HugeIcons.FerrisWheelIcon size={20} />;
+    case 'reviews': return <HugeIcons.MessageMultiple01Icon size={20} />;
+    case 'pros-cons': return <HugeIcons.ThumbsUpIcon size={20} />;
+    case 'resume': return <HugeIcons.Note01Icon size={20} />;
+    default: return <HugeIcons.ArrowRight01Icon size={20} />;
   }
 };
 
@@ -112,25 +102,19 @@ export function HotelInteractiveContainer({ hotelData }: HotelInteractiveContain
             <button
               key={section.id}
               onClick={() => toggleSection(section.id)}
-              className={`flex flex-col items-center justify-center p-6 rounded-2xl border transition-all duration-300 group ${
-                isActive
-                  ? 'bg-evergreen-forest border-evergreen-forest text-soft-sand shadow-md'
-                  : 'bg-white border-gray-100 text-primary-text hover:border-evergreen-forest/30 hover:shadow-sm'
-              }`}
+              className={`flex flex-row items-center gap-3 p-3 px-4 rounded-xl border transition-all duration-300 group ${isActive ? 'bg-evergreen-forest border-evergreen-forest text-soft-sand shadow-md' : 'bg-white border-gray-100 text-primary-text hover:border-evergreen-forest/30 hover:shadow-sm'}`}
             >
-              <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 transition-colors ${
-                isActive ? 'bg-white/10' : 'bg-soft-sand group-hover:bg-evergreen-forest group-hover:text-soft-sand text-evergreen-forest'
-              }`}>
-                {getIconForSection(section.id)}
+              <div className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center transition-colors ${isActive ? 'bg-white/20' : 'bg-soft-sand group-hover:bg-evergreen-forest/10 text-evergreen-forest group-hover:text-evergreen-forest'}`}>
+                {getDynamicIcon(section.icon, section.id)}
               </div>
-              <span className="font-century-gothic font-medium text-sm text-center">
+              <span className="font-century-gothic font-medium text-sm text-left flex-1 line-clamp-2 leading-tight">
                 {section.title}
               </span>
-              <div className="mt-3">
+              <div className="shrink-0 ml-1">
                 {isActive ? (
-                   <ArrowUp01Icon size={16} className="opacity-70" />
+                   <HugeIcons.ArrowUp01Icon size={16} className="opacity-70" />
                 ) : (
-                   <ArrowDown01Icon size={16} className="text-secondary-text opacity-50 group-hover:opacity-100 transition-opacity" />
+                   <HugeIcons.ArrowDown01Icon size={16} className="text-secondary-text opacity-50 group-hover:opacity-100 transition-opacity" />
                 )}
               </div>
             </button>

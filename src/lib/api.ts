@@ -215,14 +215,39 @@ export const api = {
         title: s.title,
         content: s.content,
         mediaCount: s.media_count,
-        isPaywalled: s.is_paywalled
+        isPaywalled: s.is_paywalled,
+        icon: s.icon
       }))
     };
   },
 
   saveHotelDetail: async (detail: HotelDetailData): Promise<void> => {
     const supabase = createClient();
+
+    // Delete sections that are no longer present
+    if (detail.sections && detail.sections.length > 0) {
+      const sectionIds = detail.sections.map(s => s.id);
+      const { error: deleteError } = await supabase
+        .from('hotel_sections')
+        .delete()
+        .eq('hotel_slug', detail.slug)
+        .not('id', 'in', `(${sectionIds.join(',')})`);
+      if (deleteError) {
+        console.error('Error deleting removed sections:', deleteError);
+      }
+    } else {
+      // If no sections, delete all for this hotel
+      const { error: deleteError } = await supabase
+        .from('hotel_sections')
+        .delete()
+        .eq('hotel_slug', detail.slug);
+      if (deleteError) {
+        console.error('Error deleting all sections:', deleteError);
+      }
+    }
+
     const { error: detailError } = await supabase.from('hotel_details').upsert({
+
       slug: detail.slug,
       name: detail.name,
       location: detail.location,
@@ -251,6 +276,7 @@ export const api = {
         content: section.content,
         media_count: section.mediaCount,
         is_paywalled: section.isPaywalled || false,
+        icon: section.icon,
         order_index: i
       });
       if (sectionError) console.error('Error saving section:', sectionError);
