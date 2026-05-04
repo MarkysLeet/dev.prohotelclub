@@ -235,22 +235,35 @@ export default function Header() {
                           Уведомлений пока нет
                         </div>
                       ) : (
-                        notifications.map(notif => (
-                          <div key={notif.id} className={`px-4 py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors ${!notif.isRead ? 'bg-evergreen-forest/5' : ''}`}>
-                            <p className="text-sm text-primary-text">
-                              <span className="font-bold">{notif.actorName}</span>{' '}
-                              {notif.type === 'like' ? 'оценил(а) ваш комментарий' : 'ответил(а) на ваш комментарий'}
-                            </p>
-                            <span className="text-xs text-secondary-text mt-1 block">
-                              {new Date(notif.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}
-                            </span>
-                            {notif.hotelSlug && (
-                               <Link href={`/hotels/${notif.hotelSlug}`} onClick={() => setIsNotifOpen(false)} className="text-xs text-evergreen-forest hover:underline mt-1 inline-block">
-                                  К отелю
-                               </Link>
-                            )}
-                          </div>
-                        ))
+
+                        notifications.map(notif => {
+                          let text = '';
+                          if (notif.type === 'like') text = 'оценил(а) ваш комментарий';
+                          else if (notif.type === 'reply') text = 'ответил(а) на ваш комментарий';
+                          else if (notif.type === 'review_approved') text = 'Ваш запрос на обзор одобрен';
+                          else if (notif.type === 'review_rejected') text = 'Ваш запрос на обзор отклонен';
+                          else if (notif.type === 'new_comment') text = 'оставил(а) новый комментарий к отелю, на который вы подписаны';
+                          else if (notif.type === 'hotel_update') text = 'вышло обновление для отеля, на который вы подписаны';
+
+                          const isSystem = notif.type === 'review_approved' || notif.type === 'review_rejected' || notif.type === 'hotel_update';
+
+                          return (
+                            <div key={notif.id} className={`px-4 py-3 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors ${!notif.isRead ? 'bg-evergreen-forest/5' : ''}`}>
+                              <p className="text-sm text-primary-text">
+                                {!isSystem && <span className="font-bold">{notif.actorName} </span>}
+                                {text}
+                              </p>
+                              <span className="text-xs text-secondary-text mt-1 block">
+                                {new Date(notif.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                              {notif.hotelSlug && (
+                                 <Link href={`/hotels/${notif.hotelSlug}`} onClick={() => setIsNotifOpen(false)} className="text-xs font-bold text-evergreen-forest hover:underline mt-1 inline-block">
+                                    Перейти к отелю
+                                 </Link>
+                              )}
+                            </div>
+                          );
+                        })
                       )}
                     </div>
                   </motion.div>

@@ -8,10 +8,13 @@ import { Badge, Button } from '@/components/ui';
 import Link from 'next/link';
 import { ArrowLeft01Icon } from 'hugeicons-react';
 
+import { ReviewRequestResponseModal } from './ReviewRequestResponseModal';
+
 export default function AdminRequestsPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [requests, setRequests] = useState<ReviewRequest[]>([]);
+  const [selectedRequest, setSelectedRequest] = useState<{ id: string, type: 'approve' | 'reject' } | null>(null);
 
   useEffect(() => {
     if (user && !user.isAdmin) {
@@ -27,10 +30,11 @@ export default function AdminRequestsPage() {
     }
   }, [user, router]);
 
-  const handleStatusChange = async (id: string, newStatus: ReviewRequest['status']) => {
-    await api.updateReviewRequestStatus(id, newStatus);
+  const handleStatusChange = async (id: string, newStatus: ReviewRequest['status'], adminReply?: string, scheduledDate?: string) => {
+    await api.updateReviewRequestStatus(id, newStatus, adminReply, scheduledDate);
     const updated = await api.getReviewRequests();
     setRequests(updated);
+    setSelectedRequest(null);
   };
 
   if (!user || !user.isAdmin) return null;
@@ -57,6 +61,7 @@ export default function AdminRequestsPage() {
                 <tr className="bg-soft-sand/50 border-b border-gray-100">
                   <th className="p-4 font-medium text-sm text-secondary-text">Отель</th>
                   <th className="p-4 font-medium text-sm text-secondary-text">Пользователь</th>
+                  <th className="p-4 font-medium text-sm text-secondary-text">Причина</th>
                   <th className="p-4 font-medium text-sm text-secondary-text">Дата</th>
                   <th className="p-4 font-medium text-sm text-secondary-text">Статус</th>
                   <th className="p-4 font-medium text-sm text-secondary-text">Действия</th>
@@ -67,6 +72,9 @@ export default function AdminRequestsPage() {
                   <tr key={req.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition-colors">
                     <td className="p-4 font-medium text-primary-text">{req.hotelName}</td>
                     <td className="p-4 text-sm text-secondary-text">{req.userName}</td>
+                    <td className="p-4 text-sm text-primary-text max-w-xs truncate" title={req.reason || 'Не указана'}>
+                      {req.reason || '-'}
+                    </td>
                     <td className="p-4 text-sm text-secondary-text">{req.date}</td>
                     <td className="p-4">
                       <Badge variant={
@@ -74,16 +82,17 @@ export default function AdminRequestsPage() {
                         req.status === 'reviewed' ? 'success' : 'danger'
                       }>
                         {req.status === 'pending' ? 'В ожидании' : 
-                         req.status === 'reviewed' ? 'Сделан обзор' : 'Отклонен'}
+                         req.status === 'reviewed' ? 'Запланирован/Сделан' : 'Отклонен'}
+                        {req.scheduledDate && <div className="text-xs mt-1 font-century-gothic font-normal">На: {req.scheduledDate}</div>}
                       </Badge>
                     </td>
                     <td className="p-4">
                       {req.status === 'pending' && (
                         <div className="flex gap-2">
-                          <Button size="sm" onClick={() => handleStatusChange(req.id, 'reviewed')}>
-                            Выполнено
+                          <Button size="sm" onClick={() => setSelectedRequest({ id: req.id, type: 'approve' })}>
+                            Одобрить
                           </Button>
-                          <Button size="sm" variant="dangerOutline" onClick={() => handleStatusChange(req.id, 'rejected')}>
+                          <Button size="sm" variant="dangerOutline" onClick={() => setSelectedRequest({ id: req.id, type: 'reject' })}>
                             Отклонить
                           </Button>
                         </div>
@@ -96,6 +105,15 @@ export default function AdminRequestsPage() {
           </div>
         )}
       </div>
+
+      {selectedRequest && (
+        <ReviewRequestResponseModal
+          isOpen={!!selectedRequest}
+          type={selectedRequest.type}
+          onClose={() => setSelectedRequest(null)}
+          onSubmit={(reply, date) => handleStatusChange(selectedRequest.id, selectedRequest.type === 'approve' ? 'reviewed' : 'rejected', reply, date)}
+        />
+      )}
     </div>
   );
 }
