@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useComments } from '@/lib/useSWRHooks';
 import { UserCircleIcon, SentIcon, FavouriteIcon, MessageMultiple02Icon, Delete01Icon } from 'hugeicons-react';
 import { api, Comment } from '@/lib/api';
 import { useAuth } from '@/lib/AuthContext';
@@ -37,19 +38,9 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
   const [commentText, setCommentText] = useState('');
   const [replyText, setReplyText] = useState('');
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
-  const [comments, setComments] = useState<Comment[]>([]);
   const { user } = useAuth();
   const { toast } = useToast();
-
-  useEffect(() => {
-    let mounted = true;
-    async function fetchComments() {
-      const data = await api.getComments(hotelSlug);
-      if (mounted) setComments(data);
-    }
-    fetchComments();
-    return () => { mounted = false; };
-  }, [hotelSlug]);
+  const { comments, isLoading, mutate } = useComments(hotelSlug);
 
   const handleSubmit = async (e: React.FormEvent, parentId?: string) => {
     e.preventDefault();
@@ -62,8 +53,7 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
 
     if (text) {
       await api.addComment(hotelSlug, text, user.id, parentId);
-      const updatedComments = await api.getComments(hotelSlug);
-      setComments(updatedComments);
+      mutate();
 
       if (parentId) {
         setReplyText('');
@@ -80,8 +70,7 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
   const handleDeleteComment = async (commentId: string) => {
     if (confirm('Удалить этот комментарий?')) {
       await api.deleteComment(commentId);
-      const updatedComments = await api.getComments(hotelSlug);
-      setComments(updatedComments);
+      mutate();
       toast('Комментарий удален', { type: 'success' });
     }
   };
@@ -92,8 +81,7 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
       return;
     }
     await api.toggleLike(commentId, user.id);
-    const updatedComments = await api.getComments(hotelSlug);
-    setComments(updatedComments);
+    mutate();
   };
 
   const renderComment = (item: Comment, isReply: boolean = false) => {
@@ -244,7 +232,8 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
 
       {/* Список комментариев */}
       <div className="space-y-8">
-        {comments.length === 0 ? (
+        {isLoading && <p className="text-secondary-text text-center">Загрузка комментариев...</p>}
+        {!isLoading && comments.length === 0 ? (
           <p className="text-secondary-text text-center italic">Пока нет комментариев. Будьте первым!</p>
         ) : (
           comments.map((item) => renderComment(item, false))

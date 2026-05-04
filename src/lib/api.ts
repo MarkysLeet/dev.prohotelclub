@@ -266,7 +266,7 @@ export const api = {
       .from('comments')
       .select('*')
       .eq('hotel_slug', hotelSlug)
-      .order('published_at', { ascending: false });
+      .order('created_at', { ascending: false });
 
     if (commentsError) {
       console.error('Error fetching comments:', commentsError);
@@ -447,7 +447,7 @@ export const api = {
         comments (hotel_slug)
       `)
       .eq('user_id', userId)
-      .order('published_at', { ascending: false });
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error('Error fetching notifications:', error);
@@ -530,7 +530,7 @@ export const api = {
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
-      .order('published_at', { ascending: false });
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error('Error fetching all profiles:', error);
@@ -582,7 +582,7 @@ export const api = {
         *,
         profiles (name)
       `)
-      .order('published_at', { ascending: false });
+      .order('created_at', { ascending: false });
 
     if (error) {
       console.error('Error fetching review requests:', error);
