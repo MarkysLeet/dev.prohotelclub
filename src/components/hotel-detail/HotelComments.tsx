@@ -93,16 +93,20 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
           <UserCircleIcon size={isReply ? 16 : 20} className="text-secondary-text" />
         </div>
         <div className="flex-1 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <div>
+          <div className="flex items-start sm:items-center justify-between mb-3 flex-col sm:flex-row gap-2 sm:gap-0">
+             <div className="flex items-center gap-2 flex-wrap">
               <h4 className="font-century-gothic font-bold text-primary-text">{item.authorName}</h4>
-              <p className="font-century-gothic text-xs text-evergreen-forest mt-0.5">{item.role}</p>
+              <span className="font-century-gothic text-[10px] uppercase tracking-wider bg-soft-sand/50 text-evergreen-forest px-2 py-0.5 rounded-md font-semibold border border-soft-sand/80">{item.role}</span>
             </div>
             <span className="font-century-gothic text-xs text-secondary-text">{item.date}</span>
           </div>
-          <p className="font-century-gothic text-[13px] leading-relaxed text-secondary-text mb-2">
-            {item.text}
-          </p>
+          <div className="bg-gray-50/80 p-3 rounded-xl border border-gray-100/50 mb-3">
+            <p className="font-century-gothic text-[13.5px] leading-relaxed text-primary-text/90">
+              {item.text}
+              </p>
+
+          </div>
+
 
           {/* Actions */}
           <div className="flex items-center gap-4">
@@ -227,6 +231,7 @@ export function HotelComments({ hotelSlug }: HotelCommentsProps) {
           <p className="font-century-gothic text-secondary-text mb-2">
             Пожалуйста, авторизуйтесь, чтобы оставлять комментарии
           </p>
+
         </div>
       )}
 
