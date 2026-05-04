@@ -5,14 +5,20 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-    UserIcon,
+  UserIcon,
   Menu01Icon,
   Cancel01Icon,
-  Building04Icon, InformationCircleIcon,
+  Building04Icon,
+  InformationCircleIcon,
   Home03Icon,
   FavouriteIcon,
   Login03Icon,
-  Logout01Icon
+  Logout01Icon,
+  DashboardSquare01Icon,
+  Wallet01Icon,
+  TimeQuarterIcon,
+  Settings01Icon,
+  Shield01Icon
 } from "hugeicons-react";
 import { useAuth } from "@/lib/AuthContext";
 import { api, Notification } from "@/lib/api";
@@ -24,8 +30,14 @@ import { ArrowLeft01Icon } from "hugeicons-react";
 const PAGE_INFO: Record<string, { title: string; icon: React.ElementType }> = {
   "/": { title: "Главная", icon: Home03Icon },
   "/hotels": { title: "Коллекция", icon: Building04Icon },
-  "/dashboard": { title: "Кабинет", icon: UserIcon },
+  "/about": { title: "О проекте", icon: InformationCircleIcon },
+  "/dashboard": { title: "Обзор", icon: DashboardSquare01Icon },
+  "/dashboard/profile": { title: "Профиль", icon: UserIcon },
+  "/dashboard/subscription": { title: "Подписка", icon: Wallet01Icon },
+  "/dashboard/history": { title: "История покупок", icon: TimeQuarterIcon },
   "/dashboard/favorites": { title: "Избранное", icon: FavouriteIcon },
+  "/dashboard/settings": { title: "Настройки", icon: Settings01Icon },
+  "/dashboard/admin": { title: "Панель администратора", icon: Shield01Icon },
   "/auth": { title: "Вход", icon: Login03Icon },
 };
 
@@ -71,7 +83,16 @@ export default function Header() {
   }, []);
 
   const currentPageInfo = React.useMemo(() => {
-    return PAGE_INFO[pathname] || { title: "ProHotelClub", icon: Home03Icon };
+    // Exact match
+    if (PAGE_INFO[pathname]) {
+      return PAGE_INFO[pathname];
+    }
+    // Prefix match for dashboard/admin
+    if (pathname.startsWith('/dashboard/admin')) {
+      return PAGE_INFO['/dashboard/admin'];
+    }
+
+    return { title: "ProHotelClub", icon: Home03Icon };
   }, [pathname]);
 
   const CurrentIcon = currentPageInfo.icon;
@@ -170,7 +191,7 @@ export default function Header() {
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-4 lg:gap-8">
+        <div className="flex items-center gap-2 lg:gap-3">
           <div
             className="md:hidden text-soft-sand flex items-center justify-center p-2 opacity-80"
             aria-label={currentPageInfo.title}
