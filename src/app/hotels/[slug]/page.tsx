@@ -14,6 +14,8 @@ import { HotelDetailData } from '@/lib/hotel-mock-data';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/AuthContext';
 import { useToast } from '@/components/ui/Toast';
+import { ReviewRequestModal } from '@/components/hotel-detail/ReviewRequestModal';
+import { HotelSubscribeButton } from '@/components/hotel-detail/HotelSubscribeButton';
 
 import Footer from "@/components/Footer";
 interface HotelPageProps {
@@ -26,6 +28,7 @@ export default function HotelPage({ params }: HotelPageProps) {
   const { slug } = use(params);
   const [hotelData, setHotelData] = useState<HotelDetailData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const { user } = useAuth();
   const { success } = useToast();
   const router = useRouter();
@@ -60,9 +63,9 @@ export default function HotelPage({ params }: HotelPageProps) {
     return null;
   }
 
-  const handleReviewRequest = async () => {
-    if (!user) return;
-    await api.addReviewRequest(hotelData.slug, hotelData.name, user.id);
+  const handleReviewRequestSubmit = async (reason: string) => {
+    if (!user || !hotelData) return;
+    await api.addReviewRequest(hotelData.slug, hotelData.name, user.id, reason);
     success('Запрос на обзор успешно отправлен!');
   };
 
@@ -90,9 +93,10 @@ export default function HotelPage({ params }: HotelPageProps) {
             <button className="px-6 py-3 bg-white text-evergreen-forest border border-gray-200 rounded-xl font-medium font-century-gothic text-sm transition-all hover:bg-gray-50 hover:border-gray-300 duration-300 shadow-sm flex items-center justify-center">
               Концепция отеля
             </button>
+            <HotelSubscribeButton hotelSlug={hotelData.slug} />
             {user?.hasActiveSubscription && (
               <button 
-                onClick={handleReviewRequest}
+                onClick={() => setIsReviewModalOpen(true)}
                 className="px-6 py-3 bg-[#D4AF37] text-white rounded-xl font-medium font-century-gothic text-sm transition-all hover:bg-[#B5952F] duration-300 shadow-sm flex items-center justify-center">
                 Запросить обзор
               </button>
@@ -134,6 +138,15 @@ export default function HotelPage({ params }: HotelPageProps) {
           </div>
         </div>
       </div>
+
+      {hotelData && (
+        <ReviewRequestModal
+          isOpen={isReviewModalOpen}
+          onClose={() => setIsReviewModalOpen(false)}
+          onSubmit={handleReviewRequestSubmit}
+          hotelName={hotelData.name}
+        />
+      )}
     </main>
   );
 }

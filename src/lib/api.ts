@@ -16,7 +16,7 @@ export interface Comment {
   replies?: Comment[];
 }
 
-export type NotificationType = 'like' | 'reply';
+export type NotificationType = 'like' | 'reply' | 'review_approved' | 'review_rejected' | 'new_comment' | 'hotel_update';
 
 export interface Notification {
   id: string;
@@ -60,6 +60,9 @@ export interface ReviewRequest {
   userName: string;
   date: string;
   status: 'pending' | 'reviewed' | 'rejected';
+  reason?: string;
+  adminReply?: string;
+  scheduledDate?: string;
 }
 
 export const api = {
@@ -373,15 +376,14 @@ export const api = {
     if (error) console.error('Error deleting comment:', error);
   },
 
+
   addComment: async (hotelSlug: string, text: string, userId: string, parentId?: string): Promise<void> => {
     const supabase = createClient();
-
-    // Insert comment
     const { data: newComment, error } = await supabase.from('comments').insert({
       hotel_slug: hotelSlug,
       author_id: userId,
       text: text,
-      parent_id: parentId || null
+      parent_id: parentId
     }).select().single();
 
     if (error) {
@@ -389,22 +391,40 @@ export const api = {
       return;
     }
 
-    // If it's a reply, create notification
-    if (parentId && newComment) {
-      // Get parent comment author
-      const { data: parentComment } = await supabase.from('comments').select('author_id').eq('id', parentId).single();
+    if (newComment) {
+      if (parentId) {
+        // Notify parent comment author
+        const { data: parentComment } = await supabase.from('comments').select('author_id').eq('id', parentId).single();
+        if (parentComment && parentComment.author_id !== userId) {
+          const { data: parentProfile } = await supabase.from('profiles').select('notify_replies').eq('id', parentComment.author_id).single();
 
-      if (parentComment && parentComment.author_id !== userId) {
-        // Check if parent author wants reply notifications
-        const { data: parentProfile } = await supabase.from('profiles').select('notify_replies').eq('id', parentComment.author_id).single();
+          if (parentProfile?.notify_replies) {
+            await supabase.from('notifications').insert({
+              user_id: parentComment.author_id,
+              actor_id: userId,
+              type: 'reply',
+              comment_id: newComment.id
+            });
+          }
+        }
+      } else {
+        // Notify all subscribers of this hotel
+        const { data: subscribers } = await supabase
+          .from('hotel_subscriptions')
+          .select('user_id')
+          .eq('hotel_slug', hotelSlug)
+          .neq('user_id', userId);
 
-        if (parentProfile?.notify_replies) {
-          await supabase.from('notifications').insert({
-            user_id: parentComment.author_id,
+        if (subscribers && subscribers.length > 0) {
+          const notifications = subscribers.map(sub => ({
+            user_id: sub.user_id,
             actor_id: userId,
-            type: 'reply',
-            comment_id: newComment.id
-          });
+            type: 'new_comment',
+            comment_id: newComment.id,
+            hotel_slug: hotelSlug // this is important for linking
+          }));
+
+          await supabase.from('notifications').insert(notifications);
         }
       }
     }
@@ -548,6 +568,43 @@ export const api = {
     if (error) console.error('Error updating profile settings:', error);
   },
 
+
+  // --- Подписки на отель ---
+  subscribeToHotel: async (hotelSlug: string, userId: string): Promise<void> => {
+    const supabase = createClient();
+    const { error } = await supabase.from('hotel_subscriptions').insert({
+      hotel_slug: hotelSlug,
+      user_id: userId
+    });
+    if (error) console.error('Error subscribing to hotel:', error);
+  },
+
+  unsubscribeFromHotel: async (hotelSlug: string, userId: string): Promise<void> => {
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('hotel_subscriptions')
+      .delete()
+      .eq('hotel_slug', hotelSlug)
+      .eq('user_id', userId);
+    if (error) console.error('Error unsubscribing from hotel:', error);
+  },
+
+  checkHotelSubscription: async (hotelSlug: string, userId: string): Promise<boolean> => {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from('hotel_subscriptions')
+      .select('id')
+      .eq('hotel_slug', hotelSlug)
+      .eq('user_id', userId)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      console.error('Error checking hotel subscription:', error);
+      return false;
+    }
+    return !!data;
+  },
+
   // --- Запросы на обзор ---
 
   // --- Пользователи (Admin) ---
@@ -622,28 +679,58 @@ export const api = {
       userId: r.user_id,
       userName: r.profiles?.name || 'Unknown',
       date: new Date(r.created_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
-      status: r.status as 'pending' | 'reviewed' | 'rejected'
+      status: r.status as 'pending' | 'reviewed' | 'rejected',
+      reason: r.reason,
+      adminReply: r.admin_reply,
+      scheduledDate: r.scheduled_date ? new Date(r.scheduled_date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : undefined
     }));
   },
 
-  addReviewRequest: async (hotelId: string, hotelName: string, userId: string): Promise<void> => {
+  addReviewRequest: async (hotelId: string, hotelName: string, userId: string, reason: string): Promise<void> => {
     const supabase = createClient();
     const { error } = await supabase.from('review_requests').insert({
       hotel_id: hotelId,
       hotel_name: hotelName,
       user_id: userId,
-      status: 'pending'
+      status: 'pending',
+      reason: reason
     });
     if (error) console.error('Error adding review request:', error);
   },
 
-  updateReviewRequestStatus: async (requestId: string, status: 'pending' | 'reviewed' | 'rejected'): Promise<void> => {
+  updateReviewRequestStatus: async (requestId: string, status: 'pending' | 'reviewed' | 'rejected', adminReply?: string, scheduledDate?: string): Promise<void> => {
     const supabase = createClient();
-    const { error } = await supabase
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const updates: any = { status };
+    if (adminReply !== undefined) updates.admin_reply = adminReply;
+    if (scheduledDate !== undefined) updates.scheduled_date = scheduledDate;
+
+    const { error, data } = await supabase
       .from('review_requests')
-      .update({ status })
-      .eq('id', requestId);
-    if (error) console.error('Error updating review request status:', error);
+      .update(updates)
+      .eq('id', requestId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating review request status:', error);
+      return;
+    }
+
+    if (data && status !== 'pending') {
+      const type = status === 'reviewed' ? 'review_approved' : 'review_rejected';
+      const actorId = (await supabase.auth.getUser()).data.user?.id;
+
+      if (actorId && actorId !== data.user_id) {
+        await supabase.from('notifications').insert({
+          user_id: data.user_id,
+          actor_id: actorId,
+          type: type,
+          hotel_slug: data.hotel_id // We use hotel_id as slug in this context often
+        });
+      }
+    }
   },
 
 
