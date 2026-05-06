@@ -66,6 +66,21 @@ export interface ReviewRequest {
 }
 
 export const api = {
+  // Helper to retry failed async operations
+  _fetchWithRetry: async <T>(operation: () => Promise<T>, retries = 3, delay = 500): Promise<T> => {
+    try {
+      return await operation();
+    } catch (error) {
+      if (retries > 0) {
+        console.warn(`Operation failed, retrying in ${delay}ms... (${retries} retries left)`, error);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return api._fetchWithRetry(operation, retries - 1, delay * 1.5);
+      }
+      throw error;
+    }
+  },
+
+
   // --- Отели ---
 
   // --- Новости ---
@@ -95,27 +110,29 @@ export const api = {
   },
 
   getAdminNews: async (): Promise<NewsItem[]> => {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from('news')
-      .select('*')
-      .order('published_at', { ascending: false });
+    return api._fetchWithRetry(async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('news')
+        .select('*')
+        .order('published_at', { ascending: false });
 
-    if (error) {
-      console.error('Error fetching admin news:', error);
-      return [];
-    }
+      if (error) {
+        console.error('Error fetching admin news:', error);
+        throw error;
+      }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return data.map((n: any) => ({
-      id: n.id,
-      title: n.title,
-      content: n.content,
-      category: n.category,
-      imageUrl: n.image_url,
-      publishedAt: n.published_at,
-      createdAt: n.created_at
-    }));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return data.map((n: any) => ({
+        id: n.id,
+        title: n.title,
+        content: n.content,
+        category: n.category,
+        imageUrl: n.image_url,
+        publishedAt: n.published_at,
+        createdAt: n.created_at
+      }));
+    });
   },
 
   saveNews: async (news: Partial<NewsItem>): Promise<void> => {
@@ -139,21 +156,23 @@ export const api = {
   },
 
   getHotels: async (): Promise<Hotel[]> => {
-    const supabase = createClient();
-    const { data, error } = await supabase.from('hotels').select('*');
-    if (error) {
-      console.error('Error fetching hotels:', error);
-      return [];
-    }
-    return data.map(h => ({
-      id: h.id,
-      name: h.name,
-      location: h.location,
-      tags: h.tags || [],
-      description: h.description,
-      imageUrl: h.image_url,
-      link: h.link,
-    }));
+    return api._fetchWithRetry(async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase.from('hotels').select('*');
+      if (error) {
+        console.error('Error fetching hotels:', error);
+        throw error;
+      }
+      return data.map(h => ({
+        id: h.id,
+        name: h.name,
+        location: h.location,
+        tags: h.tags || [],
+        description: h.description,
+        imageUrl: h.image_url,
+        link: h.link,
+      }));
+    });
   },
 
   saveHotel: async (hotel: Hotel): Promise<void> => {
@@ -609,28 +628,30 @@ export const api = {
 
   // --- Пользователи (Admin) ---
   getAllProfiles: async (): Promise<UserProfile[]> => {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .order('created_at', { ascending: false });
+    return api._fetchWithRetry(async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error('Error fetching all profiles:', error);
-      return [];
-    }
+      if (error) {
+        console.error('Error fetching all profiles:', error);
+        throw error;
+      }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return data.map((p: any) => ({
-      id: p.id,
-      name: p.name || '',
-      email: p.email || '',
-      company: p.company || '',
-      isAdmin: p.is_admin,
-      hasActiveSubscription: p.has_active_subscription,
-      subscriptionEndsAt: p.subscription_ends_at,
-      createdAt: p.created_at
-    }));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return data.map((p: any) => ({
+        id: p.id,
+        name: p.name || '',
+        email: p.email || '',
+        company: p.company || '',
+        isAdmin: p.is_admin,
+        hasActiveSubscription: p.has_active_subscription,
+        subscriptionEndsAt: p.subscription_ends_at,
+        createdAt: p.created_at
+      }));
+    });
   },
 
   updateUserProfileAsAdmin: async (userId: string, data: Partial<UserProfile>): Promise<void> => {
@@ -658,32 +679,34 @@ export const api = {
   },
 
   getReviewRequests: async (): Promise<ReviewRequest[]> => {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from('review_requests')
-      .select(`
-        *,
-        profiles (name)
-      `)
-      .order('created_at', { ascending: false });
+    return api._fetchWithRetry(async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('review_requests')
+        .select(`
+          *,
+          profiles (name)
+        `)
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error('Error fetching review requests:', error);
-      return [];
-    }
+      if (error) {
+        console.error('Error fetching review requests:', error);
+        throw error;
+      }
 
-    return data.map(r => ({
-      id: r.id,
-      hotelId: r.hotel_id,
-      hotelName: r.hotel_name,
-      userId: r.user_id,
-      userName: r.profiles?.name || 'Unknown',
-      date: new Date(r.created_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
-      status: r.status as 'pending' | 'reviewed' | 'rejected',
-      reason: r.reason,
-      adminReply: r.admin_reply,
-      scheduledDate: r.scheduled_date ? new Date(r.scheduled_date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : undefined
-    }));
+      return data.map(r => ({
+        id: r.id,
+        hotelId: r.hotel_id,
+        hotelName: r.hotel_name,
+        userId: r.user_id,
+        userName: r.profiles?.name || 'Unknown',
+        date: new Date(r.created_at).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }),
+        status: r.status as 'pending' | 'reviewed' | 'rejected',
+        reason: r.reason,
+        adminReply: r.admin_reply,
+        scheduledDate: r.scheduled_date ? new Date(r.scheduled_date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }) : undefined
+      }));
+    });
   },
 
   addReviewRequest: async (hotelId: string, hotelName: string, userId: string, reason: string): Promise<void> => {

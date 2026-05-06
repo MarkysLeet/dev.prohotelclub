@@ -6,6 +6,7 @@ import { Hotel } from '@/lib/mock-data';
 import { Button } from '@/components/ui';
 import { HotelCard } from '@/components/HotelCard';
 import { HotelCardSkeleton } from '@/components/HotelCardSkeleton';
+import { PageErrorState } from '@/components/ui';
 import { InformationCircleIcon } from 'hugeicons-react';
 import Link from 'next/link';
 import { useFavorites } from '@/lib/useFavorites';
@@ -15,14 +16,20 @@ export default function FavoritesPage() {
   const { favorites, toggleFavorite } = useFavorites();
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     async function loadHotels() {
-      const data = await api.getHotels();
-      if (mounted) {
-        setHotels(data);
-        setIsLoading(false);
+      setIsLoading(true);
+      setIsError(false);
+      try {
+        const data = await api.getHotels();
+        if (mounted) setHotels(data);
+      } catch(err) { console.error(err);
+        if(mounted) setIsError(true);
+      } finally {
+        if(mounted) setIsLoading(false);
       }
     }
     loadHotels();
@@ -46,7 +53,9 @@ export default function FavoritesPage() {
         )}
       </div>
 
-      {isLoading ? (
+      {isError ? (
+        <PageErrorState title="Ошибка загрузки избранного" message="Не удалось загрузить список избранных отелей. Пожалуйста, попробуйте обновить страницу." />
+      ) : isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           {Array.from({ length: 6 }).map((_, i) => (
             <HotelCardSkeleton key={i} variant="dashboard" />

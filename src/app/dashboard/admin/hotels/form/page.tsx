@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import { api } from '@/lib/api';
-import { Button, Input, useToast } from '@/components/ui';
+import { Button, Input, useToast , PageErrorState } from '@/components/ui';
 import Link from 'next/link';
 import { ArrowLeft01Icon, PlusSignIcon, Cancel01Icon, ArrowUp01Icon, ArrowDown01Icon } from 'hugeicons-react';
 import { HotelSection, HotelDetailData } from '@/lib/hotel-mock-data';
@@ -39,6 +39,8 @@ function HotelFormContent() {
 
   const [tagInput, setTagInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
   const [hotelDetail, setHotelDetail] = useState<HotelDetailData | null>(null);
   const [sections, setSections] = useState<HotelSection[]>([]);
   const [showSectionForm, setShowSectionForm] = useState(false);
@@ -57,19 +59,28 @@ function HotelFormContent() {
     } else if (editId) {
       let mounted = true;
       async function loadHotel() {
-        const hotels = await api.getHotels();
-        const hotel = hotels.find(h => h.id === editId);
-        if (mounted && hotel) {
-          setFormData({
-            ...hotel,
-            tags: hotel.tags || []
-          });
+        setIsLoading(true);
+        setIsError(false);
+        try {
+          const hotels = await api.getHotels();
+          const hotel = hotels.find(h => h.id === editId);
+          if (mounted && hotel) {
+            setFormData({
+              ...hotel,
+              tags: hotel.tags || []
+            });
 
-          const detail = await api.getHotelDetailBySlug(editId as string);
-          if (mounted && detail) {
-            setHotelDetail(detail);
-            setSections(detail.sections || []);
+            const detail = await api.getHotelDetailBySlug(editId as string);
+            if (mounted && detail) {
+              setHotelDetail(detail);
+              setSections(detail.sections || []);
+            }
           }
+        } catch (err) {
+          console.error("Failed to load hotel", err);
+          if (mounted) setIsError(true);
+        } finally {
+          if (mounted) setIsLoading(false);
         }
       }
       loadHotel();

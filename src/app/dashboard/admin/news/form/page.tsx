@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import { api, NewsItem } from '@/lib/api';
-import { Button, Input, useToast } from '@/components/ui';
+import { Button, Input, useToast , PageErrorState } from '@/components/ui';
 import Link from 'next/link';
 import { ArrowLeft01Icon } from 'hugeicons-react';
 
@@ -23,6 +23,8 @@ function NewsFormContent() {
     publishedAt: new Date().toISOString().slice(0, 16) // Format: YYYY-MM-DDThh:mm
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     if (user && !user.isAdmin) {
@@ -30,6 +32,8 @@ function NewsFormContent() {
     } else if (editId) {
       let mounted = true;
       async function loadNews() {
+        setIsLoading(true);
+        setIsError(false);
         try {
           const newsList = await api.getAdminNews();
           const news = newsList.find((n: NewsItem) => n.id === editId);
@@ -44,6 +48,9 @@ function NewsFormContent() {
           }
         } catch (error) {
            console.error("Error loading news:", error);
+           if (mounted) setIsError(true);
+        } finally {
+           if (mounted) setIsLoading(false);
         }
       }
       loadNews();

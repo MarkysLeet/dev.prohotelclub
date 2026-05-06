@@ -6,12 +6,15 @@ import { useEffect, useState } from 'react';
 import { api, UserProfile } from '@/lib/api';
 import { Badge, Button } from '@/components/ui';
 import Link from 'next/link';
+import { PageErrorState } from '@/components/ui';
 import { ArrowLeft01Icon } from 'hugeicons-react';
 
 export default function AdminUsersPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [users, setUsers] = useState<UserProfile[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     if (user && !user.isAdmin) {
@@ -19,8 +22,17 @@ export default function AdminUsersPage() {
     } else {
       let mounted = true;
       async function loadUsers() {
-        const data = await api.getAllProfiles();
-        if (mounted) setUsers(data);
+        setIsLoading(true);
+        setIsError(false);
+        try {
+          const data = await api.getAllProfiles();
+          if (mounted) setUsers(data);
+        } catch (err) {
+          console.error("Failed to load", err);
+          if (mounted) setIsError(true);
+        } finally {
+          if (mounted) setIsLoading(false);
+        }
       }
       loadUsers();
       return () => { mounted = false; };
