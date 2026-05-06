@@ -7,6 +7,7 @@ import { HotelComments } from '@/components/hotel-detail/HotelComments';
 import { HotelWidgetsPanel } from '@/components/hotel-detail/HotelWidgetsPanel';
 import { SimilarHotels } from '@/components/hotel-detail/SimilarHotels';
 import { HotelPageSkeleton } from '@/components/hotel-detail/HotelPageSkeleton';
+import { PageErrorState } from '@/components/ui';
 import Image from 'next/image';
 import Header from '@/components/Header';
 import { use, useEffect, useState } from 'react';
@@ -28,6 +29,7 @@ export default function HotelPage({ params }: HotelPageProps) {
   const { slug } = use(params);
   const [hotelData, setHotelData] = useState<HotelDetailData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const { user } = useAuth();
   const { success } = useToast();
@@ -36,23 +38,54 @@ export default function HotelPage({ params }: HotelPageProps) {
   useEffect(() => {
     let mounted = true;
     async function fetchHotel() {
-      const data = await api.getHotelDetailBySlug(slug);
-      if (mounted) {
-        if (data) {
-          setHotelData(data);
+      setLoading(true);
+      setIsError(false);
+      try {
+        const data = await api.getHotelDetailBySlug(slug);
+        if (mounted) {
+          if (data) {
+            setHotelData(data);
+          } else {
+             // data is null, meaning it was a 404 (handled by component returning null below)
+          }
         }
-        setLoading(false);
+      } catch (err) {
+        console.error("Failed to load hotel", err);
+        if (mounted) {
+          setIsError(true);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
       }
     }
     fetchHotel();
     return () => { mounted = false; };
   }, [slug]);
 
+  if (isError) {
+    return (
+      <main className="min-h-screen flex flex-col bg-soft-sand relative pt-[56px] lg:pt-[64px]">
+        <Header />
+        <div className="flex-1 flex items-center justify-center">
+            <PageErrorState
+              title="Не удалось загрузить данные отеля"
+              message="Произошла ошибка при получении информации об этом отеле. Пожалуйста, попробуйте обновить страницу."
+            />
+        </div>
+        <Footer />
+      </main>
+    );
+  }
+
   if (loading) {
     return (
-      <main className="min-h-screen bg-soft-sand relative pt-[56px] lg:pt-[64px]">
+      <main className="min-h-screen flex flex-col bg-soft-sand relative pt-[56px] lg:pt-[64px]">
         <Header />
-        <HotelPageSkeleton />
+        <div className="flex-1">
+            <HotelPageSkeleton />
+        </div>
         <Footer />
     </main>
     );

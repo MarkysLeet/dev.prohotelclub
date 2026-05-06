@@ -3,3 +3,4 @@ export * from './Input';
 export * from './Badge';
 export * from './Toast';
 export * from './Skeleton';
+export * from './PageErrorState';

@@ -4,8 +4,9 @@ import { useAuth } from '@/lib/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { api, ReviewRequest } from '@/lib/api';
-import { Badge, Button } from '@/components/ui';
+import { Badge, Button, PageErrorState } from '@/components/ui';
 import Link from 'next/link';
+import { PageErrorState } from '@/components/ui';
 import { ArrowLeft01Icon } from 'hugeicons-react';
 
 import { ReviewRequestResponseModal } from './ReviewRequestResponseModal';
@@ -14,6 +15,10 @@ export default function AdminRequestsPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [requests, setRequests] = useState<ReviewRequest[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<{ id: string, type: 'approve' | 'reject' } | null>(null);
 
   useEffect(() => {
@@ -22,8 +27,17 @@ export default function AdminRequestsPage() {
     } else {
       let mounted = true;
       async function loadRequests() {
-        const data = await api.getReviewRequests();
-        if (mounted) setRequests(data);
+        setIsLoading(true);
+        setIsError(false);
+        try {
+          const data = await api.getReviewRequests();
+          if (mounted) setRequests(data);
+        } catch (err) {
+          console.error('Failed to load requests', err);
+          if (mounted) setIsError(true);
+        } finally {
+          if (mounted) setIsLoading(false);
+        }
       }
       loadRequests();
       return () => { mounted = false; };

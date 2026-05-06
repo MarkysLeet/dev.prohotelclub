@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { api, NewsItem } from '@/lib/api';
-import { Button, Badge } from '@/components/ui';
+import { Button, Badge, PageErrorState } from '@/components/ui';
 import Link from 'next/link';
 import { ArrowLeft01Icon, PlusSignIcon, Edit01Icon, Delete01Icon } from 'hugeicons-react';
 
@@ -12,6 +12,10 @@ export default function AdminNewsPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [newsList, setNewsList] = useState<NewsItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
 
 
@@ -21,8 +25,17 @@ export default function AdminNewsPage() {
     } else {
       let mounted = true;
       async function loadNewsData() {
-        const data = await api.getAdminNews();
-        if (mounted) setNewsList(data);
+        setIsLoading(true);
+        setIsError(false);
+        try {
+          const data = await api.getAdminNews();
+          if (mounted) setNewsList(data);
+        } catch (err) {
+          console.error("Failed to load news", err);
+          if (mounted) setIsError(true);
+        } finally {
+          if (mounted) setIsLoading(false);
+        }
       }
       loadNewsData();
       return () => { mounted = false; };

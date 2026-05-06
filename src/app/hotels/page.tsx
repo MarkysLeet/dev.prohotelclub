@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui';
 import { HotelCard } from '@/components/HotelCard';
 import { HotelCardSkeleton } from '@/components/HotelCardSkeleton';
+import { PageErrorState } from '@/components/ui';
 import { useAuth } from '@/lib/AuthContext';
 import { useToast } from '@/components/ui/Toast';
 import { useRouter } from 'next/navigation';
@@ -45,15 +46,27 @@ export default function HotelsPage() {
   const { isAuth } = useAuth();
   const [hotelsList, setHotelsList] = useState<Hotel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     let mounted = true;
     async function loadHotels() {
       setIsLoading(true);
-      const data = await api.getHotels();
-      if (mounted) {
-        setHotelsList(data);
-        setIsLoading(false);
+      setIsError(false);
+      try {
+        const data = await api.getHotels();
+        if (mounted) {
+          setHotelsList(data);
+        }
+      } catch (err) {
+        console.error("Failed to load hotels", err);
+        if (mounted) {
+          setIsError(true);
+        }
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     }
     loadHotels();
@@ -184,7 +197,12 @@ export default function HotelsPage() {
           </motion.div>
 
           {/* Grid Section */}
-          {isLoading ? (
+          {isError ? (
+            <PageErrorState
+              title="Не удалось загрузить каталог отелей"
+              message="Произошла ошибка при получении данных. Проверьте подключение к интернету или попробуйте обновить страницу."
+            />
+          ) : isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {Array.from({ length: 8 }).map((_, i) => (
                 <HotelCardSkeleton key={i} variant="collection" />

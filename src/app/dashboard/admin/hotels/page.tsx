@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { Hotel } from '@/lib/mock-data';
-import { Button } from '@/components/ui';
+import { Button, PageErrorState } from '@/components/ui';
 import Link from 'next/link';
 import { ArrowLeft01Icon, PlusSignIcon, Edit01Icon, Delete01Icon } from 'hugeicons-react';
 import Image from 'next/image';
@@ -14,6 +14,10 @@ export default function AdminHotelsPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [hotels, setHotels] = useState<Hotel[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     if (user && !user.isAdmin) {
@@ -21,8 +25,17 @@ export default function AdminHotelsPage() {
     } else {
       let mounted = true;
       async function loadHotels() {
-        const data = await api.getHotels();
-        if (mounted) setHotels(data);
+        setIsLoading(true);
+        setIsError(false);
+        try {
+          const data = await api.getHotels();
+          if (mounted) setHotels(data);
+        } catch (err) {
+          console.error('Failed to load hotels', err);
+          if (mounted) setIsError(true);
+        } finally {
+          if (mounted) setIsLoading(false);
+        }
       }
       loadHotels();
       return () => { mounted = false; };
@@ -57,6 +70,26 @@ export default function AdminHotelsPage() {
         </Link>
       </div>
 
+      {isError ? (
+        <PageErrorState
+          title="Ошибка загрузки отелей"
+          message="Не удалось загрузить список отелей. Пожалуйста, попробуйте обновить страницу."
+        />
+      ) : isLoading ? (
+        <div className="py-12 flex justify-center">
+            <div className="w-8 h-8 border-4 border-evergreen-forest/20 border-t-evergreen-forest rounded-full animate-spin"></div>
+        </div>
+      ) : (
+      {isError ? (
+        <PageErrorState
+          title="Ошибка загрузки отелей"
+          message="Не удалось загрузить список отелей. Пожалуйста, попробуйте обновить страницу."
+        />
+      ) : isLoading ? (
+        <div className="py-12 flex justify-center">
+            <div className="w-8 h-8 border-4 border-evergreen-forest/20 border-t-evergreen-forest rounded-full animate-spin"></div>
+        </div>
+      ) : (
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {hotels.map(hotel => (
           <div key={hotel.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
@@ -95,6 +128,7 @@ export default function AdminHotelsPage() {
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 }
