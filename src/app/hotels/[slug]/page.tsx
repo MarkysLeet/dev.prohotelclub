@@ -42,22 +42,11 @@ export default function HotelPage({ params }: HotelPageProps) {
       setIsError(false);
       try {
         const data = await api.getHotelDetailBySlug(slug);
-        if (mounted) {
-          if (data) {
-            setHotelData(data);
-          } else {
-             // data is null, meaning it was a 404 (handled by component returning null below)
-          }
-        }
-      } catch (err) {
-        console.error("Failed to load hotel", err);
-        if (mounted) {
-          setIsError(true);
-        }
+        if (mounted && data) setHotelData(data);
+      } catch(err) { console.error(err);
+        if(mounted) setIsError(true);
       } finally {
-        if (mounted) {
-          setLoading(false);
-        }
+        if(mounted) setLoading(false);
       }
     }
     fetchHotel();
@@ -69,10 +58,7 @@ export default function HotelPage({ params }: HotelPageProps) {
       <main className="min-h-screen flex flex-col bg-soft-sand relative pt-[56px] lg:pt-[64px]">
         <Header />
         <div className="flex-1 flex items-center justify-center">
-            <PageErrorState
-              title="Не удалось загрузить данные отеля"
-              message="Произошла ошибка при получении информации об этом отеле. Пожалуйста, попробуйте обновить страницу."
-            />
+            <PageErrorState title="Ошибка загрузки" message="Не удалось загрузить данные отеля. Пожалуйста, попробуйте обновить страницу." />
         </div>
         <Footer />
       </main>
@@ -87,7 +73,7 @@ export default function HotelPage({ params }: HotelPageProps) {
             <HotelPageSkeleton />
         </div>
         <Footer />
-    </main>
+      </main>
     );
   }
 

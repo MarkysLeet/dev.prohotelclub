@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { api, UserProfile } from '@/lib/api';
-import { Badge, Button, PageErrorState } from '@/components/ui';
+import { Badge, Button } from '@/components/ui';
 import Link from 'next/link';
 import { PageErrorState } from '@/components/ui';
 import { ArrowLeft01Icon } from 'hugeicons-react';
@@ -13,8 +13,6 @@ export default function AdminUsersPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [users, setUsers] = useState<UserProfile[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
@@ -30,7 +28,7 @@ export default function AdminUsersPage() {
           const data = await api.getAllProfiles();
           if (mounted) setUsers(data);
         } catch (err) {
-          console.error('Failed to load users', err);
+          console.error("Failed to load", err);
           if (mounted) setIsError(true);
         } finally {
           if (mounted) setIsLoading(false);

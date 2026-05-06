@@ -39,6 +39,8 @@ function HotelFormContent() {
 
   const [tagInput, setTagInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
   const [hotelDetail, setHotelDetail] = useState<HotelDetailData | null>(null);
   const [sections, setSections] = useState<HotelSection[]>([]);
   const [showSectionForm, setShowSectionForm] = useState(false);
@@ -50,8 +52,6 @@ function HotelFormContent() {
   const [secContent, setSecContent] = useState('');
   const [secIcon, setSecIcon] = useState('StarIcon');
   const [secPaywalled, setSecPaywalled] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     if (user && !user.isAdmin) {
@@ -384,7 +384,6 @@ function HotelFormContent() {
           </Button>
         </div>
       </form>
-      )}
     </div>
   );
 }

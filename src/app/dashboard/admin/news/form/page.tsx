@@ -159,7 +159,6 @@ function NewsFormContent() {
           </Button>
         </div>
       </form>
-      )}
     </div>
   );
 }

@@ -55,18 +55,11 @@ export default function HotelsPage() {
       setIsError(false);
       try {
         const data = await api.getHotels();
-        if (mounted) {
-          setHotelsList(data);
-        }
-      } catch (err) {
-        console.error("Failed to load hotels", err);
-        if (mounted) {
-          setIsError(true);
-        }
+        if (mounted) setHotelsList(data);
+      } catch(err) { console.error(err);
+        if(mounted) setIsError(true);
       } finally {
-        if (mounted) {
-          setIsLoading(false);
-        }
+        if(mounted) setIsLoading(false);
       }
     }
     loadHotels();
@@ -198,10 +191,7 @@ export default function HotelsPage() {
 
           {/* Grid Section */}
           {isError ? (
-            <PageErrorState
-              title="Не удалось загрузить каталог отелей"
-              message="Произошла ошибка при получении данных. Проверьте подключение к интернету или попробуйте обновить страницу."
-            />
+            <PageErrorState title="Ошибка загрузки" message="Не удалось загрузить список отелей. Пожалуйста, попробуйте обновить страницу." />
           ) : isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {Array.from({ length: 8 }).map((_, i) => (

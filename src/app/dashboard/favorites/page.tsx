@@ -25,18 +25,11 @@ export default function FavoritesPage() {
       setIsError(false);
       try {
         const data = await api.getHotels();
-        if (mounted) {
-          setHotels(data);
-        }
-      } catch (err) {
-        console.error("Failed to load favorite hotels", err);
-        if (mounted) {
-          setIsError(true);
-        }
+        if (mounted) setHotels(data);
+      } catch(err) { console.error(err);
+        if(mounted) setIsError(true);
       } finally {
-        if (mounted) {
-          setIsLoading(false);
-        }
+        if(mounted) setIsLoading(false);
       }
     }
     loadHotels();
@@ -61,10 +54,7 @@ export default function FavoritesPage() {
       </div>
 
       {isError ? (
-        <PageErrorState
-            title="Ошибка загрузки избранного"
-            message="Не удалось загрузить список избранных отелей. Пожалуйста, попробуйте обновить страницу."
-        />
+        <PageErrorState title="Ошибка загрузки избранного" message="Не удалось загрузить список избранных отелей. Пожалуйста, попробуйте обновить страницу." />
       ) : isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           {Array.from({ length: 6 }).map((_, i) => (

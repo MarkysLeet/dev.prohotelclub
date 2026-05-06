@@ -198,62 +198,51 @@ export const api = {
   },
 
   getHotelDetailBySlug: async (slug: string): Promise<HotelDetailData | null> => {
-    return api._fetchWithRetry(async () => {
-      const supabase = createClient();
-      const { data: detailData, error: detailError } = await supabase
-        .from('hotel_details')
-        .select('*')
-        .eq('slug', slug)
-        .single();
+    const supabase = createClient();
+    const { data: detailData, error: detailError } = await supabase
+      .from('hotel_details')
+      .select('*')
+      .eq('slug', slug)
+      .single();
 
-      if (detailError) {
-         if (detailError.code !== 'PGRST116') {
-             console.error('Error fetching hotel detail:', detailError);
-             throw detailError;
-         }
-         return null;
-      }
+    if (detailError) {
+       if (detailError.code !== 'PGRST116') console.error('Error fetching hotel detail:', detailError);
+       return null;
+    }
 
-      const { data: sectionsData, error: sectionsError } = await supabase
-        .from('hotel_sections')
-        .select('*')
-        .eq('hotel_slug', slug)
-        .order('order_index', { ascending: true });
+    const { data: sectionsData, error: sectionsError } = await supabase
+      .from('hotel_sections')
+      .select('*')
+      .eq('hotel_slug', slug)
+      .order('order_index', { ascending: true });
 
-      if (sectionsError) {
-        console.error('Error fetching hotel sections:', sectionsError);
-        throw sectionsError;
-      }
+    if (sectionsError) {
+      console.error('Error fetching hotel sections:', sectionsError);
+    }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const sections = sectionsData?.map((s: any) => ({
+    return {
+      slug: detailData.slug,
+      name: detailData.name,
+      location: detailData.location,
+      shootingDate: detailData.shooting_date,
+      heroImage: detailData.hero_image,
+      stars: detailData.stars,
+      distanceToSea: detailData.distance_to_sea,
+      distanceToCity: detailData.distance_to_city,
+      googleRating: detailData.google_rating,
+      buildYear: detailData.build_year,
+      mealPlan: detailData.meal_plan,
+      sections: (sectionsData || []).map(s => ({
         id: s.id,
         title: s.title,
         content: s.content,
         mediaCount: s.media_count,
         isPaywalled: s.is_paywalled,
         icon: s.icon
-      }));
-
-      return {
-        slug: detailData.slug,
-        name: detailData.name,
-        location: detailData.location,
-        shootingDate: detailData.shooting_date,
-        heroImage: detailData.hero_image,
-        videoTourUrl: detailData.video_tour_url || undefined,
-        description: detailData.description,
-        distanceToAirport: detailData.distance_to_airport,
-        distanceToCity: detailData.distance_to_city,
-        googleRating: detailData.google_rating,
-        buildYear: detailData.build_year,
-        mealPlan: detailData.meal_plan,
-        pdfReportUrl: detailData.pdf_report_url || undefined,
-        videoReviewUrl: detailData.video_review_url || undefined,
-        sections: sections || []
-      };
-    });
+      }))
+    };
   },
+
   saveHotelDetail: async (detail: HotelDetailData): Promise<void> => {
     const supabase = createClient();
 
