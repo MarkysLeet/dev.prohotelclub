@@ -5,3 +5,4 @@ export * from './Toast';
 export * from './Skeleton';
 
 export * from './PageErrorState';
+export * from './IconRenderer';
