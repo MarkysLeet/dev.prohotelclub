@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { moniqa, centuryGothic } from "@/fonts";
 import { AuthProvider } from "@/lib/AuthContext";
 import { ToastProvider } from "@/components/ui/Toast";
+import { ScrollToTop } from "@/components/ui/ScrollToTop";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://prohotelclub.vercel.app';
@@ -39,6 +40,7 @@ export default function RootLayout({
         <AuthProvider>
           <ToastProvider>
             {children}
+            <ScrollToTop />
           </ToastProvider>
         </AuthProvider>
       </body>
