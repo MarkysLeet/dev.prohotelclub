@@ -595,7 +595,10 @@ export const api = {
       hotel_slug: hotelSlug,
       user_id: userId
     });
-    if (error) console.error('Error subscribing to hotel:', error);
+    if (error) {
+      console.error('Error subscribing to hotel:', error);
+      throw error;
+    }
   },
 
   unsubscribeFromHotel: async (hotelSlug: string, userId: string): Promise<void> => {
@@ -605,7 +608,10 @@ export const api = {
       .delete()
       .eq('hotel_slug', hotelSlug)
       .eq('user_id', userId);
-    if (error) console.error('Error unsubscribing from hotel:', error);
+    if (error) {
+      console.error('Error unsubscribing from hotel:', error);
+      throw error;
+    }
   },
 
   checkHotelSubscription: async (hotelSlug: string, userId: string): Promise<boolean> => {

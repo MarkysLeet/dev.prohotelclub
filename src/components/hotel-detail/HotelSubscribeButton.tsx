@@ -47,7 +47,8 @@ export function HotelSubscribeButton({ hotelSlug }: HotelSubscribeButtonProps) {
         setIsSubscribed(true);
         success('Вы подписаны на обновления');
       }
-    } catch {
+    } catch (err) {
+      console.error(err);
       error('Произошла ошибка, попробуйте еще раз');
     } finally {
       setIsLoading(false);

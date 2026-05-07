@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/AuthContext";
-import Image from "next/image";
+
 import Link from "next/link";
 import { motion } from "framer-motion";
 import AuthForm from "@/components/AuthForm";
@@ -28,28 +28,35 @@ export default function AuthPage() {
 
   return (
     <main className="h-[100dvh] flex bg-soft-sand overflow-hidden font-century-gothic">
-      {/* Left side: Image */}
+      {/* Left side: Branding / Design */}
       <motion.div
-        className="hidden lg:flex w-1/2 relative bg-evergreen-forest h-full"
+        className="hidden lg:flex flex-col justify-between w-1/2 relative bg-evergreen-forest h-full p-12 overflow-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
       >
-        <Image
-          src="https://images.unsplash.com/photo-1542314831-c6a4d14d8373?q=80&w=2070&auto=format&fit=crop"
-          alt="Premium luxury hotel interior"
-          fill
-          priority
-          className="object-cover"
-        />
-        {/* Overlay gradient to make text on top (if any) readable, though we just keep it clean */}
-        <div className="absolute inset-0 bg-black/20" />
+        {/* Abstract typography background element */}
+        <div className="absolute -right-20 -bottom-20 text-[20rem] font-moniqa text-soft-sand opacity-5 pointer-events-none leading-none select-none">
+          PHC
+        </div>
 
-        {/* Simple branding badge on image */}
-        <div className="absolute top-12 left-12">
-          <Link href="/" className="text-white font-moniqa text-5xl tracking-wide hover:opacity-80 transition-opacity">
+        {/* Branding header */}
+        <div className="relative z-10">
+          <Link href="/" className="text-soft-sand font-moniqa text-6xl tracking-wide hover:opacity-80 transition-opacity">
             ProHotelClub
           </Link>
+        </div>
+
+        {/* Messaging */}
+        <div className="relative z-10 max-w-md">
+          <h2 className="font-moniqa text-5xl text-soft-sand mb-6 leading-tight">
+            Эксклюзивная коллекция.
+            <br />
+            Личные инспекции.
+          </h2>
+          <p className="font-century-gothic text-soft-sand/80 text-lg leading-relaxed">
+            Закрытая B2B платформа для профессиональных турагентов. Только реальные инсайды и проверенные данные об отелях премиум-сегмента.
+          </p>
         </div>
       </motion.div>
 
