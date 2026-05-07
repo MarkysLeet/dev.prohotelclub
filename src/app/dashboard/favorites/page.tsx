@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useEffect, useState } from 'react';
-import { api } from '@/lib/api';
+import { api, Tag } from '@/lib/api';
+import { IconRenderer } from '@/components/ui';
 import { Hotel } from '@/lib/mock-data';
 import { Button } from '@/components/ui';
 import { HotelCard } from '@/components/HotelCard';
@@ -14,7 +15,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function FavoritesPage() {
   const { favorites, toggleFavorite } = useFavorites();
+
+  const getTagIcon = (tagName: string) => {
+    const tag = dbTags.find(t => t.name.toLowerCase() === tagName.toLowerCase());
+    return tag ? <IconRenderer iconName={tag.icon} size={14} /> : null;
+  };
   const [hotels, setHotels] = useState<Hotel[]>([]);
+  const [dbTags, setDbTags] = useState<Tag[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
@@ -79,6 +86,7 @@ export default function FavoritesPage() {
                   isFavorite={favorites.has(hotel.id)}
                   onToggleFavorite={(id) => toggleFavorite(id)}
                   variant="dashboard"
+                  getTagIcon={getTagIcon}
                 />
               </motion.div>
             ))}

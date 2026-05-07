@@ -4,16 +4,13 @@ import { useState, useMemo, useEffect } from 'react';
 import { useFavorites } from '@/lib/useFavorites';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Hotel } from '@/lib/mock-data';
-import { api } from '@/lib/api';
+import { api, Tag } from '@/lib/api';
+import { IconRenderer } from '@/components/ui';
 import Header from '@/components/Header';
 import {
   Search01Icon,
   Location01Icon,
-  FavouriteIcon,
   FilterIcon,
-  SmileIcon,
-  Diamond01Icon,
-  Sun01Icon,
   InformationCircleIcon
 } from 'hugeicons-react';
 import { cn } from '@/lib/utils';
@@ -28,23 +25,13 @@ import { useRouter } from 'next/navigation';
 // import dynamic from 'next/dynamic';
 
 import Footer from "@/components/Footer";
-// Map tags to icons
-const getTagIcon = (tag: string) => {
-  switch (tag.toLowerCase()) {
-    case 'для семьи': return <SmileIcon size={14} />;
-    case 'с животными': return <FavouriteIcon size={14} />;
-    case 'премиум':
-    case 'ultra all inclusive': return <Diamond01Icon size={14} />;
-    case 'первая линия': return <Sun01Icon size={14} />;
-    default: return null;
-  }
-};
 
 // const MapModal = dynamic(() => import("@/components/ui/MapModal"), { ssr: false });
 
 export default function HotelsPage() {
   const { isAuth } = useAuth();
   const [hotelsList, setHotelsList] = useState<Hotel[]>([]);
+  const [dbTags, setDbTags] = useState<Tag[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
@@ -54,8 +41,14 @@ export default function HotelsPage() {
       setIsLoading(true);
       setIsError(false);
       try {
-        const data = await api.getHotels();
-        if (mounted) setHotelsList(data);
+        const [hotelsData, tagsData] = await Promise.all([
+          api.getHotels(),
+          api.getTags()
+        ]);
+        if (mounted) {
+          setHotelsList(hotelsData);
+          setDbTags(tagsData);
+        }
       } catch(err) { console.error(err);
         if(mounted) setIsError(true);
       } finally {
@@ -71,6 +64,11 @@ export default function HotelsPage() {
   const { toast } = useToast();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
+
+  const getTagIcon = (tagName: string) => {
+    const tag = dbTags.find(t => t.name.toLowerCase() === tagName.toLowerCase());
+    return tag ? <IconRenderer iconName={tag.icon} size={14} /> : null;
+  };
   const [selectedLocation, setSelectedLocation] = useState('Все регионы');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const { favorites, toggleFavorite } = useFavorites();

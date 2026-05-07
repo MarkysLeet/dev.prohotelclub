@@ -1,3 +1,10 @@
+
+export interface Tag {
+  id: string;
+  name: string;
+  icon: string;
+}
+
 import { createClient } from './supabase-browser';
 import { Hotel } from './mock-data';
 import { HotelDetailData } from './hotel-mock-data';
@@ -81,32 +88,64 @@ export const api = {
   },
 
 
+
+  // --- Теги ---
+  getTags: async (): Promise<Tag[]> => {
+    return api._fetchWithRetry(async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase.from('tags').select('*').order('name');
+      if (error) {
+        console.error('Error fetching tags:', error);
+        throw error;
+      }
+      return data;
+    });
+  },
+
+  addTag: async (name: string, icon: string): Promise<Tag | null> => {
+    const supabase = createClient();
+    const { data, error } = await supabase.from('tags').insert({ name, icon }).select().single();
+    if (error) {
+      console.error('Error adding tag:', error);
+      return null;
+    }
+    return data;
+  },
+
+  deleteTag: async (id: string): Promise<void> => {
+    const supabase = createClient();
+    const { error } = await supabase.from('tags').delete().eq('id', id);
+    if (error) console.error('Error deleting tag:', error);
+  },
+
   // --- Отели ---
 
   // --- Новости ---
   getNews: async (): Promise<NewsItem[]> => {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from('news')
-      .select('*')
-      .lte('published_at', new Date().toISOString())
-      .order('published_at', { ascending: false });
+    return api._fetchWithRetry(async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('news')
+        .select('*')
+        .lte('published_at', new Date().toISOString())
+        .order('published_at', { ascending: false });
 
-    if (error) {
-      console.error('Error fetching news:', error);
-      return [];
-    }
+      if (error) {
+        console.error('Error fetching news:', error);
+        throw error;
+      }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return data.map((n: any) => ({
-      id: n.id,
-      title: n.title,
-      content: n.content,
-      category: n.category,
-      imageUrl: n.image_url,
-      publishedAt: n.published_at,
-      createdAt: n.created_at
-    }));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return data.map((n: any) => ({
+        id: n.id,
+        title: n.title,
+        content: n.content,
+        category: n.category,
+        imageUrl: n.image_url,
+        publishedAt: n.published_at,
+        createdAt: n.created_at
+      }));
+    });
   },
 
   getAdminNews: async (): Promise<NewsItem[]> => {
@@ -615,19 +654,21 @@ export const api = {
   },
 
   checkHotelSubscription: async (hotelSlug: string, userId: string): Promise<boolean> => {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from('hotel_subscriptions')
-      .select('id')
-      .eq('hotel_slug', hotelSlug)
-      .eq('user_id', userId)
-      .single();
+    return api._fetchWithRetry(async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('hotel_subscriptions')
+        .select('id')
+        .eq('hotel_slug', hotelSlug)
+        .eq('user_id', userId)
+        .single();
 
-    if (error && error.code !== 'PGRST116') {
-      console.error('Error checking hotel subscription:', error);
-      return false;
-    }
-    return !!data;
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error checking hotel subscription:', error);
+        throw error;
+      }
+      return !!data;
+    });
   },
 
   // --- Запросы на обзор ---
@@ -816,19 +857,21 @@ export const api = {
   },
 
   checkHotelAccess: async (hotelSlug: string, userId: string): Promise<boolean> => {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from('hotel_purchases')
-      .select('id')
-      .eq('user_id', userId)
-      .eq('hotel_slug', hotelSlug)
-      .single();
+    return api._fetchWithRetry(async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('hotel_purchases')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('hotel_slug', hotelSlug)
+        .single();
 
-    if (error && error.code !== 'PGRST116') {
-      console.error('Error checking hotel access:', error);
-      return false;
-    }
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error checking hotel access:', error);
+        throw error;
+      }
 
-    return !!data;
+      return !!data;
+    });
   }
 };

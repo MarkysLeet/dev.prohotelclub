@@ -3,12 +3,12 @@
 import { useAuth } from '@/lib/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
-import { api } from '@/lib/api';
-import { Button, Input, useToast , PageErrorState } from '@/components/ui';
+import { api, Tag } from '@/lib/api';
+import { Button, Input, useToast , IconRenderer } from '@/components/ui';
 import Link from 'next/link';
-import { ArrowLeft01Icon, PlusSignIcon, Cancel01Icon, ArrowUp01Icon, ArrowDown01Icon } from 'hugeicons-react';
+import { ArrowLeft01Icon, PlusSignIcon, ArrowUp01Icon, ArrowDown01Icon } from 'hugeicons-react';
 import { HotelSection, HotelDetailData } from '@/lib/hotel-mock-data';
-import * as HugeIcons from 'hugeicons-react';
+
 
 const COMMON_ICONS = [
   'Building03Icon', 'BedSingle02Icon', 'Restaurant01Icon', 'Coffee02Icon',
@@ -17,10 +17,6 @@ const COMMON_ICONS = [
   'Car01Icon', 'Briefcase02Icon'
 ];
 
-const IconRenderer = ({ iconName, size = 20 }: { iconName: string, size?: number }) => {
-  const IconComponent = (HugeIcons as Record<string, React.ElementType>)[iconName] || HugeIcons.CircleIcon;
-  return <IconComponent size={size} />;
-};
 
 function HotelFormContent() {
   const { user } = useAuth();
@@ -38,9 +34,9 @@ function HotelFormContent() {
   });
 
   const [tagInput, setTagInput] = useState('');
+  const [tagIconInput, setTagIconInput] = useState('StarIcon');
+  const [availableTags, setAvailableTags] = useState<Tag[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
   const [hotelDetail, setHotelDetail] = useState<HotelDetailData | null>(null);
   const [sections, setSections] = useState<HotelSection[]>([]);
   const [showSectionForm, setShowSectionForm] = useState(false);
@@ -59,9 +55,9 @@ function HotelFormContent() {
     } else if (editId) {
       let mounted = true;
       async function loadHotel() {
-        setIsLoading(true);
-        setIsError(false);
         try {
+          const tags = await api.getTags();
+          if (mounted) setAvailableTags(tags);
           const hotels = await api.getHotels();
           const hotel = hotels.find(h => h.id === editId);
           if (mounted && hotel) {
@@ -78,9 +74,6 @@ function HotelFormContent() {
           }
         } catch (err) {
           console.error("Failed to load hotel", err);
-          if (mounted) setIsError(true);
-        } finally {
-          if (mounted) setIsLoading(false);
         }
       }
       loadHotel();
@@ -88,24 +81,46 @@ function HotelFormContent() {
     }
   }, [user, router, editId]);
 
-  const handleAddTag = () => {
-    if (tagInput.trim() && !formData.tags?.includes(tagInput.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        tags: [...(prev.tags || []), tagInput.trim()]
-      }));
+  const handleAddTag = async () => {
+    if (tagInput.trim()) {
+      const tagName = tagInput.trim();
+      const existingTag = availableTags.find(t => t.name.toLowerCase() === tagName.toLowerCase());
+
+      if (existingTag) {
+        if (!formData.tags?.includes(existingTag.name)) {
+          setFormData(prev => ({ ...prev, tags: [...(prev.tags || []), existingTag.name] }));
+        }
+      } else {
+        setIsSubmitting(true);
+        try {
+            const newTag = await api.addTag(tagName, tagIconInput);
+            if (newTag) {
+                setAvailableTags(prev => [...prev, newTag].sort((a,b) => a.name.localeCompare(b.name)));
+                setFormData(prev => ({ ...prev, tags: [...(prev.tags || []), newTag.name] }));
+            }
+        } catch (e) {
+            console.error("Error creating tag", e);
+        } finally {
+            setIsSubmitting(false);
+        }
+      }
       setTagInput('');
+      setTagIconInput('StarIcon');
     }
   };
 
-  const handleRemoveTag = (tagToRemove: string) => {
-    setFormData(prev => ({
-      ...prev,
-      tags: prev.tags?.filter(tag => tag !== tagToRemove) || []
-    }));
+  const handleToggleTag = (tagName: string) => {
+    setFormData(prev => {
+        const currentTags = prev.tags || [];
+        if (currentTags.includes(tagName)) {
+            return { ...prev, tags: currentTags.filter(t => t !== tagName) };
+        } else {
+            return { ...prev, tags: [...currentTags, tagName] };
+        }
+    });
   };
 
-  const handleSaveSection = () => {
+    const handleSaveSection = () => {
     if (!secTitle || !secId) return;
     const newSection: HotelSection = {
       id: secId,
@@ -249,34 +264,56 @@ function HotelFormContent() {
           placeholder="https://..."
         />
 
+
         <div>
           <label className="block text-sm font-medium text-primary-text mb-2">Теги</label>
-          <div className="flex gap-2 mb-3">
-            <Input 
-              value={tagInput}
-              onChange={e => setTagInput(e.target.value)}
-              placeholder="Например: Для семьи"
-              onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
-            />
-            <Button type="button" onClick={handleAddTag} variant="secondary" className="px-4">
-              <PlusSignIcon size={20} />
-            </Button>
+          <div className="flex flex-wrap gap-2 mb-4">
+            {availableTags.map(tag => {
+              const isSelected = formData.tags?.includes(tag.name);
+              return (
+                <button
+                  key={tag.id}
+                  type="button"
+                  onClick={() => handleToggleTag(tag.name)}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-full transition-colors border ${
+                    isSelected
+                      ? 'bg-evergreen-forest text-white border-evergreen-forest'
+                      : 'bg-white text-secondary-text border-gray-200 hover:border-evergreen-forest/50'
+                  }`}
+                >
+                  <IconRenderer iconName={tag.icon} size={16} />
+                  {tag.name}
+                </button>
+              );
+            })}
+            {availableTags.length === 0 && <span className="text-sm text-gray-400">Нет доступных тегов в базе</span>}
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            {formData.tags?.map(tag => (
-              <span key={tag} className="inline-flex items-center gap-1.5 px-3 py-1 bg-soft-sand text-secondary-text text-sm rounded-full">
-                {tag}
-                <button type="button" onClick={() => handleRemoveTag(tag)} className="hover:text-primary-text">
-                  <Cancel01Icon size={14} />
-                </button>
-              </span>
-            ))}
-            {(!formData.tags || formData.tags.length === 0) && (
-              <span className="text-sm text-gray-400">Нет тегов</span>
-            )}
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-100 flex flex-col gap-3">
+            <span className="text-sm font-medium text-primary-text">Создать новый тег</span>
+            <div className="flex flex-col md:flex-row gap-3">
+              <Input
+                value={tagInput}
+                onChange={e => setTagInput(e.target.value)}
+                placeholder="Название нового тега"
+                onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), handleAddTag())}
+              />
+              <select
+                value={tagIconInput}
+                onChange={e => setTagIconInput(e.target.value)}
+                className="bg-white border border-gray-200 rounded-xl px-4 h-12 text-primary-text focus:outline-none focus:border-evergreen-forest"
+              >
+                {COMMON_ICONS.map(icon => (
+                    <option key={icon} value={icon}>{icon}</option>
+                ))}
+              </select>
+              <Button type="button" onClick={handleAddTag} variant="secondary" className="px-6 whitespace-nowrap" disabled={isSubmitting || !tagInput.trim()}>
+                <PlusSignIcon size={20} className="mr-2" /> Добавить в БД
+              </Button>
+            </div>
           </div>
         </div>
+
 
         {/* === СЕКЦИИ ОТЕЛЯ === */}
         <div className="pt-6 border-t border-gray-100">
