@@ -65,7 +65,7 @@ export default function AuthForm() {
         if (msg.includes("Email not confirmed")) {
           msg = "Email не подтвержден. Пожалуйста, проверьте вашу почту.";
         } else if (msg.includes("Invalid login credentials")) {
-          msg = "Неверный email или пароль.";
+          msg = mode === "login" ? "Неверный email или пароль." : "Убедитесь, что email введен корректно.";
         } else if (msg.includes("User already registered")) {
           msg = "Пользователь с таким email уже зарегистрирован.";
         } else if (msg.includes("Password should be at least")) {
@@ -73,7 +73,12 @@ export default function AuthForm() {
         }
         setErrorMsg(msg || "Произошла ошибка при авторизации");
       } else {
-        setErrorMsg("Произошла ошибка при авторизации");
+        // Try to handle specific API errors
+        if (String(error).includes("rate limit")) {
+          setErrorMsg("Слишком много попыток. Пожалуйста, подождите немного.");
+        } else {
+          setErrorMsg("Произошла ошибка при авторизации. Проверьте правильность email.");
+        }
       }
     } finally {
       setIsLoading(false);

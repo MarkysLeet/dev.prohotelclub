@@ -63,7 +63,7 @@ export default function AuthPage() {
       {/* Right side: Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 h-full overflow-y-auto">
         <motion.div
-          className="w-full max-w-sm sm:max-w-md flex flex-col justify-center h-full max-h-[850px]"
+          className="w-full max-w-sm sm:max-w-md flex flex-col pt-8 sm:pt-0"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
