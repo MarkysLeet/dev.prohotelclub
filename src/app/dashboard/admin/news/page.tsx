@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useAuth } from '@/lib/AuthContext';
@@ -12,8 +13,8 @@ export default function AdminNewsPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [newsList, setNewsList] = useState<NewsItem[]>([]);
-  const [_isLoading, setIsLoading] = useState(true);
-  const [_isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
 
 

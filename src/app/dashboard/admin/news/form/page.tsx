@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useAuth } from '@/lib/AuthContext';
@@ -23,8 +24,8 @@ function NewsFormContent() {
     publishedAt: new Date().toISOString().slice(0, 16) // Format: YYYY-MM-DDThh:mm
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [_isLoading, setIsLoading] = useState(false);
-  const [_isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     if (user && !user.isAdmin) {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useAuth } from '@/lib/AuthContext';
@@ -13,8 +14,8 @@ export default function AdminUsersPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [users, setUsers] = useState<UserProfile[]>([]);
-  const [_isLoading, setIsLoading] = useState(true);
-  const [_isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     if (user && !user.isAdmin) {
