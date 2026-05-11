@@ -13,8 +13,8 @@ export default function AdminUsersPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [users, setUsers] = useState<UserProfile[]>([]);
-  // const [isLoading, setIsLoading] = useState(true);
-  // const [isError, setIsError] = useState(false);
+  const [_isLoading, setIsLoading] = useState(true);
+  const [_isError, setIsError] = useState(false);
 
   useEffect(() => {
     if (user && !user.isAdmin) {

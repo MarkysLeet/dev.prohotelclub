@@ -15,8 +15,8 @@ export default function AdminRequestsPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [requests, setRequests] = useState<ReviewRequest[]>([]);
-  // const [isLoading, setIsLoading] = useState(true);
-  // const [isError, setIsError] = useState(false);
+  const [_isLoading, setIsLoading] = useState(true);
+  const [_isError, setIsError] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<{ id: string, type: 'approve' | 'reject' } | null>(null);
 
   useEffect(() => {

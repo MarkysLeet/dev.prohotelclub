@@ -39,8 +39,8 @@ function HotelFormContent() {
 
   const [tagInput, setTagInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
-  // const [isError, setIsError] = useState(false);
+  const [_isLoading, setIsLoading] = useState(false);
+  const [_isError, setIsError] = useState(false);
   const [hotelDetail, setHotelDetail] = useState<HotelDetailData | null>(null);
   const [sections, setSections] = useState<HotelSection[]>([]);
   const [showSectionForm, setShowSectionForm] = useState(false);
