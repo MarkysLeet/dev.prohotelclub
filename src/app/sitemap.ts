@@ -11,7 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: route === '' ? 1 : 0.8,
   }));
 
-  // Note: For dynamic content (e.g. hotel details /hotels/[id]),
+  // Note: For dynamic content (e.g. hotel details /hotels/[slug]),
   // you would fetch those IDs from Supabase and map over them here.
 
   return [...routes];

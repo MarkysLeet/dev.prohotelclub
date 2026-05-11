@@ -39,7 +39,7 @@ export default function AuthForm() {
           password,
           options: {
             data: {
-              name,
+              name: name || email.split('@')[0],
             }
           }
         });

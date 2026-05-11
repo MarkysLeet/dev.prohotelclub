@@ -6,15 +6,15 @@ import { useEffect, useState } from 'react';
 import { api, UserProfile } from '@/lib/api';
 import { Badge, Button } from '@/components/ui';
 import Link from 'next/link';
-import { PageErrorState } from '@/components/ui';
+// import { PageErrorState } from '@/components/ui';
 import { ArrowLeft01Icon } from 'hugeicons-react';
 
 export default function AdminUsersPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [users, setUsers] = useState<UserProfile[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     if (user && !user.isAdmin) {
