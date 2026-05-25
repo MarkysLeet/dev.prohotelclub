@@ -24,6 +24,23 @@ const IconRenderer = ({ iconName, size = 20 }: { iconName: string, size?: number
   return <IconComponent size={size} />;
 };
 
+
+function slugify(str: string): string {
+    const charMap: { [key: string]: string } = {
+        'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'e', 'ж': 'zh',
+        'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o',
+        'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'ts',
+        'ч': 'ch', 'ш': 'sh', 'щ': 'shch', 'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu',
+        'я': 'ya'
+    };
+    let result = str.toLowerCase();
+    result = result.split('').map(char => charMap[char] || char).join('');
+    return result
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/[\s-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
 function HotelFormContent() {
   const { user } = useAuth();
   const router = useRouter();
@@ -50,8 +67,7 @@ function HotelFormContent() {
 
   // Section form state
   const [secTitle, setSecTitle] = useState('');
-  const [secId, setSecId] = useState('');
-  const [secContent, setSecContent] = useState('');
+    const [secContent, setSecContent] = useState('');
   const [secImages, setSecImages] = useState<string[]>([]);
   const [secIcon, setSecIcon] = useState('StarIcon');
   const [secPaywalled, setSecPaywalled] = useState(false);
@@ -109,9 +125,10 @@ function HotelFormContent() {
   };
 
   const handleSaveSection = () => {
-    if (!secTitle || !secId) return;
+    if (!secTitle) return;
+    const generatedId = slugify(secTitle) || Math.random().toString(36).substring(2, 9);
     const newSection: HotelSection = {
-      id: secId,
+      id: generatedId,
       title: secTitle,
       content: secContent,
       icon: secIcon,
@@ -133,8 +150,7 @@ function HotelFormContent() {
 
   const handleEditSection = (index: number) => {
     const s = sections[index];
-    setSecId(s.id);
-    setSecTitle(s.title);
+        setSecTitle(s.title);
     setSecContent(s.content);
     setSecIcon(s.icon || 'StarIcon');
     setSecPaywalled(s.isPaywalled || false);
@@ -160,8 +176,7 @@ function HotelFormContent() {
   };
 
   const resetSectionForm = () => {
-    setSecId('');
-    setSecTitle('');
+        setSecTitle('');
     setSecContent('');
     setSecIcon('StarIcon');
     setSecPaywalled(false);
@@ -299,8 +314,8 @@ function HotelFormContent() {
               <h4 className="font-century-gothic font-medium text-primary-text mb-2">
                 {editingSectionIndex !== null ? 'Редактирование секции' : 'Новая секция'}
               </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="ID секции (напр: rooms)" required value={secId} onChange={e => setSecId(e.target.value)} />
+              <div className="grid grid-cols-1 gap-4">
+
                 <Input label="Название (напр: Номера)" required value={secTitle} onChange={e => setSecTitle(e.target.value)} />
               </div>
 

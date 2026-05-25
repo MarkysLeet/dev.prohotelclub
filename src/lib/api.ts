@@ -254,7 +254,7 @@ export const api = {
         .from('hotel_sections')
         .delete()
         .eq('hotel_slug', detail.slug)
-        .not('id', 'in', `(${sectionIds.join(',')})`);
+        .not('id', 'in', `(${sectionIds.map(id => `'${id}'`).join(',')})`);
       if (deleteError) {
         console.error('Error deleting removed sections:', deleteError);
       }
