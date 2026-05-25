@@ -9,6 +9,7 @@ import { ImageUpload } from '@/components/ui/ImageUpload';
 import { MultiImageUpload } from '@/components/ui/MultiImageUpload';
 import Link from 'next/link';
 import { ArrowLeft01Icon, PlusSignIcon, Cancel01Icon, ArrowUp01Icon, ArrowDown01Icon } from 'hugeicons-react';
+import { slugify } from 'transliteration';
 import { HotelSection, HotelDetailData } from '@/lib/hotel-mock-data';
 import * as HugeIcons from 'hugeicons-react';
 
@@ -109,9 +110,9 @@ function HotelFormContent() {
   };
 
   const handleSaveSection = () => {
-    if (!secTitle || !secId) return;
+    if (!secTitle) return;
     const newSection: HotelSection = {
-      id: secId,
+      id: secId || slugify(secTitle),
       title: secTitle,
       content: secContent,
       icon: secIcon,
@@ -197,7 +198,11 @@ function HotelFormContent() {
         buildYear: hotelDetail?.buildYear || new Date().getFullYear(),
         mealPlan: hotelDetail?.mealPlan || 'Не указано',
         heroImage: formData.imageUrl,
-        sections: sections
+        sections: sections.map((s, idx) => ({
+          ...s,
+          id: s.id || `sec_${Math.random().toString(36).substring(2, 9)}`,
+          order_index: idx
+        }))
       });
 
       success(editId ? 'Отель обновлен' : 'Новый отель добавлен');
@@ -299,9 +304,8 @@ function HotelFormContent() {
               <h4 className="font-century-gothic font-medium text-primary-text mb-2">
                 {editingSectionIndex !== null ? 'Редактирование секции' : 'Новая секция'}
               </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="ID секции (напр: rooms)" required value={secId} onChange={e => setSecId(e.target.value)} />
-                <Input label="Название (напр: Номера)" required value={secTitle} onChange={e => setSecTitle(e.target.value)} />
+              <div className="grid grid-cols-1 gap-4">
+                <Input label="Название секции (ID будет сгенерирован автоматически: напр: Номера -> nomera)" required value={secTitle} onChange={e => setSecTitle(e.target.value)} />
               </div>
 
               <div>
