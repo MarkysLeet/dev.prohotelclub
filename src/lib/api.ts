@@ -300,6 +300,7 @@ export const api = {
         media_count: section.mediaCount,
         is_paywalled: section.isPaywalled || false,
         icon: section.icon,
+        images: section.images || [],
         order_index: i
       });
       if (sectionError) console.error('Error saving section:', sectionError);
