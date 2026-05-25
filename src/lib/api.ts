@@ -234,11 +234,12 @@ export const api = {
       mealPlan: detailData.meal_plan,
       sections: (sectionsData || []).map(s => ({
         id: s.id,
-        title: s.title,
-        content: s.content,
-        mediaCount: s.media_count,
-        isPaywalled: s.is_paywalled,
-        icon: s.icon
+          title: s.title,
+          content: s.content,
+          mediaCount: s.media_count,
+          isPaywalled: s.is_paywalled,
+          icon: s.icon,
+          images: s.images || []
       }))
     };
   },

@@ -5,6 +5,7 @@ export interface HotelSection {
   mediaCount: number; // For skeletons
   isPaywalled?: boolean;
   icon?: string;
+  images?: string[];
 }
 
 export interface HotelDetailData {

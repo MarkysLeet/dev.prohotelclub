@@ -3,6 +3,7 @@
 import React from 'react';
 import { HotelSection as IHotelSection } from '@/lib/hotel-mock-data';
 import { HotelMediaSkeleton } from './HotelMediaSkeleton';
+import { HotelMediaGallery } from './HotelMediaGallery';
 import { HotelPaywallOverlay } from './HotelPaywallOverlay';
 
 interface HotelSectionProps {
@@ -24,7 +25,11 @@ export function HotelSection({ section, isPro = false, hotelSlug, onPurchaseSucc
           {section.content}
         </p>
       </div>
-      {section.mediaCount > 0 && <HotelMediaSkeleton count={section.mediaCount} />}
+      {section.images && section.images.length > 0 ? (
+        <HotelMediaGallery images={section.images} />
+      ) : (
+        section.mediaCount > 0 && <HotelMediaSkeleton count={section.mediaCount} />
+      )}
     </div>
   );
 
