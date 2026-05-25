@@ -249,12 +249,13 @@ export const api = {
 
     // Delete sections that are no longer present
     if (detail.sections && detail.sections.length > 0) {
-      const sectionIds = detail.sections.map(s => s.id);
+      const sectionIds = detail.sections.map(s => s.id).filter(id => id); // filter out empty ids just in case
       const { error: deleteError } = await supabase
         .from('hotel_sections')
         .delete()
         .eq('hotel_slug', detail.slug)
-        .not('id', 'in', `(${sectionIds.join(',')})`);
+        .not('id', 'in', `(${sectionIds.length > 0 ? sectionIds.join(',') : 'dummy'})`);
+      console.log('Delete old sections error:', deleteError);
       if (deleteError) {
         console.error('Error deleting removed sections:', deleteError);
       }
@@ -283,6 +284,7 @@ export const api = {
       build_year: detail.buildYear,
       meal_plan: detail.mealPlan,
     });
+    console.log('Save hotel detail error:', detailError);
 
     if (detailError) {
       console.error('Error saving hotel detail:', detailError);
@@ -292,7 +294,9 @@ export const api = {
     // Save sections
     for (let i = 0; i < detail.sections.length; i++) {
       const section = detail.sections[i];
-      const { error: sectionError } = await supabase.from('hotel_sections').upsert({
+      console.log('Saving section:', section);
+
+      const sectionData = {
         id: section.id,
         hotel_slug: detail.slug,
         title: section.title,
@@ -302,7 +306,11 @@ export const api = {
         images: section.images || [],
         icon: section.icon,
         order_index: i
-      });
+      };
+      console.log('Section data to upsert:', sectionData);
+
+      const { error: sectionError, data } = await supabase.from('hotel_sections').upsert(sectionData).select();
+      console.log('Saved section result:', { data, error: sectionError });
       if (sectionError) console.error('Error saving section:', sectionError);
     }
   },
