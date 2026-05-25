@@ -126,7 +126,7 @@ function HotelFormContent() {
 
   const handleSaveSection = () => {
     if (!secTitle) return;
-    const generatedId = slugify(secTitle) || Math.random().toString(36).substring(2, 9);
+    const generatedId = (editingSectionIndex !== null ? sections[editingSectionIndex].id : null) || slugify(secTitle) || Math.random().toString(36).substring(2, 9);
     const newSection: HotelSection = {
       id: generatedId,
       title: secTitle,

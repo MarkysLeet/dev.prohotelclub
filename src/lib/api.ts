@@ -247,26 +247,14 @@ export const api = {
   saveHotelDetail: async (detail: HotelDetailData): Promise<void> => {
     const supabase = createClient();
 
-    // Delete sections that are no longer present
-    if (detail.sections && detail.sections.length > 0) {
-      const sectionIds = detail.sections.map(s => s.id);
-      const { error: deleteError } = await supabase
-        .from('hotel_sections')
-        .delete()
-        .eq('hotel_slug', detail.slug)
-        .not('id', 'in', `(${sectionIds.map(id => `'${id}'`).join(',')})`);
-      if (deleteError) {
-        console.error('Error deleting removed sections:', deleteError);
-      }
-    } else {
-      // If no sections, delete all for this hotel
-      const { error: deleteError } = await supabase
-        .from('hotel_sections')
-        .delete()
-        .eq('hotel_slug', detail.slug);
-      if (deleteError) {
-        console.error('Error deleting all sections:', deleteError);
-      }
+    // Delete ALL sections for this hotel to ensure clean state
+    const { error: deleteError } = await supabase
+      .from('hotel_sections')
+      .delete()
+      .eq('hotel_slug', detail.slug);
+
+    if (deleteError) {
+      console.error('Error deleting sections:', deleteError);
     }
 
     const { error: detailError } = await supabase.from('hotel_details').upsert({
