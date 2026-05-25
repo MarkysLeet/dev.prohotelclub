@@ -116,7 +116,8 @@ function HotelFormContent() {
       content: secContent,
       icon: secIcon,
       isPaywalled: secPaywalled,
-      mediaCount: 0
+      images: secImages,
+      mediaCount: secImages.length || 0
     };
 
     if (editingSectionIndex !== null) {
@@ -137,6 +138,7 @@ function HotelFormContent() {
     setSecContent(s.content);
     setSecIcon(s.icon || 'StarIcon');
     setSecPaywalled(s.isPaywalled || false);
+    setSecImages(s.images || []);
     setEditingSectionIndex(index);
     setShowSectionForm(true);
   };
@@ -163,6 +165,7 @@ function HotelFormContent() {
     setSecContent('');
     setSecIcon('StarIcon');
     setSecPaywalled(false);
+    setSecImages([]);
     setEditingSectionIndex(null);
     setShowSectionForm(false);
   };
