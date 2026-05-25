@@ -238,8 +238,8 @@ export const api = {
           content: s.content,
           mediaCount: s.media_count,
           isPaywalled: s.is_paywalled,
-          icon: s.icon,
-          images: s.images || []
+          images: s.images || [],
+          icon: s.icon
       }))
     };
   },
@@ -299,6 +299,7 @@ export const api = {
         content: section.content,
         media_count: section.mediaCount,
         is_paywalled: section.isPaywalled || false,
+        images: section.images || [],
         icon: section.icon,
         order_index: i
       });

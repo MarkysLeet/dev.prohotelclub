@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/AuthContext';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import { api } from '@/lib/api';
-import { Button, Input, useToast , PageErrorState } from '@/components/ui';
+import { Button, Input, useToast } from '@/components/ui';
 import { ImageUpload } from '@/components/ui/ImageUpload';
 import { MultiImageUpload } from '@/components/ui/MultiImageUpload';
 import Link from 'next/link';
@@ -41,8 +41,8 @@ function HotelFormContent() {
 
   const [tagInput, setTagInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [, setIsLoading] = useState(false);
+  const [, setIsError] = useState(false);
   const [hotelDetail, setHotelDetail] = useState<HotelDetailData | null>(null);
   const [sections, setSections] = useState<HotelSection[]>([]);
   const [showSectionForm, setShowSectionForm] = useState(false);
@@ -116,7 +116,8 @@ function HotelFormContent() {
       content: secContent,
       icon: secIcon,
       isPaywalled: secPaywalled,
-      mediaCount: 0
+      mediaCount: secImages.length,
+      images: secImages
     };
 
     if (editingSectionIndex !== null) {
@@ -137,6 +138,7 @@ function HotelFormContent() {
     setSecContent(s.content);
     setSecIcon(s.icon || 'StarIcon');
     setSecPaywalled(s.isPaywalled || false);
+    setSecImages(s.images || []);
     setEditingSectionIndex(index);
     setShowSectionForm(true);
   };
@@ -163,6 +165,7 @@ function HotelFormContent() {
     setSecContent('');
     setSecIcon('StarIcon');
     setSecPaywalled(false);
+    setSecImages([]);
     setEditingSectionIndex(null);
     setShowSectionForm(false);
   };
