@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState, Suspense } from 'react';
 import { api } from '@/lib/api';
 import { Button, Input, useToast , PageErrorState } from '@/components/ui';
+import { ImageUpload } from '@/components/ui/ImageUpload';
+import { MultiImageUpload } from '@/components/ui/MultiImageUpload';
 import Link from 'next/link';
 import { ArrowLeft01Icon, PlusSignIcon, Cancel01Icon, ArrowUp01Icon, ArrowDown01Icon } from 'hugeicons-react';
 import { HotelSection, HotelDetailData } from '@/lib/hotel-mock-data';
@@ -50,6 +52,7 @@ function HotelFormContent() {
   const [secTitle, setSecTitle] = useState('');
   const [secId, setSecId] = useState('');
   const [secContent, setSecContent] = useState('');
+  const [secImages, setSecImages] = useState<string[]>([]);
   const [secIcon, setSecIcon] = useState('StarIcon');
   const [secPaywalled, setSecPaywalled] = useState(false);
 
@@ -242,11 +245,10 @@ function HotelFormContent() {
           />
         </div>
 
-        <Input 
-          label="URL изображения"
+        <ImageUpload
+          label="Главное изображение (Hero Image)"
           value={formData.imageUrl} 
-          onChange={e => setFormData({...formData, imageUrl: e.target.value})} 
-          placeholder="https://..."
+          onChange={url => setFormData({...formData, imageUrl: url})}
         />
 
         <div>
@@ -321,6 +323,14 @@ function HotelFormContent() {
                   className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-primary-text font-century-gothic text-base focus:outline-none focus:border-evergreen-forest min-h-[100px] resize-y"
                   value={secContent}
                   onChange={e => setSecContent(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <MultiImageUpload
+                  label="Изображения секции (Галерея)"
+                  values={secImages}
+                  onChange={urls => setSecImages(urls)}
                 />
               </div>
 
