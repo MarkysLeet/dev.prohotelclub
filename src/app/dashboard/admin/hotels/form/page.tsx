@@ -24,6 +24,23 @@ const IconRenderer = ({ iconName, size = 20 }: { iconName: string, size?: number
   return <IconComponent size={size} />;
 };
 
+
+function slugify(str: string): string {
+    const charMap: { [key: string]: string } = {
+        'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'e', 'ж': 'zh',
+        'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o',
+        'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'ts',
+        'ч': 'ch', 'ш': 'sh', 'щ': 'shch', 'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu',
+        'я': 'ya'
+    };
+    let result = str.toLowerCase();
+    result = result.split('').map(char => charMap[char] || char).join('');
+    return result
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/[\s-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
 function HotelFormContent() {
   const { user } = useAuth();
   const router = useRouter();
@@ -50,11 +67,47 @@ function HotelFormContent() {
 
   // Section form state
   const [secTitle, setSecTitle] = useState('');
-  const [secId, setSecId] = useState('');
-  const [secContent, setSecContent] = useState('');
+    const [secContent, setSecContent] = useState('');
   const [secImages, setSecImages] = useState<string[]>([]);
   const [secIcon, setSecIcon] = useState('StarIcon');
   const [secPaywalled, setSecPaywalled] = useState(false);
+
+  const autoSaveSections = async (updatedSections: HotelSection[]) => {
+    if (formData.name && formData.location && formData.description) {
+      setIsSubmitting(true);
+      const hotelId = editId || Math.random().toString(36).substring(2, 11);
+      try {
+        await api.saveHotel({
+          id: hotelId,
+          ...formData,
+          link: `/hotels/${hotelId}`
+        });
+        await api.saveHotelDetail({
+          slug: hotelId,
+          name: formData.name,
+          location: formData.location,
+          shootingDate: hotelDetail?.shootingDate || new Date().toLocaleDateString('ru-RU'),
+          stars: hotelDetail?.stars || 5,
+          distanceToSea: hotelDetail?.distanceToSea || 'Не указано',
+          distanceToCity: hotelDetail?.distanceToCity || 'Не указано',
+          googleRating: hotelDetail?.googleRating || 5.0,
+          buildYear: hotelDetail?.buildYear || new Date().getFullYear(),
+          mealPlan: hotelDetail?.mealPlan || 'Не указано',
+          heroImage: formData.imageUrl,
+          sections: updatedSections
+        });
+        success('Секции обновлены');
+        if (!editId) {
+          router.replace(`/dashboard/admin/hotels/form?id=${hotelId}`);
+        }
+      } catch (error) {
+        console.error("Error auto-saving sections", error);
+        alert("Ошибка при сохранении: " + (error instanceof Error ? error.message : "Неизвестная ошибка"));
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
+  };
 
   useEffect(() => {
     if (user && !user.isAdmin) {
@@ -108,10 +161,11 @@ function HotelFormContent() {
     }));
   };
 
-  const handleSaveSection = () => {
-    if (!secTitle || !secId) return;
+  const handleSaveSection = async () => {
+    if (!secTitle) return;
+    const generatedId = (editingSectionIndex !== null ? sections[editingSectionIndex].id : null) || slugify(secTitle) || Math.random().toString(36).substring(2, 9);
     const newSection: HotelSection = {
-      id: secId,
+      id: generatedId,
       title: secTitle,
       content: secContent,
       icon: secIcon,
@@ -120,21 +174,29 @@ function HotelFormContent() {
       images: secImages
     };
 
+
+    let updatedSections = [];
     if (editingSectionIndex !== null) {
-      const updated = [...sections];
-      updated[editingSectionIndex] = newSection;
-      setSections(updated);
+      updatedSections = [...sections];
+      updatedSections[editingSectionIndex] = newSection;
+      setSections(updatedSections);
     } else {
-      setSections([...sections, newSection]);
+      updatedSections = [...sections, newSection];
+      setSections(updatedSections);
     }
 
     resetSectionForm();
+
+    if (formData.name && formData.location && formData.description) {
+      await autoSaveSections(updatedSections);
+    } else {
+      success('Секция добавлена, не забудьте заполнить обязательные поля и сохранить отель');
+    }
   };
 
   const handleEditSection = (index: number) => {
     const s = sections[index];
-    setSecId(s.id);
-    setSecTitle(s.title);
+        setSecTitle(s.title);
     setSecContent(s.content);
     setSecIcon(s.icon || 'StarIcon');
     setSecPaywalled(s.isPaywalled || false);
@@ -143,11 +205,13 @@ function HotelFormContent() {
     setShowSectionForm(true);
   };
 
-  const handleRemoveSection = (index: number) => {
-    setSections(sections.filter((_, i) => i !== index));
+  const handleRemoveSection = async (index: number) => {
+    const updatedSections = sections.filter((_, i) => i !== index);
+    setSections(updatedSections);
+    await autoSaveSections(updatedSections);
   };
 
-  const moveSection = (index: number, dir: 'up' | 'down') => {
+  const moveSection = async (index: number, dir: 'up' | 'down') => {
     if (dir === 'up' && index === 0) return;
     if (dir === 'down' && index === sections.length - 1) return;
 
@@ -157,11 +221,11 @@ function HotelFormContent() {
     updated[index] = updated[newIndex];
     updated[newIndex] = temp;
     setSections(updated);
+    await autoSaveSections(updated);
   };
 
   const resetSectionForm = () => {
-    setSecId('');
-    setSecTitle('');
+        setSecTitle('');
     setSecContent('');
     setSecIcon('StarIcon');
     setSecPaywalled(false);
@@ -204,7 +268,7 @@ function HotelFormContent() {
       router.refresh();
       router.push('/dashboard/admin/hotels');
     } catch (error) {
-       console.error("Error saving hotel", error);
+       console.error("Error saving hotel", error); alert("Ошибка: " + (error instanceof Error ? error.message : "Неизвестная ошибка"));
     } finally {
        setIsSubmitting(false);
     }
@@ -299,8 +363,8 @@ function HotelFormContent() {
               <h4 className="font-century-gothic font-medium text-primary-text mb-2">
                 {editingSectionIndex !== null ? 'Редактирование секции' : 'Новая секция'}
               </h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input label="ID секции (напр: rooms)" required value={secId} onChange={e => setSecId(e.target.value)} />
+              <div className="grid grid-cols-1 gap-4">
+
                 <Input label="Название (напр: Номера)" required value={secTitle} onChange={e => setSecTitle(e.target.value)} />
               </div>
 
