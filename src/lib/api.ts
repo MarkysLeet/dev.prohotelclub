@@ -186,7 +186,7 @@ export const api = {
       image_url: hotel.imageUrl,
       link: hotel.link,
     });
-    if (error) console.error('Error saving hotel:', error);
+    if (error) { console.error('Error saving hotel:', error); throw error; }
   },
 
   // --- Детали Отеля ---
@@ -255,6 +255,7 @@ export const api = {
 
     if (deleteError) {
       console.error('Error deleting sections:', deleteError);
+      throw deleteError;
     }
 
     const { error: detailError } = await supabase.from('hotel_details').upsert({
@@ -274,7 +275,7 @@ export const api = {
 
     if (detailError) {
       console.error('Error saving hotel detail:', detailError);
-      return;
+      throw detailError;
     }
 
     // Save sections
@@ -291,7 +292,7 @@ export const api = {
         icon: section.icon,
         order_index: i
       });
-      if (sectionError) console.error('Error saving section:', sectionError);
+      if (sectionError) { console.error('Error saving section:', sectionError); throw sectionError; }
     }
   },
 
