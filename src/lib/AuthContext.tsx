@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const supabase = createClient();
 
-  const fetchUserProfile = React.useCallback(async function fetchProfile(userId: string, email: string, retries = 3) {
+  const fetchUserProfile = React.useCallback(async function fetchProfile(userId: string, email: string, retries = 3): Promise<void> {
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -45,6 +45,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (error && error.code !== 'PGRST116') {
          console.error('Error fetching profile:', error);
+         // Stop on critical database errors
+         setIsAuth(false);
+         setUser(null);
+         setIsLoading(false);
+         return;
       }
 
       if (data) {
@@ -63,9 +68,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
         setIsAuth(true);
         setIsLoading(false);
-      } else if (retries > 0) {
+      } else if (error && error.code === 'PGRST116' && retries > 0) {
         // Wait for the trigger to create the profile
-        setTimeout(() => fetchProfile(userId, email, retries - 1), 500); // 500ms instead of 1000ms
+        await new Promise(resolve => setTimeout(resolve, 500));
+        return fetchProfile(userId, email, retries - 1);
       } else {
         console.error('Profile not found after retries for user:', userId);
         // Do not authorize user if profile is missing to prevent bugs
