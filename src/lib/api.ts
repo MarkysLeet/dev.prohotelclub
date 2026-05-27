@@ -67,15 +67,28 @@ export interface ReviewRequest {
 
 export const api = {
   // Helper to retry failed async operations
-  _fetchWithRetry: async <T>(operation: () => Promise<T>, retries = 3, delay = 500): Promise<T> => {
+  _fetchWithRetry: async <T>(operation: () => Promise<T>, retries = 2, delay = 500): Promise<T> => {
     try {
       return await operation();
-    } catch (error) {
-      if (retries > 0) {
+    } catch (error: unknown) {
+      // Do not retry if the error is explicitly a 4xx (Client Error) or PGRST116 (Not found)
+      // because retrying it will likely yield the exact same error, just causing delay.
+      const isClientError =
+        typeof error === 'object' && error !== null && 'status' in error &&
+        typeof (error as {status: number}).status === 'number' &&
+        (error as {status: number}).status >= 400 && (error as {status: number}).status < 500;
+      const isNotFound =
+        typeof error === 'object' && error !== null && 'code' in error &&
+        (error as {code: string}).code === 'PGRST116';
+
+      if (retries > 0 && !isClientError && !isNotFound) {
         console.warn(`Operation failed, retrying in ${delay}ms... (${retries} retries left)`, error);
         await new Promise(resolve => setTimeout(resolve, delay));
         return api._fetchWithRetry(operation, retries - 1, delay * 1.5);
       }
+
+      // If retries are exhausted or it's a client error, fail fast and throw
+      console.error('Operation completely failed or hit a non-retryable error:', error);
       throw error;
     }
   },
